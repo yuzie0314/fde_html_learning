@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>點餐｜Demo</title>
+<style>
+  :root{
+    --bg:#fff7ef; --card:#ffffff; --ink:#2a2320; --muted:#9a8f86;
+    --brand:#e8582c; --brand2:#ff7a4d; --line:#efe3d8; --ok:#2fa96a; --chip:#fff0e6;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);min-height:100vh;display:flex;justify-content:center}
+  .app{width:100%;max-width:430px;padding:0 0 110px}
+  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--brand),var(--brand2));
+    color:#fff;padding:18px 20px;border-radius:0 0 22px 22px;box-shadow:0 8px 20px rgba(232,88,44,.25)}
+  header h1{margin:0;font-size:19px;font-weight:800;letter-spacing:1px}
+  header p{margin:4px 0 0;font-size:12px;opacity:.9}
+  .steps{display:flex;gap:6px;margin-top:14px}
+  .steps i{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.35)}
+  .steps i.on{background:#fff}
+  .wrap{padding:20px}
+  .q{font-size:17px;font-weight:800;margin:6px 0 4px}
+  .sub{font-size:12px;color:var(--muted);margin-bottom:16px}
+  .opt{display:flex;align-items:center;gap:12px;background:var(--card);border:2px solid var(--line);
+    border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer;transition:.12s;font-size:16px}
+  .opt:active{transform:scale(.99)}
+  .opt.sel{border-color:var(--brand);background:var(--chip)}
+  .opt .em{font-size:24px}
+  .opt .ck{margin-left:auto;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none}
+  .opt.sel .ck{background:var(--brand);border-color:var(--brand);position:relative}
+  .opt.sel .ck:after{content:"✓";color:#fff;font-size:14px;position:absolute;top:-1px;left:4px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid .opt{margin:0;flex-direction:column;text-align:center;padding:18px 10px;gap:6px}
+  .grid .opt .ck{display:none}
+  .tablepick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+  .tablepick button{padding:14px 0;border-radius:12px;border:2px solid var(--line);background:#fff;font-size:16px;font-weight:700;cursor:pointer}
+  .tablepick button.sel{border-color:var(--brand);background:var(--chip);color:var(--brand)}
+  .count{font-size:12px;color:var(--brand);font-weight:700}
+  .foot{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;pointer-events:none}
+  .footin{width:100%;max-width:430px;padding:14px 20px 22px;background:linear-gradient(180deg,transparent,var(--bg) 30%);pointer-events:auto}
+  .btn{width:100%;padding:16px;border:none;border-radius:16px;font-size:17px;font-weight:800;color:#fff;
+    background:linear-gradient(180deg,var(--brand2),var(--brand));box-shadow:0 8px 20px rgba(232,88,44,.3);cursor:pointer}
+  .btn:disabled{filter:grayscale(.6) opacity(.6);box-shadow:none;cursor:not-allowed}
+  .btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+  .barrow{display:flex;gap:10px}
+  .summary{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+  .summary .li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:15px}
+  .summary .li:last-child{border:none}
+  .summary .li span:first-child{color:var(--muted)}
+  .done{text-align:center;padding:50px 20px}
+  .done .big{font-size:64px}
+  .done h2{margin:10px 0 6px}
+  .done p{color:var(--muted);margin:0}
+  .hidden{display:none}
+  .link{display:inline-block;margin-top:10px;font-size:12px;color:var(--brand);text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>🍱 教科系實習餐廳</h1>
+    <p>掃碼點餐 Demo</p>
+    <div class="steps" id="steps"></div>
+  </header>
+  <div class="wrap" id="wrap"></div>
+</div>
+
+<div class="foot"><div class="footin" id="foot"></div></div>
+
+<script>
+const MAINS = [
+  {n:"招牌雞腿",e:"🍗"},{n:"香煎鯖魚",e:"🐟"},{n:"糖醋排骨",e:"🍖"},
+  {n:"麻婆豆腐",e:"🌶️"},{n:"蔥爆牛肉",e:"🥩"},{n:"素食滷味",e:"🥬"}
+];
+const SIDES = ["炒高麗菜","燙青花菜","滷白菜","炒豆芽","三色蛋","涼拌小黃瓜","炒油菜","筍絲","玉米筍","紅蘿蔔絲"];
+
+let step=0;
+const order={type:null, table:null, rice:null, main:null, sides:[]};
+const TOTAL=5;
+const $=id=>document.getElementById(id);
+
+function renderSteps(){
+  $('steps').innerHTML=Array.from({length:TOTAL},(_,i)=>`<i class="${i<=step?'on':''}"></i>`).join('');
+}
+
+function render(){
+  renderSteps();
+  const w=$('wrap'), f=$('foot');
+  if(step===0){
+    w.innerHTML=`<div class="q">用餐方式</div><div class="sub">請先選擇外帶或內用</div>
+      <div class="grid">
+        <div class="opt ${order.type==='外帶'?'sel':''}" onclick="pick('type','外帶')"><span class="em">🛍️</span><div>外帶</div></div>
+        <div class="opt ${order.type==='內用'?'sel':''}" onclick="pick('type','內用')"><span class="em">🍽️</span><div>內用（選桌號）</div></div>
+      </div>
+      <div id="tbl" class="${order.type==='內用'?'':'hidden'}">
+        <div class="sub" style="margin:16px 0 4px">選擇桌號</div>
+        <div class="tablepick">${Array.from({length:8},(_,i)=>`<button class="${order.table==i+1?'sel':''}" onclick="pick('table',${i+1})">${i+1}桌</button>`).join('')}</div>
+      </div>`;
+    f.innerHTML=nav(canNext0());
+  }
+  else if(step===1){
+    w.innerHTML=`<div class="q">是否要飯？</div><div class="sub">主食附餐選擇</div>
+      <div class="opt ${order.rice==='要飯'?'sel':''}" onclick="pick('rice','要飯')"><span class="em">🍚</span>要飯<span class="ck"></span></div>
+      <div class="opt ${order.rice==='不要飯'?'sel':''}" onclick="pick('rice','不要飯')"><span class="em">🚫</span>不要飯<span class="ck"></span></div>`;
+    f.innerHTML=nav(!!order.rice);
+  }
+  else if(step===2){
+    w.innerHTML=`<div class="q">選擇主食</div><div class="sub">單選一項</div>`+
+      MAINS.map(m=>`<div class="opt ${order.main===m.n?'sel':''}" onclick="pick('main','${m.n}')"><span class="em">${m.e}</span>${m.n}<span class="ck"></span></div>`).join('');
+    f.innerHTML=nav(!!order.main);
+  }
+  else if(step===3){
+    w.innerHTML=`<div class="q">選擇三菜 <span class="count">(${order.sides.length}/3)</span></div><div class="sub">請選滿 3 樣配菜</div>`+
+      SIDES.map(s=>`<div class="opt ${order.sides.includes(s)?'sel':''}" onclick="toggleSide('${s}')">${s}<span class="ck"></span></div>`).join('');
+    f.innerHTML=nav(order.sides.length===3);
+  }
+  else if(step===4){
+    w.innerHTML=`<div class="q">確認訂單</div><div class="sub">請確認以下內容</div>
+      <div class="summary">
+        <div class="li"><span>用餐方式</span><b>${order.type==='內用'?('內用 · '+order.table+'桌'):'外帶'}</b></div>
+        <div class="li"><span>飯</span><b>${order.rice}</b></div>
+        <div class="li"><span>主食</span><b>${order.main}</b></div>
+        <div class="li"><span>三菜</span><b>${order.sides.join('、')}</b></div>
+      </div>`;
+    f.innerHTML=`<div class="barrow"><button class="btn ghost" style="flex:.5" onclick="go(-1)">上一步</button>
+      <button class="btn" style="flex:1" onclick="submit()">送出訂單 ✓</button></div>`;
+  }
+  else if(step===5){
+    $('steps').innerHTML='';
+    w.innerHTML=`<div class="done"><div class="big">✅</div><h2>訂單已送出！</h2>
+      <p>廚房顯示畫面已即時收到您的訂單</p>
+      <a class="link" href="display.html" target="_blank">開啟廚房顯示畫面 →</a></div>`;
+    f.innerHTML=`<button class="btn" onclick="reset()">再點一單</button>`;
+  }
+}
+
+function nav(ok){
+  const back = step>0 ? `<button class="btn ghost" style="flex:.5" onclick="go(-1)">上一步</button>`:'';
+  return `<div class="barrow">${back}<button class="btn" style="flex:1" onclick="go(1)" ${ok?'':'disabled'}>下一步</button></div>`;
+}
+function canNext0(){ return order.type==='外帶' || (order.type==='內用' && order.table); }
+
+window.pick=(k,v)=>{ order[k]=v; if(k==='type'&&v==='外帶')order.table=null; render(); };
+window.toggleSide=(s)=>{
+  const i=order.sides.indexOf(s);
+  if(i>=0) order.sides.splice(i,1);
+  else { if(order.sides.length>=3) return; order.sides.push(s); }
+  render();
+};
+window.go=(d)=>{ step=Math.max(0,Math.min(TOTAL,step+d)); render(); };
+window.reset=()=>{ step=0; order.type=order.table=order.rice=order.main=null; order.sides=[]; render(); };
+
+window.submit=()=>{
+  const now=new Date();
+  const rec={
+    id:Date.now(),
+    time:now.toTimeString().slice(0,5),
+    ts:now.getTime(),
+    place: order.type==='內用' ? (order.table+'桌') : '外帶',
+    type: order.type,
+    rice: order.rice, main: order.main, sides:[...order.sides]
+  };
+  // 存入 localStorage（顯示頁開啟時可讀歷史）
+  const list=JSON.parse(localStorage.getItem('orders')||'[]');
+  list.push(rec); localStorage.setItem('orders',JSON.stringify(list));
+  // 即時廣播給顯示頁
+  try{ new BroadcastChannel('order-demo').postMessage(rec); }catch(e){}
+  step=5; render();
+};
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>yujen · FDE Demo 作品集</title>
+<style>
+  :root{--bg:#0e1220;--card:#182034;--ink:#eef2f8;--muted:#95a0b5;--line:#28324a;--teal:#12b6a6;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    background:radial-gradient(900px 500px at 50% -10%,#1a2444,var(--bg) 60%);color:var(--ink);min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto;padding:48px 22px 60px}
+  .badge{display:inline-block;font-size:12px;font-weight:800;color:#04201c;background:linear-gradient(135deg,#3ad6c4,var(--teal));padding:6px 12px;border-radius:20px}
+  h1{font-size:30px;margin:18px 0 6px;font-weight:800}
+  .sub{color:var(--muted);font-size:15px;margin-bottom:30px}
+  a.card{display:flex;align-items:center;gap:16px;text-decoration:none;color:inherit;
+    background:linear-gradient(180deg,var(--card),#141a2c);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;margin-bottom:14px;transition:.15s}
+  a.card:hover{border-color:var(--teal);transform:translateY(-2px)}
+  .ic{width:52px;height:52px;border-radius:13px;flex:none;display:flex;align-items:center;justify-content:center;font-size:26px;background:#0f1626;border:1px solid var(--line)}
+  .t{font-size:17px;font-weight:800}
+  .d{font-size:13px;color:var(--muted);margin-top:2px}
+  .arrow{margin-left:auto;color:var(--teal);font-size:20px}
+  .foot{margin-top:26px;color:var(--muted);font-size:12px;text-align:center;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="badge">FORWARD-DEPLOYED ENGINEER</span>
+  <h1>yujen · Demo 作品集</h1>
+  <div class="sub">以下為各專案的可操作 Demo，點擊即可試用（建議使用 Chrome）。</div>
+
+  <a class="card" href="esg/">
+    <div class="ic">🌐</div>
+    <div><div class="t">AI 多語種移工 DEI 認證平台</div>
+    <div class="d">五語微課程 → 線上測驗 → QR 電子證書 → 企業戰情室（含語音）</div></div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a class="card" href="ai-service/">
+    <div class="ic">🤖</div>
+    <div><div class="t">電商 AI 客服</div>
+    <div class="d">即時回覆訂單/退換貨/運費等常見問題，可語音朗讀</div></div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a class="card" href="order/">
+    <div class="ic">🍱</div>
+    <div><div class="t">掃碼點餐系統</div>
+    <div class="d">外帶/桌號 → 主食 → 三菜 → 送出，廚房看板即時顯示</div></div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a class="card" href="roulette/">
+    <div class="ic">🎡</div>
+    <div><div class="t">推薦幸運輪盤</div>
+    <div class="d">姓名手機登入，推薦成交填格、依次數抽獎</div></div>
+    <div class="arrow">→</div>
+  </a>
+
+  <div class="foot">
+    ＊ 點餐系統另有「廚房看板」頁：進入後開 <b>order/display.html</b> 可同步顯示訂單。<br>
+    yujen ｜ Forward-Deployed Engineer
+  </div>
+</div>
+</body>
+</html>

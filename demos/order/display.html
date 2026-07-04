@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>廚房顯示｜Demo</title>
+<style>
+  :root{--bg:#12161c;--card:#1c222c;--ink:#eef2f7;--muted:#8b97a7;--brand:#ff7a4d;
+    --take:#ffb020;--dine:#33c06a;--line:#2a323e;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);min-height:100vh}
+  header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;
+    background:linear-gradient(180deg,#1c222c,#12161c);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  header h1{margin:0;font-size:20px;font-weight:800}
+  header h1 small{color:var(--muted);font-weight:500;font-size:13px;margin-left:8px}
+  .right{display:flex;align-items:center;gap:16px}
+  .clock{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--brand)}
+  .clear{background:transparent;border:1px solid var(--line);color:var(--muted);padding:8px 14px;border-radius:10px;cursor:pointer;font-size:13px}
+  .stat{font-size:13px;color:var(--muted)}
+  .stat b{color:var(--ink);font-size:16px}
+  .board{padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+  .empty{color:var(--muted);text-align:center;padding:80px 20px;grid-column:1/-1}
+  .empty .em{font-size:48px}
+  .ticket{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:0 8px 20px rgba(0,0,0,.3);animation:pop .35s ease}
+  @keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  .thead{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;font-weight:800}
+  .thead.dine{background:linear-gradient(90deg,rgba(51,192,106,.2),transparent);border-left:4px solid var(--dine)}
+  .thead.take{background:linear-gradient(90deg,rgba(255,176,32,.2),transparent);border-left:4px solid var(--take)}
+  .place{font-size:19px}
+  .time{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .tbody{padding:6px 16px 16px}
+  .line{display:flex;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:15px}
+  .line:last-child{border:none}
+  .tag{font-size:11px;color:var(--muted);min-width:34px}
+  .no{font-size:44px;font-weight:900;color:#2a323e;text-align:right;line-height:.8;margin:-6px 16px 8px 0}
+  .badge{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:700}
+  .badge.dine{background:rgba(51,192,106,.18);color:var(--dine)}
+  .badge.take{background:rgba(255,176,32,.18);color:var(--take)}
+</style>
+</head>
+<body>
+<header>
+  <h1>👨‍🍳 廚房訂單看板 <small>即時顯示</small></h1>
+  <div class="right">
+    <div class="stat">今日訂單 <b id="cnt">0</b></div>
+    <div class="clock" id="clock">--:--</div>
+    <button class="clear" onclick="clearAll()">清空</button>
+  </div>
+</header>
+<div class="board" id="board"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let orders = JSON.parse(localStorage.getItem('orders')||'[]');
+
+function tick(){ $('clock').textContent=new Date().toTimeString().slice(0,5); }
+tick(); setInterval(tick,1000*10);
+
+function render(){
+  const b=$('board');
+  $('cnt').textContent=orders.length;
+  if(orders.length===0){ b.innerHTML=`<div class="empty"><div class="em">🍽️</div><p>尚無訂單，等待點餐中…</p></div>`; return; }
+  const sorted=[...orders].sort((a,b)=>b.ts-a.ts);
+  b.innerHTML=sorted.map((o,idx)=>{
+    const dine=o.type==='內用';
+    const num=orders.findIndex(x=>x.id===o.id)+1;
+    return `<div class="ticket">
+      <div class="thead ${dine?'dine':'take'}">
+        <span class="place">${dine?'🍽️ '+o.place:'🛍️ 外帶'}</span>
+        <span class="badge ${dine?'dine':'take'}">${dine?'內用':'外帶'}</span>
+      </div>
+      <div class="no">#${String(num).padStart(2,'0')}</div>
+      <div class="tbody">
+        <div class="line"><span class="tag">時間</span><b>${o.time}</b></div>
+        <div class="line"><span class="tag">飯</span>${o.rice}</div>
+        <div class="line"><span class="tag">主食</span><b>${o.main}</b></div>
+        <div class="line"><span class="tag">三菜</span>${o.sides.join('、')}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function add(rec){
+  if(orders.some(o=>o.id===rec.id)) return;
+  orders.push(rec);
+  localStorage.setItem('orders',JSON.stringify(orders));
+  render();
+}
+window.clearAll=()=>{ if(confirm('清空所有訂單？')){ orders=[]; localStorage.setItem('orders','[]'); render(); } };
+
+// 即時接收（同瀏覽器跨分頁）
+try{ const bc=new BroadcastChannel('order-demo'); bc.onmessage=e=>add(e.data); }catch(e){}
+// 備援：localStorage 事件（其他分頁寫入時觸發）
+window.addEventListener('storage',e=>{ if(e.key==='orders'){ syncFromStore(); } });
+// 保險：每 1.5 秒輪詢 localStorage，確保 file:// 直接開啟也能同步
+function syncFromStore(){
+  const latest=JSON.parse(localStorage.getItem('orders')||'[]');
+  if(latest.length!==orders.length){ orders=latest; render(); }
+}
+setInterval(syncFromStore,1500);
+
+render();
+</script>
+</body>
+</html>

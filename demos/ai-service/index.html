@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI 客服｜Demo</title>
+<style>
+  :root{
+    --bg:#eef1f6; --panel:#ffffff; --brand:#4f6bff; --brand2:#6d86ff;
+    --ink:#1f2430; --muted:#8a90a2; --line:#e7eaf2; --bot:#f2f4fb; --ok:#25b06a;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .phone{width:100%;max-width:400px;height:min(760px,92vh);background:var(--panel);border-radius:26px;overflow:hidden;
+    display:flex;flex-direction:column;box-shadow:0 30px 70px rgba(31,40,64,.25);border:1px solid var(--line)}
+  .top{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:16px 18px;display:flex;align-items:center;gap:12px}
+  .av{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;position:relative}
+  .av .dot{position:absolute;right:1px;bottom:1px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid #5a74ff}
+  .top .nm{font-weight:800;font-size:16px}
+  .top .st{font-size:11px;opacity:.9}
+  .voice{margin-left:auto;background:rgba(255,255,255,.18);border:none;color:#fff;font-size:12px;
+    padding:8px 11px;border-radius:20px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:5px}
+  .voice.off{opacity:.55}
+  .chat{flex:1;overflow-y:auto;padding:18px 16px;background:linear-gradient(180deg,#f6f8fc,#eef1f6);display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:80%;padding:11px 14px;border-radius:16px;font-size:14.5px;line-height:1.55;white-space:pre-wrap;animation:in .25s ease}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .bot{align-self:flex-start;background:var(--panel);border:1px solid var(--line);border-bottom-left-radius:5px;box-shadow:0 2px 6px rgba(31,40,64,.05)}
+  .me{align-self:flex-end;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border-bottom-right-radius:5px}
+  .time{font-size:10px;color:var(--muted);margin:2px 4px 0}
+  .me + .time{align-self:flex-end}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:92%}
+  .chip{background:#fff;border:1.5px solid #d6ddf5;color:var(--brand);font-size:13px;font-weight:600;
+    padding:8px 13px;border-radius:20px;cursor:pointer;transition:.12s}
+  .chip:active{transform:scale(.96);background:#eef2ff}
+  .typing{align-self:flex-start;background:#fff;border:1px solid var(--line);padding:13px 16px;border-radius:16px;border-bottom-left-radius:5px;display:flex;gap:4px}
+  .typing i{width:7px;height:7px;border-radius:50%;background:#c3cae0;animation:b 1s infinite}
+  .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+  @keyframes b{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+  .foot{border-top:1px solid var(--line);padding:10px 12px;display:flex;gap:8px;align-items:center;background:#fff}
+  .foot input{flex:1;border:1.5px solid var(--line);border-radius:22px;padding:11px 15px;font-size:15px;outline:none}
+  .foot input:focus{border-color:var(--brand)}
+  .send{width:44px;height:44px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-size:18px;cursor:pointer;flex:none}
+  .badge{font-size:9px;text-align:center;color:var(--muted);padding:4px}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="top">
+    <div class="av">🤖<span class="dot"></span></div>
+    <div><div class="nm">小雲 AI 客服</div><div class="st">線上・平均 2 秒回覆</div></div>
+    <button class="voice" id="voice">🔊 語音</button>
+  </div>
+  <div class="chat" id="chat"></div>
+  <div class="foot">
+    <input id="inp" placeholder="輸入問題，或點下方按鈕…" autocomplete="off">
+    <button class="send" id="send">➤</button>
+  </div>
+  <div class="badge">AI 客服 Demo・示範用（可串接真實訂單系統與大型語言模型）</div>
+</div>
+
+<script>
+const chat=document.getElementById('chat');
+let voiceOn=true;
+
+const INTENTS=[
+  {keys:["訂單","物流","到貨","到哪","出貨","包裹","查件","運送","幾天","什麼時候到"],
+   a:"您可以提供訂單編號，我立即為您查詢物流進度 📦\n（示範）訂單 #A20260704 目前狀態：已出貨，預計 7/6 送達，宅配單號 8842-1176-33。",
+   chips:["我要退換貨","運費怎麼算","轉真人客服"]},
+  {keys:["退","換貨","退貨","退款","不想要","瑕疵","壞掉"],
+   a:"退換貨說明如下 🔁\n・鑑賞期 7 天內、商品完整可申請\n・生鮮/客製商品恕不退換\n・退款於收到退回商品後 3～5 個工作天原路退回\n需要我幫您開啟退貨申請嗎？",
+   chips:["開啟退貨申請","查詢我的訂單","轉真人客服"]},
+  {keys:["運費","運送費","免運","多少錢寄","寄送費用"],
+   a:"運費資訊 🚚\n・本島宅配 NT$80，滿 NT$1,200 免運\n・超商取貨 NT$60，滿 NT$900 免運\n・離島另計。要幫您看目前購物車是否達免運嗎？",
+   chips:["查詢我的訂單","付款方式","轉真人客服"]},
+  {keys:["規格","尺寸","顏色","庫存","有貨","現貨","材質","size"],
+   a:"商品規格與庫存 🛍️\n請告訴我商品名稱或連結，我可查詢即時庫存與可選規格。\n（示範）「經典帆布包」現貨：黑/卡其/藍，均有庫存。",
+   chips:["運費怎麼算","付款方式","查詢我的訂單"]},
+  {keys:["付款","付費","刷卡","信用卡","分期","匯款","貨到付款","超商代碼","line pay","付錢"],
+   a:"付款方式 💳\n・信用卡（可 3/6 期分期）\n・LINE Pay / Apple Pay\n・超商代碼繳費\n・貨到付款（本島限定）",
+   chips:["運費怎麼算","查詢我的訂單","轉真人客服"]},
+  {keys:["時間","營業","客服時間","幾點","上班","服務時間"],
+   a:"客服服務時間 🕘\n・AI 客服：24 小時全年無休\n・真人客服：週一至週五 10:00–18:00\n非服務時間我也會先幫您記錄，專員上線後回覆您。",
+   chips:["轉真人客服","查詢我的訂單"]},
+  {keys:["真人","專員","客服人員","找人","不要機器人","轉接"],
+   a:"好的，我已為您轉接真人客服 👩‍💼\n（示範）目前等候人數 2 位，預計 3 分鐘內由專員接手。方便先留下您的訂單編號與問題摘要嗎？",
+   chips:["查詢我的訂單","我要退換貨"]},
+  {keys:["謝謝","感謝","thank","了解","好的","ok"],
+   a:"不客氣！很高興能幫上忙 😊 還有其他需要協助的地方嗎？",
+   chips:["查詢我的訂單","我要退換貨","運費怎麼算"]},
+  {keys:["你好","哈囉","hi","hello","在嗎","嗨"],
+   a:"您好，我是小雲 AI 客服 🤖 很高興為您服務！以下是常見問題，也可以直接打字問我：",
+   chips:["查詢我的訂單","我要退換貨","運費怎麼算","付款方式"]},
+];
+const FALLBACK={a:"這個問題我先幫您記下來了 📝 我可以協助訂單物流、退換貨、運費、付款、商品規格等問題；較複雜的部分也能為您轉接真人客服。您想先了解哪一項？",
+  chips:["查詢我的訂單","我要退換貨","運費怎麼算","轉真人客服"]};
+
+function now(){return new Date().toTimeString().slice(0,5);}
+function scroll(){chat.scrollTop=chat.scrollHeight;}
+
+function addMe(t){
+  const d=document.createElement('div');d.className='msg me';d.textContent=t;chat.appendChild(d);
+  const tm=document.createElement('div');tm.className='time';tm.textContent=now();chat.appendChild(tm);scroll();
+}
+function typing(){const d=document.createElement('div');d.className='typing';d.id='typing';d.innerHTML='<i></i><i></i><i></i>';chat.appendChild(d);scroll();return d;}
+
+function speak(t){
+  if(!voiceOn||!window.speechSynthesis)return;
+  const clean=t.replace(/[📦🔁🚚🛍️💳🕘👩‍💼😊🤖📝➤・]/g,' ');
+  const u=new SpeechSynthesisUtterance(clean);u.lang='zh-TW';u.rate=1.05;
+  speechSynthesis.cancel();speechSynthesis.speak(u);
+}
+function addBot(t,chips){
+  const d=document.createElement('div');d.className='msg bot';d.textContent=t;chat.appendChild(d);
+  const tm=document.createElement('div');tm.className='time';tm.textContent=now();chat.appendChild(tm);
+  if(chips&&chips.length){
+    const c=document.createElement('div');c.className='chips';
+    chips.forEach(x=>{const b=document.createElement('button');b.className='chip';b.textContent=x;b.onclick=()=>{addMe(x);respond(x);};c.appendChild(b);});
+    chat.appendChild(c);
+  }
+  scroll();speak(t);
+}
+function match(text){
+  const t=text.toLowerCase();
+  let best=null,score=0;
+  for(const it of INTENTS){
+    const s=it.keys.reduce((n,k)=>n+(t.includes(k.toLowerCase())?1:0),0);
+    if(s>score){score=s;best=it;}
+  }
+  return score>0?best:FALLBACK;
+}
+function respond(text){
+  const t=typing();
+  setTimeout(()=>{t.remove();const r=match(text);addBot(r.a,r.chips);},700+Math.random()*500);
+}
+function submit(){
+  const v=document.getElementById('inp').value.trim();if(!v)return;
+  document.getElementById('inp').value='';addMe(v);respond(v);
+}
+document.getElementById('send').onclick=submit;
+document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
+document.getElementById('voice').onclick=function(){
+  voiceOn=!voiceOn;this.classList.toggle('off',!voiceOn);this.textContent=voiceOn?'🔊 語音':'🔇 語音';
+  if(!voiceOn&&window.speechSynthesis)speechSynthesis.cancel();
+};
+
+// 開場
+setTimeout(()=>addBot("您好，我是小雲 AI 客服 🤖\n很高興為您服務！請問需要什麼協助呢？以下是常見問題，也可以直接打字問我：",
+  ["查詢我的訂單","我要退換貨","運費怎麼算","付款方式"]),400);
+</script>
+</body>
+</html>
