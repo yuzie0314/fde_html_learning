@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Dr.Chen 官方 AI 小助手｜Demo</title>
 <style>
-  :root{
-    --bg:#080b16;--panel:#0e1430;--card:#121830;--ink:#eaf0ff;--muted:#8891b4;
-    --cyan:#25e0e6;--mag:#b14dff;--line:#222b4d;--line2:#232c50;--ok:#2fe0a6;
-  }
+  :root{--bg:#080b16;--panel:#0e1430;--card:#121830;--ink:#eaf0ff;--muted:#8891b4;
+    --cyan:#25e0e6;--mag:#b14dff;--line:#222b4d;--line2:#232c50;--ok:#2fe0a6;}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
     background:#080b16;color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;
@@ -51,7 +49,6 @@
   .send{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;flex:none;color:#06121a;font-size:16px;
     background:linear-gradient(135deg,var(--cyan),var(--mag));box-shadow:0 0 16px rgba(37,224,230,.45)}
   .badge{font-size:9px;text-align:center;color:var(--muted);padding:4px}
-  a.link{color:var(--cyan);text-decoration:none;border-bottom:1px dashed rgba(37,224,230,.5)}
 </style>
 </head>
 <body>
@@ -66,56 +63,53 @@
     <input id="inp" placeholder="輸入問題，或點下方按鈕…" autocomplete="off">
     <button class="send" id="send">➤</button>
   </div>
-  <div class="badge">AI 小助手 Demo · 示範用（實際內容依 Dr.Chen 提供資料設定）</div>
+  <div class="badge">AI 小助手 Demo · 示範用（可依 Dr.Chen 需求持續調整）</div>
 </div>
-
 <script>
 const INTENTS=[
  {k:["直播","幾點","開播","時間","什麼時候","schedule","實況"],
-  a:"Dr.Chen 的直播時間表 🎮\n・週一 / 三 / 五　21:00 開台\n・週六　20:00 特別場（挑戰賽）\n開台前 30 分鐘社群會發通知，別錯過！",
-  c:["在哪裡看直播","怎麼收到開播通知","加入社群"]},
- {k:["哪看","哪裡看","平台","twitch","youtube","yt","頻道","在哪"],
-  a:"可以在這些地方看直播 📺\n・YouTube：Dr.Chen 頻道\n・Twitch：drchen\n（實際連結由 Dr.Chen 提供後填入）點下面就能追蹤！",
+  a:"開台資訊看這裡 🎮\nDr.Chen 幾乎每天都在 Threads 更新動態與開台時間，最即時的資訊請追蹤：\n・Threads：@drchen8990\n開台會第一時間在 Threads 公告，追蹤就不會錯過！",
+  c:["在哪裡看直播","怎麼收到開播通知","合作邀約"]},
+ {k:["哪看","哪裡看","平台","twitch","youtube","yt","頻道","在哪","重播"],
+  a:"可以在這些地方看 Dr.Chen 📺\n・YouTube：youtube.com/@drchen9090（直播與重播）\n・Threads：@drchen8990（每日最新動態）\n訂閱 + 追蹤，兩邊都不漏接！",
   c:["怎麼收到開播通知","直播時間","合作邀約"]},
  {k:["通知","追蹤","提醒","訂閱","開播提醒","關注"],
-  a:"想第一時間收到開播通知 🔔\n1. 到 YouTube 頻道按「訂閱 + 小鈴鐺」\n2. Twitch 點「追蹤 Follow」\n3. 加入官方社群，開台自動推播\n這樣就不會錯過任何一場囉！",
-  c:["加入社群","直播時間","抖內支持"]},
- {k:["社群","discord","line","telegram","群組","加入","tg","官方群"],
-  a:"歡迎加入官方社群 💬\n・Discord：即時聊天、活動公告\n・LINE 社群 / Telegram：開台通知\n（連結由 Dr.Chen 提供後填入）在這裡跟大家一起看台最熱鬧！",
+  a:"想第一時間收到開播通知 🔔\n1. 追蹤 Threads @drchen8990（Dr.Chen 每天更新，開台必發）\n2. YouTube 頻道按「訂閱 + 小鈴鐺」\n這樣每一場都不會錯過！",
+  c:["在哪裡看直播","直播時間","抖內支持"]},
+ {k:["社群","discord","line","telegram","群組","加入","tg","官方群","threads","脆","追蹤他"],
+  a:"想跟 Dr.Chen 互動最快的方式 💬\n・Threads：@drchen8990 ← 他最活躍、每天發文，留言互動最即時\n・YouTube：youtube.com/@drchen9090\n追蹤 Threads 等於加入第一手社群！",
   c:["直播時間","合作邀約","常見問題"]},
- {k:["合作","業配","商案","邀約","聯繫","經紀","廠商","贊助商","商業"],
-  a:"合作與業配洽詢 🤝\n歡迎廠商 / 媒體來信談合作！\n・請提供：品牌、合作形式、檔期與預算\n・洽詢窗口：business@（Dr.Chen 提供）\n我會盡快幫您轉達給本人 / 經紀窗口。",
-  c:["常見問題","加入社群","直播時間"]},
+ {k:["合作","業配","商案","邀約","聯繫","經紀","廠商","贊助商","商業","email","信箱"],
+  a:"合作與業配洽詢 🤝\n歡迎廠商 / 媒體來信談合作！\n・合作信箱：drchen8990@gmail.com\n・請附上：品牌、合作形式、檔期與預算\n也可以直接私訊 Threads @drchen8990，我會幫您轉達。",
+  c:["常見問題","在哪裡看直播","直播時間"]},
  {k:["抖內","斗內","贊助","donate","支持","打賞","乾爹"],
-  a:"謝謝你想支持 Dr.Chen 🙌\n・直播中可透過平台的抖內功能\n・或到官方頁面的支持連結\n（連結由 Dr.Chen 提供後填入）你的支持是持續開台的最大動力！",
-  c:["直播時間","加入社群","合作邀約"]},
+  a:"謝謝你想支持 Dr.Chen 🙌\n・直播中可透過平台的抖內 / 超級留言功能\n・也歡迎多多分享頻道、幫忙拉人氣\n你的支持是他持續開台的最大動力！",
+  c:["直播時間","在哪裡看直播","合作邀約"]},
  {k:["你是誰","介紹","關於","是誰","自我介紹","dr.chen","drchen","chen"],
-  a:"嗨，我是 Dr.Chen 的官方 AI 小助手 🤖\nDr.Chen 是一位遊戲實況主，常帶來遊戲實況與各種挑戰內容。有任何關於直播、社群、合作的問題都可以問我！",
-  c:["直播時間","加入社群","合作邀約"]},
+  a:"嗨，我是 Dr.Chen 的官方 AI 小助手 🤖\nDr.Chen 是一位遊戲實況主，常帶來遊戲實況與各種挑戰內容，每天也會在 Threads @drchen8990 更新動態。有任何直播、追蹤、合作的問題都可以問我！",
+  c:["直播時間","在哪裡看直播","合作邀約"]},
  {k:["器材","設備","配備","滑鼠","鍵盤","電腦","規格"],
-  a:"常被問到的直播器材 🖥️\n・這部分 Dr.Chen 會不定期在社群分享\n・詳細清單可到社群精華區查看\n想知道特定裝備也可以私訊小編喔！",
-  c:["加入社群","直播時間","常見問題"]},
- // 中性處理：Bybit / 刮刮樂 / 活動 — 不做誘導，導向社群公告
+  a:"常被問到的直播器材 🖥️\n這部分 Dr.Chen 會不定期在 Threads 分享，想知道特定裝備也可以私訊 @drchen8990 詢問喔！",
+  c:["在哪裡看直播","直播時間","常見問題"]},
  {k:["活動","抽獎","刮刮樂","bybit","代理","優惠碼","註冊","入金","加密","幣","邀請碼","投資"],
-  a:"關於活動與優惠資訊 📢\n最新活動一律以「官方社群公告」為準，請至 Discord 查看或私訊小編確認，避免被假冒帳號詐騙。\n※ 相關內容涉及個人理財，請務必自行評估、量力而為。",
-  c:["加入社群","直播時間","合作邀約"]},
+  a:"關於活動與優惠資訊 📢\n最新活動一律以「官方公告」為準，請追蹤 Threads @drchen8990 或私訊確認，慎防假冒帳號詐騙。\n※ 相關內容涉及個人理財，請務必自行評估、量力而為。",
+  c:["直播時間","在哪裡看直播","合作邀約"]},
  {k:["謝謝","感謝","thank","了解","好的","ok","讚"],
-  a:"不客氣！有需要隨時再問我 😄 記得準時來看台～",
-  c:["直播時間","加入社群"]},
+  a:"不客氣！有需要隨時再問我 😄 記得追蹤 Threads、準時來看台～",
+  c:["直播時間","在哪裡看直播"]},
  {k:["你好","哈囉","hi","hello","嗨","在嗎","安安"],
-  a:"哈囉！我是 Dr.Chen 的 AI 小助手 👋 想了解直播時間、加入社群，還是談合作呢？",
-  c:["直播時間","加入社群","合作邀約"]},
+  a:"哈囉！我是 Dr.Chen 的 AI 小助手 👋 想了解直播時間、去哪追蹤，還是談合作呢？",
+  c:["直播時間","在哪裡看直播","合作邀約"]},
 ];
-const FB={a:"這題我先記下來了 📝 我可以幫你查：直播時間、在哪看、加入社群、合作業配、抖內支持等。你想先了解哪個？",
-  c:["直播時間","加入社群","合作邀約","常見問題"]};
-
+const FB={a:"這題我先記下來了 📝 我可以幫你查：直播時間、在哪看、去哪追蹤、合作業配、抖內支持等。你想先了解哪個？",
+  c:["直播時間","在哪裡看直播","合作邀約","抖內支持"]};
 const chat=document.getElementById('chat');let voiceOn=true;
 const now=()=>new Date().toTimeString().slice(0,5);
 const scroll=()=>chat.scrollTop=chat.scrollHeight;
 function addMe(t){const d=document.createElement('div');d.className='msg me';d.textContent=t;chat.appendChild(d);
   const m=document.createElement('div');m.className='time';m.textContent=now();chat.appendChild(m);scroll();}
 function typing(){const d=document.createElement('div');d.className='typing';d.id='ty';d.innerHTML='<i></i><i></i><i></i>';chat.appendChild(d);scroll();return d;}
-function speak(t){if(!voiceOn||!window.speechSynthesis)return;const c=t.replace(/[🎮📺🔔💬🤝🙌🤖🖥️📢📝😄👋◉※・]/g,' ');
+function speak(t){if(!voiceOn||!window.speechSynthesis)return;const c=t.replace(/[🎮📺🔔💬🤝🙌🤖🖥️📢📝😄👋◉※←・]/g,' ');
   const u=new SpeechSynthesisUtterance(c);u.lang='zh-TW';u.rate=1.05;speechSynthesis.cancel();speechSynthesis.speak(u);}
 function addBot(t,chips){const d=document.createElement('div');d.className='msg bot';d.textContent=t;chat.appendChild(d);
   const m=document.createElement('div');m.className='time';m.textContent=now();chat.appendChild(m);
@@ -131,8 +125,8 @@ document.getElementById('send').onclick=submit;
 document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
 document.getElementById('voice').onclick=function(){voiceOn=!voiceOn;this.classList.toggle('off',!voiceOn);
   this.textContent=voiceOn?'🔊 語音':'🔇 語音';if(!voiceOn&&window.speechSynthesis)speechSynthesis.cancel();};
-setTimeout(()=>addBot("哈囉！我是 Dr.Chen 的官方 AI 小助手 🤖\n想知道直播時間、加入社群，還是談合作呢？點下面或直接打字問我！",
-  ["直播時間","加入社群","合作邀約","抖內支持"]),400);
+setTimeout(()=>addBot("哈囉！我是 Dr.Chen 的官方 AI 小助手 🤖\n想知道直播時間、去哪追蹤，還是談合作呢？點下面或直接打字問我！",
+  ["直播時間","在哪裡看直播","合作邀約","抖內支持"]),400);
 </script>
 </body>
 </html>
