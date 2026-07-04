@@ -3,240 +3,152 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>推薦輪盤｜Demo</title>
+<title>集富講堂 · 會員推薦獎勵</title>
 <style>
-  :root{
-    --bg:#0f1020; --card:#1a1c33; --card2:#232647;
-    --gold:#f5c542; --gold2:#ffde7a; --pink:#ff5d8f; --purple:#7b5cff;
-    --green:#2fd47a; --text:#f2f3ff; --muted:#a4a7c9; --line:#2c2f52;
-  }
+  :root{--bg:#0f1524;--card:#182136;--card2:#202a45;--gold:#d4af37;--gold2:#f0cf6b;
+    --text:#f3f0e6;--muted:#a7a690;--line:#2b3654;--green:#3ecf8e;--rose:#e0a44b;}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-    background:radial-gradient(1200px 700px at 50% -10%,#241a45 0%,var(--bg) 55%);
-    color:var(--text);min-height:100vh;display:flex;justify-content:center}
-  .app{width:100%;max-width:440px;padding:20px 18px 40px}
-  .brand{display:flex;align-items:center;gap:10px;justify-content:center;margin:6px 0 18px}
-  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold)}
-  .brand h1{font-size:18px;margin:0;letter-spacing:1px;font-weight:800}
-  .card{background:linear-gradient(180deg,var(--card) 0%,#171932 100%);
-    border:1px solid var(--line);border-radius:20px;padding:22px 18px;
-    box-shadow:0 20px 50px rgba(0,0,0,.4)}
+    background:radial-gradient(1100px 600px at 50% -10%,#1c2742 0%,var(--bg) 55%);color:var(--text);min-height:100vh;display:flex;justify-content:center}
+  .app{width:100%;max-width:440px;padding:22px 18px 44px}
+  .brand{text-align:center;margin:4px 0 18px}
+  .brand .k{font-size:11px;letter-spacing:4px;color:var(--gold);font-weight:700}
+  .brand h1{font-size:20px;margin:4px 0 0;font-weight:800;letter-spacing:1px}
+  .brand h1 span{color:var(--gold2)}
+  .card{background:linear-gradient(180deg,var(--card),#141b2d);border:1px solid var(--line);border-radius:20px;padding:22px 18px;
+    box-shadow:0 20px 50px rgba(0,0,0,.45)}
   label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px}
-  input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);
-    background:#12142a;color:var(--text);font-size:16px;outline:none}
-  input:focus{border-color:var(--purple)}
-  .btn{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:800;
-    cursor:pointer;margin-top:18px;color:#231a00;
-    background:linear-gradient(180deg,var(--gold2),var(--gold));
-    box-shadow:0 8px 22px rgba(245,197,66,.35);transition:.15s}
+  input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:#0e1526;color:var(--text);font-size:16px;outline:none}
+  input:focus{border-color:var(--gold)}
+  .btn{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;margin-top:18px;color:#221a02;
+    background:linear-gradient(180deg,var(--gold2),var(--gold));box-shadow:0 8px 22px rgba(212,175,55,.3);transition:.15s}
   .btn:active{transform:translateY(2px)}
   .btn:disabled{filter:grayscale(.7) brightness(.7);cursor:not-allowed;box-shadow:none}
   .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line);box-shadow:none}
   .hint{font-size:12px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.6}
-
-  /* wheel */
   .stage{position:relative;width:300px;height:300px;margin:8px auto 4px}
-  .pointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);z-index:5;
-    width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;
-    border-top:26px solid var(--pink);filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
-  .wheel{width:300px;height:300px;border-radius:50%;position:relative;
-    transition:transform 5s cubic-bezier(.17,.67,.2,1);
-    box-shadow:0 0 0 8px #12142a,0 0 0 12px var(--gold),0 14px 40px rgba(0,0,0,.5)}
-  .hub{position:absolute;top:50%;left:50%;width:54px;height:54px;transform:translate(-50%,-50%);
-    background:radial-gradient(circle at 35% 30%,#fff,var(--gold));border-radius:50%;z-index:4;
-    display:flex;align-items:center;justify-content:center;font-weight:900;color:#7a5c00;font-size:13px;
-    box-shadow:0 4px 10px rgba(0,0,0,.4)}
-  .seg-label{position:absolute;left:50%;top:50%;transform-origin:0 0;font-size:12px;font-weight:700;
-    white-space:nowrap;pointer-events:none}
-
+  .pointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);z-index:5;width:0;height:0;
+    border-left:15px solid transparent;border-right:15px solid transparent;border-top:26px solid var(--gold);filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+  .wheel{width:300px;height:300px;border-radius:50%;position:relative;transition:transform 5s cubic-bezier(.17,.67,.2,1);
+    box-shadow:0 0 0 8px #0e1526,0 0 0 12px var(--gold),0 14px 40px rgba(0,0,0,.5)}
+  .hub{position:absolute;top:50%;left:50%;width:56px;height:56px;transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 35% 30%,#fff,var(--gold));border-radius:50%;z-index:4;display:flex;align-items:center;justify-content:center;
+    font-weight:900;color:#7a5c00;font-size:12px;box-shadow:0 4px 10px rgba(0,0,0,.4)}
+  .seg-label{position:absolute;left:50%;top:50%;transform-origin:0 0;font-size:12px;font-weight:700;white-space:nowrap;pointer-events:none}
   .stats{display:flex;gap:10px;margin:14px 0 4px}
   .stat{flex:1;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center}
-  .stat b{display:block;font-size:22px;color:var(--gold)}
+  .stat b{display:block;font-size:22px;color:var(--gold2)}
   .stat span{font-size:11px;color:var(--muted)}
-
-  .panel{margin-top:16px;background:#12142a;border:1px dashed var(--line);border-radius:14px;padding:14px}
+  .panel{margin-top:16px;background:#0e1526;border:1px dashed var(--line);border-radius:14px;padding:14px}
   .panel h3{margin:0 0 4px;font-size:13px;color:var(--gold2)}
   .panel p{margin:0 0 10px;font-size:11px;color:var(--muted)}
-  .row{display:flex;gap:8px}
-  .row input{flex:1}
+  .row{display:flex;gap:8px}.row input{flex:1}
   .row .btn{margin-top:0;width:auto;padding:13px 16px;white-space:nowrap}
-
   .toast{position:fixed;left:50%;top:22%;transform:translateX(-50%) scale(.9);opacity:0;
-    background:linear-gradient(180deg,#fff,#ffe9a8);color:#5a3d00;font-weight:900;font-size:20px;
-    padding:18px 30px;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:50;
-    pointer-events:none;transition:.3s;text-align:center}
+    background:linear-gradient(180deg,#fff,#f6e6b8);color:#5a3d00;font-weight:900;font-size:19px;padding:18px 28px;border-radius:18px;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:50;pointer-events:none;transition:.3s;text-align:center}
   .toast.show{opacity:1;transform:translateX(-50%) scale(1)}
-  .toast.lose{background:linear-gradient(180deg,#2a2d4d,#20223c);color:#cdd0f0}
+  .toast.lose{background:linear-gradient(180deg,#232d47,#1a2238);color:#cdd0e6}
   .hidden{display:none}
   .list{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
   .chip{font-size:11px;background:var(--card2);border:1px solid var(--line);padding:5px 9px;border-radius:20px}
-  .chip.win{background:rgba(47,212,122,.15);border-color:var(--green);color:var(--green)}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="brand"><span class="dot"></span><h1>推薦幸運輪盤</h1></div>
+  <div class="brand"><div class="k">集 富 講 堂</div><h1>會員<span>推薦獎勵</span>輪盤</h1></div>
 
-  <!-- 登入 -->
   <div id="loginView" class="card">
     <div style="text-align:center;font-size:15px;color:var(--muted);margin-bottom:4px">會員登入</div>
     <label>姓名</label>
     <input id="name" placeholder="王小明" autocomplete="off">
     <label>手機號碼</label>
     <input id="phone" placeholder="0912345678" inputmode="numeric" maxlength="10">
-    <div id="otpBox" class="hidden">
-      <label>驗證碼（Demo：任意 4 碼即可）</label>
-      <input id="otp" placeholder="＿＿＿＿" inputmode="numeric" maxlength="4">
-    </div>
-    <button class="btn" id="loginBtn">登入 / 進入輪盤</button>
-    <div class="hint">＊此為投標展示版，資料僅存於本機瀏覽器，不上傳。<br>正式版將串接 OTP 簡訊驗證與後端資料庫。</div>
+    <button class="btn" id="loginBtn">登入 · 進入推薦獎勵</button>
+    <div class="hint">＊投標展示版，資料僅存本機瀏覽器，不上傳。<br>正式版將串接 OTP 簡訊驗證與會員資料庫。</div>
   </div>
 
-  <!-- 遊戲 -->
   <div id="gameView" class="card hidden">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <div style="font-size:14px">Hi，<b id="uName"></b></div>
+      <div style="font-size:14px">Hi，<b id="uName"></b> 會員</div>
       <button class="btn ghost" style="width:auto;margin:0;padding:8px 12px;font-size:12px" id="logoutBtn">登出</button>
     </div>
-
     <div class="stage">
       <div class="pointer"></div>
       <div class="wheel" id="wheel"></div>
-      <div class="hub">GO</div>
+      <div class="hub">集富<br>抽獎</div>
     </div>
-
     <div class="stats">
-      <div class="stat"><b id="dealCount">0</b><span>累積成交</span></div>
+      <div class="stat"><b id="dealCount">0</b><span>推薦成交</span></div>
       <div class="stat"><b id="spinLeft">0</b><span>可抽次數</span></div>
       <div class="stat"><b id="winRate">0%</b><span>中獎機率</span></div>
     </div>
-
-    <button class="btn" id="spinBtn" disabled>抽獎（需要成交次數）</button>
-
+    <button class="btn" id="spinBtn" disabled>抽獎（需要推薦成交）</button>
     <div class="list" id="slotList"></div>
-
-    <!-- 業主模擬面板 -->
     <div class="panel">
-      <h3>▶ 業主模擬面板</h3>
-      <p>模擬「介紹一位朋友成交」→ 系統把代號填入一格、並 +1 抽獎次數。介紹滿 10 人 = 中獎率 100%。</p>
+      <h3>▶ 業主（管理端）模擬面板</h3>
+      <p>模擬「一位會員推薦朋友報名課程並成交」→ 系統把朋友代號填入一格、並 +1 抽獎次數。推薦滿 10 位成交 = 中獎率 100%。</p>
       <div class="row">
-        <input id="friend" placeholder="朋友名字 / 代號" autocomplete="off">
-        <button class="btn" id="addBtn">＋成交</button>
+        <input id="friend" placeholder="被推薦人姓名 / 代號" autocomplete="off">
+        <button class="btn" id="addBtn">＋推薦成交</button>
       </div>
       <button class="btn ghost" id="resetBtn" style="margin-top:10px">重置活動</button>
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
-const COLORS=['#7b5cff','#ff5d8f','#2fd47a','#f5c542','#4 dd0e1','#ff8a5c','#b47bff','#57c7ff','#ff6fae','#9be15d']
-  .map(c=>c.replace(' ',''));
+const COLORS=['#c9a227','#2e6f6a','#7a5cbf','#b8642f','#3a7bd5','#c04b7a','#4aa564','#9a7b1f','#5a6b8c','#8a4b2f'];
 const N=10;
-let slots=Array(N).fill(null); // 每格：null 或 代號
-let spins=0, deals=0, spinning=false, rot=0;
+let slots=Array(N).fill(null),spins=0,deals=0,spinning=false,rot=0;
 const $=id=>document.getElementById(id);
-
-/* ---------- 登入 ---------- */
 $('loginBtn').onclick=()=>{
-  const name=$('name').value.trim(), phone=$('phone').value.trim();
+  const name=$('name').value.trim(),phone=$('phone').value.trim();
   if(!name){alert('請輸入姓名');return;}
-  if(!/^09\d{8}$/.test(phone)){alert('請輸入正確的手機號碼（09 開頭共 10 碼）');return;}
-  $('uName').textContent=name;
-  $('loginView').classList.add('hidden');
-  $('gameView').classList.remove('hidden');
-  buildWheel(); render();
+  if(!/^09\d{8}$/.test(phone)){alert('請輸入正確手機（09 開頭共 10 碼）');return;}
+  $('uName').textContent=name;$('loginView').classList.add('hidden');$('gameView').classList.remove('hidden');
+  buildWheel();render();
 };
 $('logoutBtn').onclick=()=>{$('gameView').classList.add('hidden');$('loginView').classList.remove('hidden');};
-
-/* ---------- 輪盤繪製 ---------- */
 function buildWheel(){
-  const w=$('wheel'), seg=360/N;
-  // 用 conic-gradient 畫扇形
-  let stops=[];
-  for(let i=0;i<N;i++){stops.push(`${COLORS[i]} ${i*seg}deg ${(i+1)*seg}deg`);}
+  const w=$('wheel'),seg=360/N,stops=[];
+  for(let i=0;i<N;i++)stops.push(`${COLORS[i]} ${i*seg}deg ${(i+1)*seg}deg`);
   w.style.background=`conic-gradient(${stops.join(',')})`;
-  // 標籤
   w.querySelectorAll('.seg-label').forEach(e=>e.remove());
-  for(let i=0;i<N;i++){
-    const el=document.createElement('div');
-    el.className='seg-label'; el.dataset.i=i;
-    const ang=(i+0.5)*seg-90; // 該格中心角度
-    el.style.transform=`rotate(${ang}deg) translate(78px,-8px)`;
-    w.appendChild(el);
-  }
+  for(let i=0;i<N;i++){const el=document.createElement('div');el.className='seg-label';el.dataset.i=i;
+    const ang=(i+0.5)*seg-90;el.style.transform=`rotate(${ang}deg) translate(78px,-8px)`;w.appendChild(el);}
   updateLabels();
 }
-function updateLabels(){
-  $('wheel').querySelectorAll('.seg-label').forEach(el=>{
-    const i=+el.dataset.i;
-    el.textContent = slots[i] ? slots[i] : '—';
-    el.style.color = slots[i] ? '#fff' : 'rgba(255,255,255,.45)';
-  });
-}
-
-/* ---------- 狀態渲染 ---------- */
+function updateLabels(){$('wheel').querySelectorAll('.seg-label').forEach(el=>{const i=+el.dataset.i;
+  el.textContent=slots[i]?slots[i]:'—';el.style.color=slots[i]?'#fff':'rgba(255,255,255,.45)';});}
 function render(){
   const filled=slots.filter(Boolean).length;
-  $('dealCount').textContent=deals;
-  $('spinLeft').textContent=spins;
-  $('winRate').textContent=Math.round(filled/N*100)+'%';
+  $('dealCount').textContent=deals;$('spinLeft').textContent=spins;$('winRate').textContent=Math.round(filled/N*100)+'%';
   const btn=$('spinBtn');
-  if(spins>0){btn.disabled=false;btn.textContent=`抽獎（剩 ${spins} 次）`;}
-  else{btn.disabled=true;btn.textContent='抽獎（需要成交次數）';}
-  // 已填代號清單
-  const list=$('slotList'); list.innerHTML='';
+  if(spins>0){btn.disabled=false;btn.textContent=`抽獎（剩 ${spins} 次）`;}else{btn.disabled=true;btn.textContent='抽獎（需要推薦成交）';}
+  const list=$('slotList');list.innerHTML='';
   slots.forEach((s,i)=>{if(s){const c=document.createElement('span');c.className='chip';c.textContent=`第${i+1}格 · ${s}`;list.appendChild(c);}});
   updateLabels();
 }
-
-/* ---------- 新增成交 ---------- */
 $('addBtn').onclick=()=>{
   let name=$('friend').value.trim();
   const empty=slots.map((s,i)=>s?null:i).filter(v=>v!==null);
   if(empty.length===0){alert('10 格已滿，中獎機率已達 100%！');return;}
-  if(!name) name='友'+(slots.filter(Boolean).length+1);
+  if(!name)name='推薦'+(slots.filter(Boolean).length+1);
   const idx=empty[Math.floor(Math.random()*empty.length)];
-  slots[idx]=name; deals++; spins++;
-  $('friend').value='';
-  render();
+  slots[idx]=name;deals++;spins++;$('friend').value='';render();
 };
-
-/* ---------- 抽獎 ---------- */
 $('spinBtn').onclick=()=>{
-  if(spinning||spins<=0) return;
-  spinning=true; spins--;
-  const btn=$('spinBtn'); btn.disabled=true;
-  const seg=360/N;
-  const win=Math.floor(Math.random()*N);        // 隨機停在哪一格
-  const turns=5+Math.floor(Math.random()*3);     // 轉幾圈
-  // 指針在最上方(12點)。要讓 win 格中心對準頂端：
-  const target=turns*360 + (360 - (win*seg+seg/2));
-  rot += target;
-  $('wheel').style.transform=`rotate(${rot}deg)`;
-  setTimeout(()=>{
-    spinning=false;
-    const hit=slots[win];
-    if(hit) showToast(`🎉 中獎！停在「${hit}」`,false);
-    else showToast('銘謝惠顧，再接再厲',true);
-    render();
-  },5100);
+  if(spinning||spins<=0)return;spinning=true;spins--;$('spinBtn').disabled=true;
+  const seg=360/N,win=Math.floor(Math.random()*N),turns=5+Math.floor(Math.random()*3);
+  const targetMod=(360-(win*seg+seg/2))%360;const curMod=((rot%360)+360)%360;let delta=targetMod-curMod;if(delta<0)delta+=360;delta+=turns*360;rot+=delta;$('wheel').style.transform=`rotate(${rot}deg)`;
+  setTimeout(()=>{spinning=false;const hit=slots[win];
+    if(hit)showToast(`🎉 中獎！停在「${hit}」`,false);else showToast('銘謝惠顧，再接再厲',true);render();},5100);
 };
-
-function showToast(msg,lose){
-  const t=$('toast'); t.textContent=msg;
-  t.className='toast show'+(lose?' lose':'');
-  setTimeout(()=>t.className='toast'+(lose?' lose':''),2200);
-}
-
-$('resetBtn').onclick=()=>{
-  if(!confirm('確定重置活動？')) return;
-  slots=Array(N).fill(null); spins=0; deals=0; rot=0;
-  $('wheel').style.transition='none';$('wheel').style.transform='rotate(0deg)';
-  setTimeout(()=>$('wheel').style.transition='',30);
-  render();
-};
+function showToast(msg,lose){const t=$('toast');t.textContent=msg;t.className='toast show'+(lose?' lose':'');
+  setTimeout(()=>t.className='toast'+(lose?' lose':''),2200);}
+$('resetBtn').onclick=()=>{if(!confirm('確定重置活動？'))return;slots=Array(N).fill(null);spins=0;deals=0;rot=0;
+  $('wheel').style.transition='none';$('wheel').style.transform='rotate(0deg)';setTimeout(()=>$('wheel').style.transition='',30);render();};
 </script>
 </body>
 </html>
