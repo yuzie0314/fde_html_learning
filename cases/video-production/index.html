@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多門市活動影片產能規模化 — 案例研究</title>
+<meta name="description" content="七門市、每天超過10場的兒童禮俗活動紀錄公司重複刊登「剪輯師」職缺三次——問題不是找不到人，而是他要的從來不是一位剪輯師，是一條產線。由 Zorya（FDE & Data Scientist）製作之流程診斷與產能規劃案例。">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Zorya">
+
+<!-- 部署後請將以下 og:url／canonical 換成實際網域 -->
+<!-- <link rel="canonical" href="https://your-domain.example/cases/video-capacity"> -->
+<meta property="og:type" content="article">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:site_name" content="Zorya — FDE & Data Scientist">
+<meta property="og:title" content="多門市活動影片產能規模化｜案例研究">
+<meta property="og:description" content="他要的不是剪輯師，是一條產線：七門市×每天10場×每月26天≒1,800+支影片，單支有效產出成本NT$555，遠高於客戶認知的150–300元。">
+<meta property="og:image" content="assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="多門市活動影片產能規模化 — 案例研究封面，標示單支有效產出成本 NT$555 與客戶認知落差">
+<!-- <meta property="og:url" content="https://your-domain.example/cases/video-capacity"> -->
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="多門市活動影片產能規模化｜案例研究">
+<meta name="twitter:description" content="七門市重複刊登「剪輯師」職缺三次，開價150–300元——他要的不是剪輯師，是一條產線。">
+<meta name="twitter:image" content="assets/og-image.png">
+
+<meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "name": "多門市活動影片產能規模化",
+  "headline": "多門市活動影片產能規模化 — 案例研究",
+  "description": "七門市、每天超過10場的兒童禮俗活動紀錄公司重複刊登「剪輯師」職缺三次的產能規劃案例，含批次流程SOP、剪輯模板與產能試算。",
+  "inLanguage": "zh-Hant",
+  "genre": "案例研究",
+  "about": "多門市活動影片產能規模化之流程診斷與規格設計",
+  "disclaimer": "本案例情境改編自公開刊登之外包需求，所有公司名、人名、金額、資料均為虛構合成，不對應任何真實個人或案件。",
+  "author": {
+    "@type": "Person",
+    "name": "Zorya",
+    "jobTitle": "FDE & Data Scientist",
+    "email": "mailto:uzang199431465@gmail.com"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --surface-page:   #f9f9f7;
+    --surface-card:   #fcfcfb;
+    --surface-raised: #ffffff;
+    --ink-primary:    #0b0b0b;
+    --ink-secondary:  #52514e;
+    --ink-muted:      #898781;
+    --gridline:       #e1e0d9;
+    --border:         rgba(11,11,11,0.10);
+    --border-strong:  rgba(11,11,11,0.16);
+    --accent:         #2a78d6;
+    --accent-ink:     #184f95;
+    --accent-soft:    rgba(42,120,214,0.10);
+    --good:           #0ca30c;
+    --good-soft:      rgba(12,163,12,0.12);
+    --warn:           #eda100;
+    --warn-soft:      rgba(237,161,0,0.14);
+    --gray-status:    #898781;
+    --gray-status-soft: rgba(137,135,129,0.14);
+    --shadow-card:    0 1px 2px rgba(11,11,11,0.04), 0 4px 16px rgba(11,11,11,0.06);
+
+    --font-serif: "Noto Serif TC", "Noto Serif", serif;
+    --font-sans: "Noto Sans TC", "Noto Sans", -apple-system, "Segoe UI", sans-serif;
+
+    --space-1: 8px;
+    --space-2: 16px;
+    --space-3: 24px;
+    --space-4: 32px;
+    --space-5: 48px;
+    --space-6: 64px;
+    --space-7: 96px;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --container: 1080px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-page:   #0d0d0d;
+      --surface-card:   #1a1a19;
+      --surface-raised: #201f1e;
+      --ink-primary:    #ffffff;
+      --ink-secondary:  #c3c2b7;
+      --ink-muted:      #898781;
+      --gridline:       #2c2c2a;
+      --border:         rgba(255,255,255,0.10);
+      --border-strong:  rgba(255,255,255,0.18);
+      --accent:         #3987e5;
+      --accent-ink:     #9ec5f4;
+      --accent-soft:    rgba(57,135,229,0.16);
+      --good:           #0ca30c;
+      --good-soft:      rgba(12,163,12,0.18);
+      --warn:           #c98500;
+      --warn-soft:      rgba(201,133,0,0.20);
+      --gray-status:    #c3c2b7;
+      --gray-status-soft: rgba(195,194,183,0.14);
+      --shadow-card:    0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-page:   #0d0d0d;
+    --surface-card:   #1a1a19;
+    --surface-raised: #201f1e;
+    --ink-primary:    #ffffff;
+    --ink-secondary:  #c3c2b7;
+    --ink-muted:      #898781;
+    --gridline:       #2c2c2a;
+    --border:         rgba(255,255,255,0.10);
+    --border-strong:  rgba(255,255,255,0.18);
+    --accent:         #3987e5;
+    --accent-ink:     #9ec5f4;
+    --accent-soft:    rgba(57,135,229,0.16);
+    --good:           #0ca30c;
+    --good-soft:      rgba(12,163,12,0.18);
+    --warn:           #c98500;
+    --warn-soft:      rgba(201,133,0,0.20);
+    --gray-status:    #c3c2b7;
+    --gray-status-soft: rgba(195,194,183,0.14);
+    --shadow-card:    0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--surface-page);
+    color: var(--ink-primary);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { font-family: var(--font-serif); font-weight: 600; margin: 0; letter-spacing: 0.01em; }
+  p { margin: 0; text-wrap: pretty; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .wrap { max-width: var(--container); margin: 0 auto; padding: 0 var(--space-3); }
+
+  /* ---------- disclaimer strip ---------- */
+  .disclaimer-strip {
+    background: var(--surface-raised);
+    border-bottom: 1px solid var(--gridline);
+    font-size: 13px;
+    color: var(--ink-muted);
+    padding: 8px var(--space-3);
+    text-align: center;
+  }
+
+  /* ---------- header ---------- */
+  header.site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--surface-page) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--gridline);
+  }
+  .header-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px var(--space-3);
+    max-width: var(--container); margin: 0 auto;
+  }
+  .brand { font-family: var(--font-serif); font-weight: 600; font-size: 16px; letter-spacing: 0.02em; }
+  .brand span { color: var(--ink-muted); font-family: var(--font-sans); font-weight: 400; font-size: 13px; margin-left: 8px; }
+  nav.main-nav { display: flex; gap: var(--space-3); align-items: center; }
+  nav.main-nav a {
+    color: var(--ink-secondary); text-decoration: none; font-size: 14px; font-weight: 500;
+    padding: 6px 2px; border-bottom: 2px solid transparent;
+  }
+  nav.main-nav a:hover { color: var(--ink-primary); border-bottom-color: var(--accent); }
+  .theme-toggle {
+    border: 1px solid var(--border-strong); background: var(--surface-card); color: var(--ink-primary);
+    border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+    margin-left: var(--space-2);
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer; }
+  @media (max-width: 780px) {
+    nav.main-nav.links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-raised); border-bottom: 1px solid var(--gridline); flex-direction: column; align-items: flex-start; padding: var(--space-2) var(--space-3); gap: var(--space-2); }
+    nav.main-nav.links.open { display: flex; }
+    .nav-toggle { display: block; }
+  }
+
+  /* ---------- reveal ---------- */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+  /* ---------- hero ---------- */
+  .hero { padding: var(--space-7) 0 var(--space-6); }
+  .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent-ink); text-transform: uppercase; margin-bottom: var(--space-2); }
+  .hero h1 { font-size: clamp(28px, 4.4vw, 44px); line-height: 1.28; max-width: 18ch; }
+  .hero .lede { margin-top: var(--space-3); font-size: 18px; color: var(--ink-secondary); max-width: 60ch; }
+  .hero .context-line { margin-top: var(--space-3); font-size: 15px; color: var(--ink-muted); max-width: 62ch; border-left: 2px solid var(--border-strong); padding-left: var(--space-2); }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-top: var(--space-5); }
+  @media (max-width: 700px) { .stat-row { grid-template-columns: 1fr; } }
+  .stat-tile {
+    background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md);
+    padding: var(--space-3); box-shadow: var(--shadow-card);
+  }
+  .stat-tile .label { font-size: 13px; color: var(--ink-muted); margin-bottom: 6px; }
+  .stat-tile .value { font-size: 26px; font-weight: 700; font-family: var(--font-serif); }
+  .stat-tile.headline .value { color: var(--accent-ink); }
+  .stat-tile .sub { font-size: 12px; color: var(--ink-muted); margin-top: 4px; }
+
+  /* ---------- section shell ---------- */
+  section { padding: var(--space-7) 0; border-top: 1px solid var(--gridline); }
+  section:first-of-type { border-top: none; }
+  .section-head { max-width: 68ch; margin-bottom: var(--space-5); }
+  .section-kicker { font-size: 13px; font-weight: 600; color: var(--accent-ink); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-1); }
+  .section-head h2 { font-size: clamp(22px, 3vw, 30px); }
+  .section-head p { margin-top: var(--space-2); color: var(--ink-secondary); font-size: 16px; }
+
+  /* ---------- background info ---------- */
+  .bg-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: var(--space-5); align-items: start; }
+  @media (max-width: 820px) { .bg-grid { grid-template-columns: 1fr; } }
+  dl.info-list { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px var(--space-3); }
+  dl.info-list dt { color: var(--ink-muted); font-size: 14px; white-space: nowrap; padding-top: 2px; }
+  dl.info-list dd { margin: 0; font-size: 15px; }
+
+  .scope-card { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-3); }
+  .scope-card h3 { font-size: 15px; font-family: var(--font-sans); font-weight: 700; margin-bottom: var(--space-2); }
+  .scope-card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .scope-card li { display: flex; gap: 10px; font-size: 14.5px; color: var(--ink-secondary); }
+  .glyph { flex-shrink: 0; width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 2px; }
+  .glyph.yes { background: var(--good-soft); color: var(--good); }
+  .glyph.no { background: var(--gray-status-soft); color: var(--ink-muted); }
+  .scope-card + .scope-card { margin-top: var(--space-2); }
+
+  /* ---------- source cards ---------- */
+  .source-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+  @media (max-width: 900px) { .source-grid { grid-template-columns: 1fr; } }
+  .source-card { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-3); }
+  .source-card .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--accent-ink); background: var(--accent-soft); border-radius: 999px; padding: 3px 10px; margin-bottom: var(--space-2); }
+  .source-card h3 { font-family: var(--font-sans); font-size: 16px; margin-bottom: 6px; }
+  .source-card .desc { font-size: 14px; color: var(--ink-secondary); margin-bottom: var(--space-2); }
+  .source-card .issue { font-size: 13px; color: var(--ink-muted); border-top: 1px dashed var(--gridline); padding-top: 10px; }
+
+  .obstacle-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: var(--space-3); }
+  .obstacle-chip { font-size: 13px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--border-strong); color: var(--ink-secondary); background: var(--surface-raised); }
+  .obstacle-chip.key { border-color: var(--warn); color: var(--ink-primary); background: var(--warn-soft); font-weight: 600; }
+
+  /* ---------- capacity equation ---------- */
+  .equation-block {
+    background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md);
+    padding: var(--space-5) var(--space-4); box-shadow: var(--shadow-card);
+  }
+  .equation-row { display: flex; align-items: center; justify-content: center; gap: var(--space-2); flex-wrap: wrap; }
+  .eq-term { text-align: center; }
+  .eq-term .eq-value { font-family: var(--font-serif); font-size: clamp(26px, 5vw, 40px); font-weight: 700; color: var(--ink-primary); }
+  .eq-term .eq-label { font-size: 13px; color: var(--ink-muted); margin-top: 4px; }
+  .eq-op { font-size: clamp(20px, 3vw, 28px); color: var(--ink-muted); font-weight: 300; padding: 0 4px; }
+  .eq-result .eq-value { color: var(--accent-ink); font-size: clamp(30px, 6vw, 48px); }
+  .eq-result { background: var(--accent-soft); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); }
+  @media (max-width: 720px) { .equation-row { gap: 6px; } .eq-op { padding: 0 2px; } }
+
+  /* ---------- pipeline / fork ---------- */
+  .pipeline { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; }
+  .pipe-node {
+    flex: 1 1 160px; background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md);
+    padding: var(--space-2) 14px; font-size: 13.5px; color: var(--ink-secondary); position: relative; min-width: 150px;
+  }
+  .pipe-node strong { display: block; font-size: 13.5px; color: var(--ink-primary); font-weight: 700; margin-bottom: 4px; }
+  .pipe-arrow { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; padding: 0 8px; color: var(--ink-muted); font-size: 18px; }
+  @media (max-width: 900px) {
+    .pipeline { flex-direction: column; }
+    .pipe-arrow { transform: rotate(90deg); padding: 6px 0; align-self: center; }
+  }
+  .fork-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); margin-top: var(--space-2); }
+  @media (max-width: 900px) { .fork-row { grid-template-columns: repeat(2, 1fr); } }
+  .fork-node { background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 12px 14px; font-size: 13px; }
+  .fork-node strong { display: block; font-size: 13px; margin-bottom: 3px; }
+  .fork-node.out-yes { border-left: 3px solid var(--accent); }
+  .fork-node.out-no { border-left: 3px solid var(--gray-status); }
+  .fork-node.out-warn { border-left: 3px solid var(--warn); }
+
+  /* ---------- charts ---------- */
+  .chart-block { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-4); box-shadow: var(--shadow-card); }
+  .chart-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .chart-caption { font-size: 13px; color: var(--ink-muted); margin-bottom: var(--space-3); max-width: 70ch; }
+  .legend-row { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); font-size: 13px; color: var(--ink-secondary); }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  svg.chart-svg { width: 100%; height: auto; overflow: visible; font-family: var(--font-sans); }
+  .bar-cat-label { fill: var(--ink-secondary); font-size: 12.5px; }
+  .bar-value-label { fill: var(--ink-primary); font-size: 12.5px; font-weight: 600; }
+  .bar-rect { cursor: pointer; transition: opacity 0.15s ease; }
+  .bar-rect:hover, .bar-rect:focus { opacity: 0.82; }
+  .axis-muted { stroke: var(--gridline); }
+
+  /* ---------- HTML bar chart (labels stay legible at any width) ---------- */
+  .cbar-list { display: flex; flex-direction: column; gap: 12px; }
+  .cbar-row .cbar-label { font-size: 13.5px; color: var(--ink-secondary); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .cbar-row .cbar-label .flag { font-size: 11px; font-weight: 700; color: var(--warn); background: var(--warn-soft); padding: 1px 8px; border-radius: 999px; }
+  .cbar-track { display: flex; align-items: center; gap: 10px; }
+  .cbar-fill {
+    height: 30px; border-radius: 4px; flex: 0 0 auto; min-width: 3px;
+    cursor: pointer; transition: opacity 0.15s ease; position: relative;
+  }
+  .cbar-fill:hover, .cbar-fill:focus { opacity: 0.82; }
+  .cbar-rest { flex: 1 1 auto; height: 30px; border-radius: 4px; background: var(--gridline); opacity: 0.35; }
+  .cbar-value { font-size: 13px; font-weight: 600; color: var(--ink-primary); white-space: nowrap; flex: 0 0 auto; }
+  details.table-toggle { margin-top: var(--space-3); }
+  details.table-toggle summary { cursor: pointer; font-size: 13px; color: var(--accent-ink); font-weight: 600; }
+  table.data-table { width: 100%; border-collapse: collapse; margin-top: var(--space-2); font-size: 13.5px; }
+  table.data-table th, table.data-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--gridline); }
+  table.data-table th { color: var(--ink-muted); font-weight: 600; }
+  table.data-table td.amount { text-align: right; }
+
+  .chart-tooltip {
+    position: fixed; pointer-events: none; z-index: 200;
+    background: var(--ink-primary); color: var(--surface-page);
+    font-size: 12.5px; padding: 6px 10px; border-radius: var(--radius-sm);
+    opacity: 0; transform: translateY(4px); transition: opacity 0.12s ease, transform 0.12s ease;
+    max-width: 260px; line-height: 1.5;
+  }
+  .chart-tooltip.show { opacity: 1; transform: translateY(0); }
+  .chart-tooltip b { font-weight: 700; }
+
+  .charts-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); align-items: start; }
+  @media (max-width: 900px) { .charts-two-col { grid-template-columns: 1fr; } }
+
+  /* ---------- case cards ---------- */
+  .case-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
+  @media (max-width: 820px) { .case-grid { grid-template-columns: 1fr; } }
+  .case-card { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-3); border-top: 3px solid var(--gray-status); }
+  .case-card.type-dispute { border-top-color: var(--accent); }
+  .case-card.type-trap { border-top-color: var(--warn); }
+  .case-card .case-kicker { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); margin-bottom: 6px; }
+  .case-card h3 { font-family: var(--font-sans); font-size: 16px; margin-bottom: 10px; }
+  .case-card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px var(--space-2); font-size: 13.5px; }
+  .case-card dt { color: var(--ink-muted); white-space: nowrap; }
+  .case-card dd { margin: 0; }
+  .case-card .impact { margin-top: var(--space-2); padding-top: var(--space-2); border-top: 1px dashed var(--gridline); font-size: 13.5px; color: var(--ink-secondary); }
+  .amt { color: var(--accent-ink); font-weight: 700; }
+
+  /* ---------- premise / SLA / AI tables ---------- */
+  table.premise-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.premise-table th, table.premise-table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--gridline); vertical-align: top; }
+  table.premise-table th { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-muted); font-weight: 600; }
+  table.premise-table td.code { font-weight: 700; color: var(--accent-ink); white-space: nowrap; }
+  table.premise-table td.tag-yes { color: var(--good); font-weight: 700; white-space: nowrap; }
+  table.premise-table td.tag-no { color: var(--ink-muted); font-weight: 700; white-space: nowrap; }
+  .premise-note { margin-top: var(--space-2); font-size: 13px; color: var(--ink-muted); }
+
+  .sla-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
+  @media (max-width: 820px) { .sla-grid { grid-template-columns: 1fr; } }
+  .sla-card { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-4); border-top: 4px solid var(--gray-status); }
+  .sla-card.fast { border-top-color: var(--warn); }
+  .sla-card.slow { border-top-color: var(--accent); }
+  .sla-card .sla-kicker { font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); }
+  .sla-card .sla-time { font-family: var(--font-serif); font-size: 34px; font-weight: 700; margin-top: 6px; }
+  .sla-card.fast .sla-time { color: var(--warn); }
+  .sla-card.slow .sla-time { color: var(--accent-ink); }
+  .sla-card dl { margin-top: var(--space-3); display: grid; grid-template-columns: auto 1fr; gap: 8px var(--space-2); font-size: 14px; }
+  .sla-card dt { color: var(--ink-muted); white-space: nowrap; }
+  .sla-card dd { margin: 0; color: var(--ink-secondary); }
+
+  .callout {
+    background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+    padding: var(--space-3); font-size: 14px; color: var(--ink-secondary); margin-top: var(--space-4);
+  }
+  .callout b { color: var(--ink-primary); }
+  .callout.warn { border-color: var(--warn); background: var(--warn-soft); }
+
+  /* ---------- contact ---------- */
+  .contact-card {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+    background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md);
+    padding: var(--space-5); box-shadow: var(--shadow-card);
+  }
+  @media (max-width: 720px) { .contact-card { flex-direction: column; align-items: flex-start; } }
+  .contact-name { font-family: var(--font-serif); font-size: 22px; font-weight: 700; }
+  .contact-role { font-size: 14px; color: var(--accent-ink); font-weight: 600; margin-top: 2px; }
+  .contact-lede { margin-top: var(--space-2); font-size: 15px; color: var(--ink-secondary); max-width: 46ch; }
+  .contact-cta {
+    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: var(--accent); color: #ffffff; text-decoration: none; text-align: center;
+    padding: 16px 28px; border-radius: var(--radius-md); font-weight: 700; font-size: 15px;
+    transition: opacity 0.15s ease, transform 0.15s ease; white-space: nowrap;
+  }
+  .contact-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+  .contact-cta .contact-email { font-weight: 500; font-size: 12.5px; opacity: 0.85; }
+  @media (max-width: 720px) { .contact-cta { width: 100%; } }
+
+  /* ---------- footer ---------- */
+  footer { padding: var(--space-6) 0 var(--space-7); border-top: 1px solid var(--gridline); }
+  .footer-position { font-family: var(--font-serif); font-size: 20px; line-height: 1.6; max-width: 56ch; margin-bottom: var(--space-4); }
+  .footer-disclaimer { font-size: 13px; color: var(--ink-muted); max-width: 78ch; line-height: 1.8; }
+  .footer-disclaimer p + p { margin-top: 8px; }
+  .footer-meta { margin-top: var(--space-4); font-size: 12.5px; color: var(--ink-muted); border-top: 1px solid var(--gridline); padding-top: var(--space-2); }
+</style>
+</head>
+<body>
+
+<div class="disclaimer-strip">本案例情境改編自公開刊登之外包需求，所有公司名、人名、金額、資料均為虛構合成，如有雷同純屬巧合。</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">多門市活動影片產能規模化<span>案例研究</span></div>
+    <nav class="main-nav links" id="mainNav">
+      <a href="#background">案件背景</a>
+      <a href="#scale">產能論證</a>
+      <a href="#sources">資料挑戰</a>
+      <a href="#metrics">核心指標</a>
+      <a href="#losses">年損失金額</a>
+      <a href="#sla">交件時效</a>
+      <a href="#ai">AI 界線</a>
+      <a href="#scope">交付範疇</a>
+      <a href="#contact">聯絡</a>
+    </nav>
+    <div style="display:flex; align-items:center;">
+      <button class="nav-toggle" id="navToggle" aria-label="開啟選單" aria-expanded="false">☰</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div class="eyebrow">案例研究 · 產能規劃與流程設計</div>
+    <h1>他要的不是剪輯師，<br>是一條產線</h1>
+    <p class="lede">七門市兒童禮俗活動紀錄公司在外包平台上重複刊登同一個「剪輯師」職缺三次，開價一組 150–300 元。問題不是找不到人——七門市每天超過 10 場的量級，從來沒有一位個人接案者能承接得住。</p>
+    <p class="context-line">「一支影片剪輯費就 150 到 300 塊，我開這個價都找不到人，是現在剪輯師都這麼難請嗎？」——阿德（營運總監），客戶初談逐字稿節錄</p>
+
+    <div class="stat-row">
+      <div class="stat-tile reveal">
+        <div class="label">估算月產能需求</div>
+        <div class="value num">1,800+ 支/月</div>
+        <div class="sub">7 門市 × 每天 10 場 × 每月 26 天</div>
+      </div>
+      <div class="stat-tile headline reveal">
+        <div class="label">單支有效產出成本（實際）</div>
+        <div class="value num">NT$ 555</div>
+        <div class="sub">客戶認知僅 NT$150–300／支</div>
+      </div>
+      <div class="stat-tile reveal">
+        <div class="label">準時交付率（全體）</div>
+        <div class="value num">44.7%</div>
+        <div class="sub">家長版 51.2%／短影音 35.2%</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="background" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">案件背景</div>
+      <h2>客戶把「找剪輯師」講成需求，實際是產能規劃問題</h2>
+      <p>傳家囍事有限公司經營嬰兒抓周、滿月剃頭、收涎、慶生派對等兒童禮俗活動紀錄，七個門市另提供到府服務。現況做法：門市人員用手機拍攝、上傳共用雲端硬碟，外包剪輯師接單剪輯後交付家長成品版，同時剪出短影音供門市行銷推廣。</p>
+    </div>
+
+    <div class="bg-grid">
+      <div class="reveal">
+        <dl class="info-list">
+          <dt>公司</dt><dd>傳家囍事有限公司</dd>
+          <dt>規模</dt><dd>41 人，七個門市（台北中山、板橋、中壢、西屯、東區、三民、光復），另含到府服務</dd>
+          <dt>業態</dt><dd>嬰兒抓周、滿月剃頭、收涎、慶生派對，含到府服務</dd>
+          <dt>現況</dt><dd>手機拍攝 → 上傳共用雲端 → 外包剪輯師接單剪輯；交件時間不穩，風格每支不同</dd>
+          <dt>提案規模</dt><dd>18–29 人提案／原刊登已重複刊登三次同一需求，開價 150–300 元／支</dd>
+          <dt>決策者</dt><dd>阿德（營運總監）——只問「一支多少錢、多久好」；佳玲（行政）負責派件、追素材、催剪輯師，全程無償吸收協調成本</dd>
+        </dl>
+      </div>
+      <div class="reveal">
+        <div class="scope-card">
+          <h3>委任範圍</h3>
+          <ul>
+            <li><span class="glyph yes">✓</span>剪輯模板規格建立（家長版／短影音版）</li>
+            <li><span class="glyph yes">✓</span>批次流程 SOP 設計（拍攝／上傳／派件／驗收）</li>
+            <li><span class="glyph yes">✓</span>示範影片（合成素材製作）</li>
+            <li><span class="glyph yes">✓</span>產能與成本試算（公式可調整重算）</li>
+          </ul>
+        </div>
+        <div class="scope-card">
+          <h3>不在委任範圍</h3>
+          <ul>
+            <li><span class="glyph no">✕</span>系統開發（上傳系統、驗收平台等）</li>
+            <li><span class="glyph no">✕</span>實際外包剪輯師媒合本身</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="scale" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">產能規模化論證</div>
+      <h2>這個數字組合本身就是答案</h2>
+      <p>客戶重複刊登同一職缺三次，不是運氣不好找不到人，而是他要的從來不是一位剪輯師，是一條產線。沒有任何個人接案剪輯師接得住這個量。</p>
+    </div>
+
+    <div class="equation-block reveal">
+      <div class="equation-row">
+        <div class="eq-term"><div class="eq-value num">7</div><div class="eq-label">門市</div></div>
+        <div class="eq-op">×</div>
+        <div class="eq-term"><div class="eq-value num">10</div><div class="eq-label">場/天</div></div>
+        <div class="eq-op">×</div>
+        <div class="eq-term"><div class="eq-value num">26</div><div class="eq-label">天/月</div></div>
+        <div class="eq-op">≒</div>
+        <div class="eq-term eq-result"><div class="eq-value num">1,800+</div><div class="eq-label">支/月</div></div>
+      </div>
+    </div>
+
+    <div class="callout reveal">
+      <b>年化推算（W4 損失金額之計算基礎）：</b>A／B／C 三表僅為 3 個月之代表性樣本，不是全年完整交易量。全年真實場次量須以「7 門市 × 每日場次數 × 313 個營業天」重新推算，估算約 <b class="num">21,910 場</b>／年，而非直接把樣本列數當作全年真實發生次數——下方兩筆年損失金額即以此年化場次數為基礎計算。
+    </div>
+  </section>
+
+  <section id="sources" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">三來源資料挑戰</div>
+      <h2>三份資料，沒有一組能對得上</h2>
+      <p>這不是「資料不乾淨」的問題，而是三份資料從設計時就沒有共同鍵，只能靠「門市＋日期」推測配對——且素材上傳日與活動日期本身就有落差，到府場次尤其明顯。</p>
+    </div>
+
+    <div class="source-grid reveal">
+      <div class="source-card">
+        <span class="tag">來源 A</span>
+        <h3>素材上傳紀錄</h3>
+        <p class="desc">A_素材上傳.csv，約 700 筆（3 個月）</p>
+        <p class="issue">檔名毫無規則（IMG_0834、抓周.mp4、新的資料夾/慶生派對_7.mov）；門市代碼寫法不一；部分場次漏傳</p>
+      </div>
+      <div class="source-card">
+        <span class="tag">來源 B</span>
+        <h3>活動場次表</h3>
+        <p class="desc">B_活動場次.csv，約 780 筆（含取消場次）</p>
+        <p class="issue">訂單系統匯出，用訂單編號；與素材上傳紀錄無任何對應鍵；含已取消場次</p>
+      </div>
+      <div class="source-card">
+        <span class="tag">來源 C</span>
+        <h3>交件紀錄</h3>
+        <p class="desc">C_交件紀錄.csv，約 620 筆</p>
+        <p class="issue">行政（佳玲）手動記錄；約 22% 為事後補登，與實際完成日期有 1–4 天落差；約 6% 實際交件從未登記</p>
+      </div>
+    </div>
+
+    <div class="obstacle-row reveal">
+      <span class="obstacle-chip key">A／B 兩表沒有共同鍵，只能靠「門市＋日期」推測配對</span>
+      <span class="obstacle-chip">約 9–10% 場次找不到對應素材</span>
+      <span class="obstacle-chip">到府場次素材回傳天數遠長於門市內（到府約 4.2 天 vs 門市內約 1.3 天）</span>
+      <span class="obstacle-chip">2 個門市手機時間戳設定錯誤</span>
+      <span class="obstacle-chip">素材長度差異極大（3 分鐘～90 分鐘）</span>
+      <span class="obstacle-chip">C 表約 22% 為事後補登交件日期</span>
+    </div>
+  </section>
+
+  <section id="metrics" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">核心指標</div>
+      <h2>準時交付率與單支有效產出成本</h2>
+      <p>第二個指標是本案重點：客戶只看得到 150–300 元的剪輯費，看不到行政協調與重工造成的真實單支成本。</p>
+    </div>
+
+    <div class="chart-block reveal" id="chart-ontime" style="margin-bottom: var(--space-3);">
+      <div class="chart-title">準時交付率依門市</div>
+      <div class="chart-caption">樣本 638 筆交件紀錄；全體 44.7%（家長成品版 51.2%／短影音 35.2%）。西屯店（ST04）標示為「非管理問題」——見下方說明。</div>
+      <div class="cbar-list" id="cbarOntime" role="img" aria-label="準時交付率依門市長條圖"></div>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>一般門市</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--warn)"></span>到府占比異常高門市（非管理問題）</span>
+      </div>
+      <details class="table-toggle">
+        <summary>顯示完整數字表格</summary>
+        <table class="data-table" id="tableOntime">
+          <thead><tr><th>門市</th><th>到府占比</th><th>準時交付率</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </details>
+      <div class="callout warn" style="margin-top: var(--space-3);">
+        <b>假異常說明：西屯店（ST04）並非交件能力差。</b>西屯店到府服務占比高達 55%（其他門市僅 18%–24%），而到府場次的素材回傳天數本來就遠高於門市內場次（到府平均約 4.2 天 vs 門市內平均約 1.3 天），壓縮了剪輯與交付的可用時間。這是服務型態的結構性差異，不是剪輯師或行政管理的執行力問題——若直接要求「換剪輯師」或「加強管理」，資源會投錯地方。正確做法是依「門市內／到府」分開設算準時交付率基準，而非用同一套標準比較七家門市。
+      </div>
+    </div>
+
+    <div class="chart-block reveal" id="chart-cost">
+      <div class="chart-title">單支有效產出成本：真實 NT$555 vs 客戶認知 NT$150–300</div>
+      <div class="chart-caption">樣本期間 92 天，交付 638 支（短影音 261／家長成品版 377）。單支有效產出成本 ＝（剪輯費＋行政協調工時成本＋重工成本）÷ 實際交付支數。</div>
+      <svg class="chart-svg" id="svgCost" viewBox="0 0 480 190" role="img" aria-label="單支有效產出成本組成與客戶認知落差圖"></svg>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>剪輯費</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--warn)"></span>行政協調工時成本</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--gray-status)"></span>重工成本（找檔案＋重剪）</span>
+      </div>
+      <details class="table-toggle">
+        <summary>顯示完整數字表格</summary>
+        <table class="data-table" id="tableCost">
+          <thead><tr><th>項目</th><th>金額</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </details>
+      <p class="premise-note">重工成本中，因誤選片段完全重剪 19 支，成本 NT$8,044。另《產能試算.xlsx》以面向未來的情境模型另算出現況單支成本約 NT$427／支，與本節「歷史樣本彙總」數字用途不同（一為既成事實彙總，一為可調參數之情境試算），方向一致但不必然相等。</p>
+    </div>
+  </section>
+
+  <section id="losses" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">兩筆年損失金額</div>
+      <h2>客戶完全沒算進報價的兩筆錢</h2>
+      <p>以下金額皆以「產能規模化論證」章節之年化場次數（約 21,910 場／年）為基礎，套用樣本觀察到的比例推算，而非直接沿用 3 個月樣本筆數。</p>
+    </div>
+
+    <div class="case-grid reveal">
+      <div class="case-card type-dispute">
+        <div class="case-kicker">W4-1 · 缺料／重拍／退費</div>
+        <h3>素材漏傳的下游代價</h3>
+        <dl>
+          <dt>全年完成場次</dt><dd class="num">21,910 場 × 92%（扣除 8% 取消率）＝ 20,157 場</dd>
+          <dt>缺素材比例</dt><dd class="num">10.3%（樣本實測）＝ 2,068 場</dd>
+          <dt>後續分佈</dt><dd>退費 2.8%／補拍 5.6%／商譽處理 8.5%／無償吸收 83.1%</dd>
+          <dt>成本參數</dt><dd class="num">單場客單價 NT$3,480／補拍 NT$1,150／商譽 NT$420</dd>
+        </dl>
+        <p class="impact">年損失 ＝ 2,068 ×（2.8%×3,480 + 5.6%×1,150 + 8.5%×420）＝ <span class="amt num">NT$410,135／年</span></p>
+      </div>
+
+      <div class="case-card type-dispute">
+        <div class="case-kicker">W4-2 · 隱形行政協調成本</div>
+        <h3>佳玲每天下班比較晚，但沒有出現在任何報表上</h3>
+        <dl>
+          <dt>每日協調工時</dt><dd class="num">追素材配對 2.8h ＋ 催剪輯師 1.5h ＋ 處理客訴 2.0h ＝ 6.3 小時/天</dd>
+          <dt>時薪</dt><dd class="num">月薪 NT$46,800 ÷ 208 小時 ＝ NT$225.0／小時</dd>
+          <dt>年度營業天數</dt><dd class="num">313 天</dd>
+        </dl>
+        <p class="impact">年成本 ＝ 6.3 × 225.0 × 313 ＝ <span class="amt num">NT$443,678／年</span>——這筆錢不會出現在任何一張訂單或交件紀錄上，只反映在佳玲每天下班比較晚這件事情上。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="sla" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">交件時效的建議答案 · W2 主戰場</div>
+      <h2>「多久交件比較好？」不能只給一個數字</h2>
+      <p>阿德在逐字稿中直接把決定權丟回顧問方：「這個喔……老實說我們沒有訂欸。這個你們比較懂，你覺得應該抓多久？家長版跟那個要發社群的短片，是不是都用一樣的天數就好？」——單一天數的答案，因忽略兩種交付物的用途與容錯度本質不同，屬於不完整的回答。</p>
+    </div>
+
+    <div class="sla-grid reveal">
+      <div class="sla-card fast">
+        <div class="sla-kicker">短影音推廣版</div>
+        <div class="sla-time num">48 小時內</div>
+        <dl>
+          <dt>用途</dt><dd>門市自用，發限動／社群推廣</dd>
+          <dt>容錯度</dt><dd>高——即使風格稍粗糙，時效性比精緻度重要，晚了就失去行銷時機</dd>
+          <dt>修改機制</dt><dd>不提供正式修改機制，僅明顯錯誤（如門市名稱打錯）可申請重新輸出</dd>
+        </dl>
+      </div>
+      <div class="sla-card slow">
+        <div class="sla-kicker">家長成品版</div>
+        <div class="sla-time num">7 個工作日內</div>
+        <dl>
+          <dt>用途</dt><dd>家長付費之正式成品，長期保存、反覆觀看</dd>
+          <dt>容錯度</dt><dd>低——品質與完整度優先於速度，需一次修改緩衝期</dd>
+          <dt>修改機制</dt><dd>交付後家長有一次免費修改機會（片段替換／字幕勘誤，不含重新選鏡）</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="callout reveal" style="margin-top: var(--space-4);">
+      <b>為什麼不能用單一標準：</b>若統一用 48 小時，家長成品版的品質會被迫犧牲以趕件；若統一用 7 天，短影音會完全失去行銷時效性，等於白剪。用途不同（即時曝光 vs 完整精緻）、容錯度不同，兩者必須分層設定，才不會顧此失彼。
+    </div>
+  </section>
+
+  <section id="ai" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">AI 的界線</div>
+      <h2>批次化不等於全面自動化</h2>
+      <p>把阿德口中「影片要有感覺」「品質要一致」這類主觀期待，轉換成可以明確劃分自動化與人工的具體規格，而不是靠每位剪輯師各自的美感判斷。</p>
+    </div>
+
+    <div class="chart-block reveal">
+      <div style="overflow-x:auto;">
+        <table class="premise-table">
+          <thead><tr><th>工作項目</th><th>可否自動化</th><th>理由</th></tr></thead>
+          <tbody>
+            <tr><td>字幕生成（語音轉文字、時間軸對齊）</td><td class="tag-yes">可自動化</td><td>機械式的音轉文任務，正確率可被客觀檢核，人工只需錯字校對，不需創意判斷</td></tr>
+            <tr><td>素材自動分段（依聲音／畫面變化偵測分段點）</td><td class="tag-yes">可自動化</td><td>分段點可用音量、畫面變化率等客觀訊號偵測，作為初步整理輔助，不涉及「這段該不該留」的價值判斷</td></tr>
+            <tr><td>剪輯節奏（鏡頭停留秒數、切換時機）</td><td class="tag-no">不自動化</td><td>是「這一刻該不該讓家長多看兩秒」的情感判斷，抓周儀式與慶生吹蠟燭需要的停留感完全不同</td></tr>
+            <tr><td>選鏡（同一時刻多支素材該選哪一顆鏡頭）</td><td class="tag-no">不自動化</td><td>需判斷哪一顆鏡頭最能傳達這個家庭的情緒，每個家庭都不同，無法用固定規則泛化</td></tr>
+            <tr><td>音樂情緒配置（溫馨／活潑／莊重）</td><td class="tag-no">不自動化</td><td>需對應現場真實氣氛，同樣是抓周也可能嚴肅莊重或嘻笑熱鬧，需剪輯師看過素材後主觀判斷</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="premise-note">一句話總結：機械式、有客觀對錯的工作可以自動化；涉及「這一刻該不該被記住、該被記住幾秒」的情感判斷，必須留給人。即使用 AI 處理找檔案跟字幕，剪輯師仍是產線裡不可取代的一環——產能問題的解法在拍攝端規範與流程分工，不在剪輯端加人或加自動化。</p>
+    </div>
+  </section>
+
+  <section id="scope" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">交付範疇</div>
+      <h2>四項交付物</h2>
+    </div>
+    <div class="fork-row reveal">
+      <div class="fork-node out-yes"><strong>01　剪輯模板 × 2</strong>家長成品版／短影音推廣版，含開場、字幕樣式、片尾、音樂配置規格</div>
+      <div class="fork-node out-yes"><strong>02　批次流程 SOP</strong>拍攝規範／上傳規範／派件規則／驗收規則</div>
+      <div class="fork-node out-yes"><strong>03　示範影片 × 2</strong>家長版 2–3 分鐘、短影音 60 秒內，合成素材製作</div>
+      <div class="fork-node out-yes"><strong>04　產能試算 Excel</strong>公式可調整重算，計算導入 SOP 後之單支成本與可承接量上限</div>
+    </div>
+    <div class="callout reveal">
+      <b>真正的解方在拍攝端，不在剪輯端：</b>批次流程 SOP 把最大篇幅放在「門市拍攝規範」（檔名規則、必拍鏡頭清單）而非剪輯流程本身——現況交件不穩定、品質不一致、剪輯師找檔案耗時（估計多花約 35% 工時）、西屯店準時率看似偏差，追根究柢都指向同一件事：門市現場拍攝完全沒有規範可循。多找幾個剪輯師（阿德提出的解法）並不能解決這個問題，只會讓更多人重複面對同樣的混亂。產能試算顯示，即使導入 SOP，達成每月 1,800+ 支的目標仍需遠多於現有 6 位的剪輯人力（約 17 人，SOP 前約需 22 人）——這再次印證本案最開頭的核心論點：客戶要的不是一位剪輯師，是一條產線；但 SOP 讓每一位剪輯師的產出效率都能提升，讓增聘人數減少。
+    </div>
+  </section>
+
+  <section id="contact" class="wrap">
+    <div class="contact-card reveal">
+      <div class="contact-info">
+        <div class="contact-name">Zorya</div>
+        <div class="contact-role">FDE &amp; Data Scientist</div>
+        <p class="contact-lede">如果你手上也有一份「客戶把需求講錯了、但自己不知道」的案子——不管是產能規劃、資料整併還是流程設計，都歡迎聊聊。</p>
+      </div>
+      <a class="contact-cta" href="mailto:uzang199431465@gmail.com">
+        寄信聊聊這個案例
+        <span class="contact-email">uzang199431465@gmail.com</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p class="footer-position">客戶要的不是一位更快的剪輯師，是一條能承接量級的產線——而產線的第一個環節，永遠是拍攝端有沒有規範可循。</p>
+  <div class="footer-disclaimer">
+    <p>本頁面所使用之公司名、人名、金額、資料均為虛構合成，不對應任何真實個人或案件。本案例情境改編自公開刊登之外包需求。</p>
+    <p>本案不含系統開發，也不含實際外包剪輯師媒合本身，僅為診斷、流程設計與試算階段之交付。所有金額與指標均可由 <code>scripts/gen_data.py</code>（固定隨機種子）完全重現。</p>
+  </div>
+  <div class="footer-meta">多門市活動影片產能規模化 · 作品集案例研究 · 製作與分析：Zorya（FDE &amp; Data Scientist）</div>
+</footer>
+
+<div class="chart-tooltip" id="chartTooltip"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- theme toggle ---------- */
+  var root = document.documentElement;
+  var themeBtn = document.getElementById('themeToggle');
+  function getStoredTheme() {
+    try { return localStorage.getItem('f-case-theme'); } catch (e) { return null; }
+  }
+  function setStoredTheme(v) {
+    try { localStorage.setItem('f-case-theme', v); } catch (e) {}
+  }
+  var stored = getStoredTheme();
+  if (stored === 'light' || stored === 'dark') root.setAttribute('data-theme', stored);
+  themeBtn.addEventListener('click', function () {
+    var current = root.getAttribute('data-theme');
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var effectiveDark = current ? current === 'dark' : prefersDark;
+    var next = effectiveDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    setStoredTheme(next);
+  });
+
+  /* ---------- mobile nav ---------- */
+  var navToggle = document.getElementById('navToggle');
+  var mainNav = document.getElementById('mainNav');
+  navToggle.addEventListener('click', function () {
+    var open = mainNav.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  mainNav.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () { mainNav.classList.remove('open'); });
+  });
+
+  /* ---------- reveal on scroll ---------- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(function (el) { io.observe(el); });
+  } else {
+    revealEls.forEach(function (el) { el.classList.add('is-visible'); });
+  }
+
+  /* ---------- shared tooltip ---------- */
+  var tooltip = document.getElementById('chartTooltip');
+  function showTooltip(evt, html) {
+    tooltip.innerHTML = html;
+    tooltip.classList.add('show');
+    moveTooltip(evt);
+  }
+  function moveTooltip(evt) {
+    var x = evt.clientX, y = evt.clientY;
+    var padding = 14;
+    tooltip.style.left = Math.min(x + padding, window.innerWidth - 270) + 'px';
+    tooltip.style.top = Math.max(y - 40, 8) + 'px';
+  }
+  function hideTooltip() { tooltip.classList.remove('show'); }
+
+  function fmt(n) { return 'NT$ ' + n.toLocaleString('en-US'); }
+  function pct(n) { return (n * 100).toFixed(1) + '%'; }
+  var css = getComputedStyle(root);
+  function cssVar(name) { return css.getPropertyValue(name).trim(); }
+
+  var COLOR_ACCENT = 'var(--accent)';
+  var COLOR_WARN = 'var(--warn)';
+  var COLOR_GRAY = 'var(--gray-status)';
+
+  /* ================= chart 1: 準時交付率依門市 ================= */
+  var storeData = [
+    { store: 'ST04 西屯店', visitShare: '55%', rate: 0.211, flag: true },
+    { store: 'ST02 板橋店', visitShare: '22%', rate: 0.419, flag: false },
+    { store: 'ST05 東區店', visitShare: '19%', rate: 0.453, flag: false },
+    { store: 'ST06 三民店', visitShare: '24%', rate: 0.467, flag: false },
+    { store: 'ST03 中壢店', visitShare: '20%', rate: 0.478, flag: false },
+    { store: 'ST07 光復店', visitShare: '21%', rate: 0.481, flag: false },
+    { store: 'ST01 台北中山店', visitShare: '18%', rate: 0.602, flag: false }
+  ];
+
+  (function renderOntime() {
+    var container = document.getElementById('cbarOntime');
+    var maxVal = Math.max.apply(null, storeData.map(function (d) { return d.rate; }));
+
+    storeData.forEach(function (d) {
+      var pctW = Math.max((d.rate / maxVal) * 100, 1.2);
+      var row = document.createElement('div');
+      row.className = 'cbar-row';
+
+      var label = document.createElement('div');
+      label.className = 'cbar-label';
+      label.innerHTML = d.store + (d.flag ? '<span class="flag">到府占比 ' + d.visitShare + '</span>' : '');
+      row.appendChild(label);
+
+      var track = document.createElement('div');
+      track.className = 'cbar-track';
+
+      var fill = document.createElement('div');
+      fill.className = 'cbar-fill';
+      fill.style.width = pctW + '%';
+      fill.style.background = d.flag ? COLOR_WARN : COLOR_ACCENT;
+      fill.tabIndex = 0;
+      fill.addEventListener('mousemove', function (evt) {
+        showTooltip(evt, '<b>' + d.store + '</b><br>準時交付率 ' + pct(d.rate) + '<br>到府占比 ' + d.visitShare + (d.flag ? '<br>到府素材本來就晚到，非管理問題' : ''));
+      });
+      fill.addEventListener('mouseleave', hideTooltip);
+      track.appendChild(fill);
+
+      var rest = document.createElement('div');
+      rest.className = 'cbar-rest';
+      track.appendChild(rest);
+
+      var value = document.createElement('span');
+      value.className = 'cbar-value';
+      value.textContent = pct(d.rate);
+      track.appendChild(value);
+
+      row.appendChild(track);
+      container.appendChild(row);
+    });
+
+    var tbody = document.querySelector('#tableOntime tbody');
+    storeData.forEach(function (d) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + d.store + '</td><td>' + d.visitShare + '</td><td class="amount num">' + pct(d.rate) + '</td>';
+      tbody.appendChild(tr);
+    });
+  })();
+
+  /* ================= chart 2: 單支有效產出成本 vs 客戶認知 ================= */
+  (function renderCost() {
+    var svg = document.getElementById('svgCost');
+    var W = 480, H = 190;
+    var domainMax = 620;
+    var left = 10, right = W - 10;
+    var scale = function (v) { return left + (v / domainMax) * (right - left); };
+    var svgNS = 'http://www.w3.org/2000/svg';
+
+    var perceivedLow = 150, perceivedHigh = 300;
+    var segs = [
+      { label: '剪輯費', amount: 230, color: COLOR_ACCENT },
+      { label: '行政協調工時成本', amount: 204, color: COLOR_WARN },
+      { label: '重工成本', amount: 121, color: COLOR_GRAY }
+    ];
+    var total = segs.reduce(function (s, d) { return s + d.amount; }, 0);
+
+    var y1 = 44, y2 = 128, barH = 30;
+
+    // row label: 客戶認知
+    var t1 = document.createElementNS(svgNS, 'text');
+    t1.setAttribute('x', left); t1.setAttribute('y', y1 - 12);
+    t1.setAttribute('class', 'bar-cat-label');
+    t1.setAttribute('font-weight', '700');
+    t1.textContent = '客戶認知剪輯費';
+    svg.appendChild(t1);
+
+    // perceived range bar
+    var rangeBg = document.createElementNS(svgNS, 'rect');
+    rangeBg.setAttribute('x', left); rangeBg.setAttribute('y', y1);
+    rangeBg.setAttribute('width', right - left); rangeBg.setAttribute('height', barH);
+    rangeBg.setAttribute('rx', 4);
+    rangeBg.setAttribute('fill', cssVar('--gridline'));
+    rangeBg.setAttribute('opacity', '0.35');
+    svg.appendChild(rangeBg);
+
+    var rangeFill = document.createElementNS(svgNS, 'rect');
+    rangeFill.setAttribute('x', scale(perceivedLow));
+    rangeFill.setAttribute('y', y1);
+    rangeFill.setAttribute('width', scale(perceivedHigh) - scale(perceivedLow));
+    rangeFill.setAttribute('height', barH);
+    rangeFill.setAttribute('rx', 4);
+    rangeFill.setAttribute('fill', cssVar('--ink-muted'));
+    rangeFill.setAttribute('class', 'bar-rect');
+    rangeFill.setAttribute('tabindex', '0');
+    rangeFill.addEventListener('mousemove', function (evt) {
+      showTooltip(evt, '<b>客戶認知剪輯費</b><br>NT$150 – NT$300／支');
+    });
+    rangeFill.addEventListener('mouseleave', hideTooltip);
+    svg.appendChild(rangeFill);
+
+    var rangeLabel = document.createElementNS(svgNS, 'text');
+    rangeLabel.setAttribute('x', (scale(perceivedLow) + scale(perceivedHigh)) / 2);
+    rangeLabel.setAttribute('y', y1 + barH / 2 + 5);
+    rangeLabel.setAttribute('text-anchor', 'middle');
+    rangeLabel.setAttribute('fill', '#ffffff');
+    rangeLabel.setAttribute('font-size', '12.5');
+    rangeLabel.setAttribute('font-weight', '700');
+    rangeLabel.textContent = '150–300';
+    svg.appendChild(rangeLabel);
+
+    // row label: 真實成本
+    var t2 = document.createElementNS(svgNS, 'text');
+    t2.setAttribute('x', left); t2.setAttribute('y', y2 - 12);
+    t2.setAttribute('class', 'bar-cat-label');
+    t2.setAttribute('font-weight', '700');
+    t2.textContent = '真實單支有效產出成本';
+    svg.appendChild(t2);
+
+    // stacked true-cost bar
+    var x = left;
+    segs.forEach(function (d) {
+      var w = (d.amount / domainMax) * (right - left);
+      var rect = document.createElementNS(svgNS, 'rect');
+      rect.setAttribute('x', x);
+      rect.setAttribute('y', y2);
+      rect.setAttribute('width', w);
+      rect.setAttribute('height', barH);
+      rect.setAttribute('fill', d.color);
+      rect.setAttribute('class', 'bar-rect');
+      rect.setAttribute('tabindex', '0');
+      rect.addEventListener('mousemove', function (evt) {
+        showTooltip(evt, '<b>' + d.label + '</b><br>' + fmt(d.amount) + '／支');
+      });
+      rect.addEventListener('mouseleave', hideTooltip);
+      svg.appendChild(rect);
+
+      if (w > 46) {
+        var text = document.createElementNS(svgNS, 'text');
+        text.setAttribute('x', x + w / 2);
+        text.setAttribute('y', y2 + barH / 2 + 5);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('fill', '#ffffff');
+        text.setAttribute('font-size', '12.5');
+        text.setAttribute('font-weight', '700');
+        text.textContent = d.amount;
+        svg.appendChild(text);
+      }
+      x += w;
+    });
+
+    // total label at end of stacked bar
+    var totalLabel = document.createElementNS(svgNS, 'text');
+    totalLabel.setAttribute('x', scale(total) + 8);
+    totalLabel.setAttribute('y', y2 + barH / 2 + 5);
+    totalLabel.setAttribute('class', 'bar-value-label');
+    totalLabel.textContent = '＝ ' + total;
+    svg.appendChild(totalLabel);
+
+    // dashed reference line at perceived upper bound (300) crossing both rows
+    var refLine = document.createElementNS(svgNS, 'line');
+    refLine.setAttribute('x1', scale(perceivedHigh));
+    refLine.setAttribute('x2', scale(perceivedHigh));
+    refLine.setAttribute('y1', y1 - 20);
+    refLine.setAttribute('y2', y2 + barH + 14);
+    refLine.setAttribute('stroke', cssVar('--ink-muted'));
+    refLine.setAttribute('stroke-width', '1.5');
+    refLine.setAttribute('stroke-dasharray', '4 3');
+    svg.appendChild(refLine);
+
+    var gapLabel = document.createElementNS(svgNS, 'text');
+    gapLabel.setAttribute('x', scale(perceivedHigh) + 6);
+    gapLabel.setAttribute('y', y2 + barH + 30);
+    gapLabel.setAttribute('fill', cssVar('--ink-muted'));
+    gapLabel.setAttribute('font-size', '12');
+    gapLabel.textContent = '客戶認知上限 300 → 實際 555，近 2 倍落差';
+    svg.appendChild(gapLabel);
+
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    var tbody = document.querySelector('#tableCost tbody');
+    var rows = [
+      ['客戶認知剪輯費（範圍）', 'NT$150 – NT$300／支'],
+      ['真實－剪輯費', fmt(230) + '／支'],
+      ['真實－行政協調工時成本', fmt(204) + '／支'],
+      ['真實－重工成本（找檔案＋重剪）', fmt(121) + '／支'],
+      ['真實－單支有效產出成本合計', fmt(total) + '／支']
+    ];
+    rows.forEach(function (r) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + r[0] + '</td><td class="amount num">' + r[1] + '</td>';
+      tbody.appendChild(tr);
+    });
+  })();
+
+  window.addEventListener('mousemove', function (evt) {
+    if (tooltip.classList.contains('show')) moveTooltip(evt);
+  });
+})();
+</script>
+</body>
+</html>

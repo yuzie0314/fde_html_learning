@@ -3,24 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>點餐｜Demo</title>
+<title>掃碼點餐系統 — Zorya 練習 Demo</title>
+<meta name="description" content="外帶／桌號 → 主食 → 三菜 → 送出的掃碼點餐互動流程練習，訂單會即時同步到廚房看板頁。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/portfolio-theme.css">
 <style>
+  /* ---- page-scoped tokens: re-point the original bespoke palette
+         onto the shared design-system variables ---- */
   :root{
-    --bg:#fff7ef; --card:#ffffff; --ink:#2a2320; --muted:#9a8f86;
-    --brand:#e8582c; --brand2:#ff7a4d; --line:#efe3d8; --ok:#2fa96a; --chip:#fff0e6;
+    --bg: var(--surface-page);
+    --card: var(--surface-card);
+    --ink: var(--ink-primary);
+    --muted: var(--ink-muted);
+    --brand: var(--accent);
+    --brand2: color-mix(in srgb, var(--accent) 65%, white 35%);
+    --line: var(--gridline);
+    --ok: var(--good);
+    --chip: var(--accent-soft);
   }
+  .back-link{ display:inline-block; font-size:13px; color:var(--ink-muted); text-decoration:none; padding: var(--space-2) 0 0; }
+  .back-link:hover{ color:var(--accent-ink); }
+
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-    background:var(--bg);color:var(--ink);min-height:100vh;display:flex;justify-content:center}
+  body{margin:0;font-family:var(--font-sans);
+    background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center}
   .app{width:100%;max-width:430px;padding:0 0 110px}
-  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--brand),var(--brand2));
-    color:#fff;padding:18px 20px;border-radius:0 0 22px 22px;box-shadow:0 8px 20px rgba(232,88,44,.25)}
-  header h1{margin:0;font-size:19px;font-weight:800;letter-spacing:1px}
-  header p{margin:4px 0 0;font-size:12px;opacity:.9}
+  .app-header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--brand),var(--brand2));
+    color:#fff;padding:18px 20px;border-radius:0 0 22px 22px;box-shadow:0 8px 20px rgba(42,120,214,.25)}
+  .app-header h1{margin:0;font-size:19px;font-weight:800;letter-spacing:1px;font-family:var(--font-sans)}
+  .app-header p{margin:4px 0 0;font-size:12px;opacity:.9}
   .steps{display:flex;gap:6px;margin-top:14px}
   .steps i{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.35)}
   .steps i.on{background:#fff}
-  .wrap{padding:20px}
+  .wrap-inner{padding:20px}
   .q{font-size:17px;font-weight:800;margin:6px 0 4px}
   .sub{font-size:12px;color:var(--muted);margin-bottom:16px}
   .opt{display:flex;align-items:center;gap:12px;background:var(--card);border:2px solid var(--line);
@@ -35,15 +54,15 @@
   .grid .opt{margin:0;flex-direction:column;text-align:center;padding:18px 10px;gap:6px}
   .grid .opt .ck{display:none}
   .tablepick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
-  .tablepick button{padding:14px 0;border-radius:12px;border:2px solid var(--line);background:#fff;font-size:16px;font-weight:700;cursor:pointer}
+  .tablepick button{padding:14px 0;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-size:16px;font-weight:700;cursor:pointer}
   .tablepick button.sel{border-color:var(--brand);background:var(--chip);color:var(--brand)}
   .count{font-size:12px;color:var(--brand);font-weight:700}
   .foot{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;pointer-events:none}
   .footin{width:100%;max-width:430px;padding:14px 20px 22px;background:linear-gradient(180deg,transparent,var(--bg) 30%);pointer-events:auto}
   .btn{width:100%;padding:16px;border:none;border-radius:16px;font-size:17px;font-weight:800;color:#fff;
-    background:linear-gradient(180deg,var(--brand2),var(--brand));box-shadow:0 8px 20px rgba(232,88,44,.3);cursor:pointer}
+    background:linear-gradient(180deg,var(--brand2),var(--brand));box-shadow:0 8px 20px rgba(42,120,214,.3);cursor:pointer}
   .btn:disabled{filter:grayscale(.6) opacity(.6);box-shadow:none;cursor:not-allowed}
-  .btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+  .btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:none}
   .barrow{display:flex;gap:10px}
   .summary{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
   .summary .li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:15px}
@@ -51,24 +70,39 @@
   .summary .li span:first-child{color:var(--muted)}
   .done{text-align:center;padding:50px 20px}
   .done .big{font-size:64px}
-  .done h2{margin:10px 0 6px}
+  .done h2{margin:10px 0 6px;font-family:var(--font-sans)}
   .done p{color:var(--muted);margin:0}
   .hidden{display:none}
   .link{display:inline-block;margin-top:10px;font-size:12px;color:var(--brand);text-decoration:underline}
 </style>
 </head>
 <body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="../../index.html">Zorya<span>練習 Demo</span></a>
+    <div style="display:flex; align-items:center;">
+      <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap" style="padding-top:10px;">
+  <a class="back-link" href="../../index.html">← 回作品集首頁</a>
+</div>
+
 <div class="app">
-  <header>
+  <div class="app-header">
     <h1>🍱 教科系實習餐廳</h1>
     <p>掃碼點餐 Demo</p>
     <div class="steps" id="steps"></div>
-  </header>
-  <div class="wrap" id="wrap"></div>
+  </div>
+  <div class="wrap-inner" id="wrap"></div>
 </div>
 
 <div class="foot"><div class="footin" id="foot"></div></div>
 
+<script src="../../assets/portfolio-theme.js"></script>
 <script>
 const MAINS = [
   {n:"招牌雞腿",e:"🍗"},{n:"香煎鯖魚",e:"🐟"},{n:"糖醋排骨",e:"🍖"},

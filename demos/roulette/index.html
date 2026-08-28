@@ -2,101 +2,147 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>集富講堂 · 會員推薦獎勵</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>推薦幸運輪盤 — Zorya 練習 Demo</title>
+<meta name="description" content="姓名手機登入、推薦成交累積抽獎次數、依次數動態調整中獎機率的互動輪盤前端練習 Demo。">
+<meta name="author" content="Zorya">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/portfolio-theme.css">
 <style>
-  :root{--bg:#0f1524;--card:#182136;--card2:#202a45;--gold:#d4af37;--gold2:#f0cf6b;
-    --text:#f3f0e6;--muted:#a7a690;--line:#2b3654;--green:#3ecf8e;--rose:#e0a44b;}
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-    background:radial-gradient(1100px 600px at 50% -10%,#1c2742 0%,var(--bg) 55%);color:var(--text);min-height:100vh;display:flex;justify-content:center}
-  .app{width:100%;max-width:440px;padding:22px 18px 44px}
-  .brand{text-align:center;margin:4px 0 18px}
-  .brand .k{font-size:11px;letter-spacing:4px;color:var(--gold);font-weight:700}
-  .brand h1{font-size:20px;margin:4px 0 0;font-weight:800;letter-spacing:1px}
-  .brand h1 span{color:var(--gold2)}
-  .card{background:linear-gradient(180deg,var(--card),#141b2d);border:1px solid var(--line);border-radius:20px;padding:22px 18px;
-    box-shadow:0 20px 50px rgba(0,0,0,.45)}
-  label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px}
-  input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:#0e1526;color:var(--text);font-size:16px;outline:none}
-  input:focus{border-color:var(--gold)}
-  .btn{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;margin-top:18px;color:#221a02;
-    background:linear-gradient(180deg,var(--gold2),var(--gold));box-shadow:0 8px 22px rgba(212,175,55,.3);transition:.15s}
-  .btn:active{transform:translateY(2px)}
-  .btn:disabled{filter:grayscale(.7) brightness(.7);cursor:not-allowed;box-shadow:none}
-  .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line);box-shadow:none}
-  .hint{font-size:12px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.6}
-  .stage{position:relative;width:300px;height:300px;margin:8px auto 4px}
-  .pointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);z-index:5;width:0;height:0;
-    border-left:15px solid transparent;border-right:15px solid transparent;border-top:26px solid var(--gold);filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
-  .wheel{width:300px;height:300px;border-radius:50%;position:relative;transition:transform 5s cubic-bezier(.17,.67,.2,1);
-    box-shadow:0 0 0 8px #0e1526,0 0 0 12px var(--gold),0 14px 40px rgba(0,0,0,.5)}
-  .hub{position:absolute;top:50%;left:50%;width:56px;height:56px;transform:translate(-50%,-50%);
-    background:radial-gradient(circle at 35% 30%,#fff,var(--gold));border-radius:50%;z-index:4;display:flex;align-items:center;justify-content:center;
-    font-weight:900;color:#7a5c00;font-size:12px;box-shadow:0 4px 10px rgba(0,0,0,.4)}
-  .seg-label{position:absolute;left:50%;top:50%;transform-origin:0 0;font-size:12px;font-weight:700;white-space:nowrap;pointer-events:none}
-  .stats{display:flex;gap:10px;margin:14px 0 4px}
-  .stat{flex:1;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center}
-  .stat b{display:block;font-size:22px;color:var(--gold2)}
-  .stat span{font-size:11px;color:var(--muted)}
-  .panel{margin-top:16px;background:#0e1526;border:1px dashed var(--line);border-radius:14px;padding:14px}
-  .panel h3{margin:0 0 4px;font-size:13px;color:var(--gold2)}
-  .panel p{margin:0 0 10px;font-size:11px;color:var(--muted)}
-  .row{display:flex;gap:8px}.row input{flex:1}
-  .row .btn{margin-top:0;width:auto;padding:13px 16px;white-space:nowrap}
-  .toast{position:fixed;left:50%;top:22%;transform:translateX(-50%) scale(.9);opacity:0;
-    background:linear-gradient(180deg,#fff,#f6e6b8);color:#5a3d00;font-weight:900;font-size:19px;padding:18px 28px;border-radius:18px;
-    box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:50;pointer-events:none;transition:.3s;text-align:center}
-  .toast.show{opacity:1;transform:translateX(-50%) scale(1)}
-  .toast.lose{background:linear-gradient(180deg,#232d47,#1a2238);color:#cdd0e6}
-  .hidden{display:none}
-  .list{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
-  .chip{font-size:11px;background:var(--card2);border:1px solid var(--line);padding:5px 9px;border-radius:20px}
+  /* ---- roulette demo: page-scoped widget styles, built on shared tokens ---- */
+  .back-link { display:inline-block; font-size:14px; color:var(--ink-secondary); text-decoration:none; margin-bottom:var(--space-2); }
+  .back-link:hover { color:var(--accent-ink); }
+
+  .rl-shell { max-width:440px; margin:0 auto; }
+  .rl-card { background:var(--surface-card); border:1px solid var(--gridline); border-radius:var(--radius-md); padding:var(--space-4) var(--space-3); box-shadow:var(--shadow-card); }
+  .rl-card + .rl-card { margin-top:0; }
+
+  .rl-topline { text-align:center; margin:0 0 var(--space-2); }
+  .rl-topline .k { font-size:11px; letter-spacing:4px; color:var(--accent-ink); font-weight:700; }
+  .rl-topline h2 { font-family:var(--font-serif); font-size:19px; margin:4px 0 0; font-weight:700; color:var(--ink-primary); }
+  .rl-topline h2 span { color:var(--accent-ink); }
+  .rl-subline { text-align:center; font-size:14px; color:var(--ink-muted); margin-bottom:4px; }
+
+  .rl-label { display:block; font-size:13px; color:var(--ink-muted); margin:14px 0 6px; }
+  .rl-input { width:100%; padding:13px 14px; border-radius:var(--radius-sm); border:1px solid var(--border-strong); background:var(--surface-raised); color:var(--ink-primary); font-size:16px; outline:none; font-family:var(--font-sans); }
+  .rl-input:focus { border-color:var(--accent); }
+
+  .rl-btn { width:100%; padding:14px; border:none; border-radius:var(--radius-md); font-size:15px; font-weight:700; cursor:pointer; margin-top:var(--space-3); color:#fff; background:var(--accent); box-shadow:0 8px 20px var(--accent-soft); transition:transform .15s ease, opacity .15s ease; font-family:var(--font-sans); }
+  .rl-btn:hover { opacity:.92; transform:translateY(-1px); }
+  .rl-btn:active { transform:translateY(1px); }
+  .rl-btn:disabled { filter:grayscale(.5) brightness(.92); cursor:not-allowed; box-shadow:none; opacity:.55; transform:none; }
+  .rl-btn.ghost { background:transparent; color:var(--ink-primary); border:1px solid var(--border-strong); box-shadow:none; }
+  .rl-hint { font-size:12px; color:var(--ink-muted); text-align:center; margin-top:var(--space-3); line-height:1.6; }
+
+  .rl-stage { position:relative; width:280px; height:280px; margin:var(--space-2) auto 4px; }
+  .rl-pointer { position:absolute; top:-6px; left:50%; transform:translateX(-50%); z-index:5; width:0; height:0; border-left:15px solid transparent; border-right:15px solid transparent; border-top:26px solid var(--accent); filter:drop-shadow(0 3px 4px rgba(11,11,11,.35)); }
+  .rl-wheel { width:280px; height:280px; border-radius:50%; position:relative; transition:transform 5s cubic-bezier(.17,.67,.2,1); box-shadow:0 0 0 8px var(--surface-page), 0 0 0 12px var(--accent), 0 14px 40px rgba(11,11,11,.25); }
+  .rl-hub { position:absolute; top:50%; left:50%; width:56px; height:56px; transform:translate(-50%,-50%); background:radial-gradient(circle at 35% 30%, #fff, var(--accent)); border-radius:50%; z-index:4; display:flex; align-items:center; justify-content:center; font-weight:900; color:#fff; font-size:12px; text-align:center; line-height:1.3; box-shadow:0 4px 10px rgba(11,11,11,.3); }
+
+  /* .seg-label is created dynamically by the wheel script (el.className='seg-label') — name kept as-is */
+  .seg-label { position:absolute; left:50%; top:50%; transform-origin:0 0; font-size:12px; font-weight:700; white-space:nowrap; pointer-events:none; }
+
+  .rl-stats { display:flex; gap:10px; margin:var(--space-3) 0 4px; }
+  .rl-stat { flex:1; background:var(--surface-raised); border:1px solid var(--gridline); border-radius:var(--radius-sm); padding:12px 8px; text-align:center; }
+  .rl-stat b { display:block; font-size:22px; color:var(--accent-ink); font-family:var(--font-serif); }
+  .rl-stat span { font-size:11px; color:var(--ink-muted); }
+
+  .rl-panel { margin-top:var(--space-3); background:var(--surface-raised); border:1px dashed var(--border-strong); border-radius:var(--radius-sm); padding:14px; }
+  .rl-panel h3 { margin:0 0 4px; font-size:13px; color:var(--accent-ink); font-family:var(--font-sans); }
+  .rl-panel p { margin:0 0 10px; font-size:11px; color:var(--ink-muted); }
+  .rl-row { display:flex; gap:8px; }
+  .rl-row .rl-input { flex:1; }
+  .rl-row .rl-btn { margin-top:0; width:auto; padding:13px 16px; white-space:nowrap; }
+
+  /* .toast / .show / .lose / .hidden are toggled by the wheel script via className/classList — names kept as-is */
+  .toast { position:fixed; left:50%; top:22%; transform:translateX(-50%) scale(.9); opacity:0; background:var(--good-soft); color:var(--ink-primary); font-weight:900; font-size:19px; padding:18px 28px; border-radius:var(--radius-md); box-shadow:var(--shadow-card); z-index:50; pointer-events:none; transition:.3s; text-align:center; border:1px solid var(--good); }
+  .toast.show { opacity:1; transform:translateX(-50%) scale(1); }
+  .toast.lose { background:var(--gray-status-soft); border-color:var(--border-strong); color:var(--ink-secondary); }
+  .hidden { display:none; }
+
+  .rl-list { margin-top:10px; display:flex; flex-wrap:wrap; gap:6px; }
+  /* .chip is created dynamically by the wheel script (c.className='chip') — name kept as-is */
+  .chip { font-size:11px; background:var(--surface-raised); border:1px solid var(--gridline); padding:5px 9px; border-radius:999px; color:var(--ink-secondary); }
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="brand"><div class="k">集 富 講 堂</div><h1>會員<span>推薦獎勵</span>輪盤</h1></div>
 
-  <div id="loginView" class="card">
-    <div style="text-align:center;font-size:15px;color:var(--muted);margin-bottom:4px">會員登入</div>
-    <label>姓名</label>
-    <input id="name" placeholder="王小明" autocomplete="off">
-    <label>手機號碼</label>
-    <input id="phone" placeholder="0912345678" inputmode="numeric" maxlength="10">
-    <button class="btn" id="loginBtn">登入 · 進入推薦獎勵</button>
-    <div class="hint">＊投標展示版，資料僅存本機瀏覽器，不上傳。<br>正式版將串接 OTP 簡訊驗證與會員資料庫。</div>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="../../index.html">Zorya<span>FDE &amp; Data Scientist</span></a>
+    <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
   </div>
+</header>
 
-  <div id="gameView" class="card hidden">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <div style="font-size:14px">Hi，<b id="uName"></b> 會員</div>
-      <button class="btn ghost" style="width:auto;margin:0;padding:8px 12px;font-size:12px" id="logoutBtn">登出</button>
-    </div>
-    <div class="stage">
-      <div class="pointer"></div>
-      <div class="wheel" id="wheel"></div>
-      <div class="hub">集富<br>抽獎</div>
-    </div>
-    <div class="stats">
-      <div class="stat"><b id="dealCount">0</b><span>推薦成交</span></div>
-      <div class="stat"><b id="spinLeft">0</b><span>可抽次數</span></div>
-      <div class="stat"><b id="winRate">0%</b><span>中獎機率</span></div>
-    </div>
-    <button class="btn" id="spinBtn" disabled>抽獎（需要推薦成交）</button>
-    <div class="list" id="slotList"></div>
-    <div class="panel">
-      <h3>▶ 業主（管理端）模擬面板</h3>
-      <p>模擬「一位會員推薦朋友報名課程並成交」→ 系統把朋友代號填入一格、並 +1 抽獎次數。推薦滿 10 位成交 = 中獎率 100%。</p>
-      <div class="row">
-        <input id="friend" placeholder="被推薦人姓名 / 代號" autocomplete="off">
-        <button class="btn" id="addBtn">＋推薦成交</button>
+<main>
+  <section class="hero wrap" style="padding-bottom:var(--space-3);">
+    <a class="back-link" href="../../index.html">← 回作品集首頁</a>
+    <div class="eyebrow" style="margin-top:var(--space-2);">互動元件 · 練習 Demo</div>
+    <h1 style="font-size:clamp(24px, 3.6vw, 34px);">推薦幸運輪盤</h1>
+    <p class="lede" style="font-size:16px;">會員登入後，每筆推薦成交可累積一次抽獎機會；推薦滿 10 位成交即可達到 100% 中獎率，機率會隨推薦數即時調整。姓名與手機號碼僅存於本機瀏覽器展示用途，不會上傳或串接真實會員系統。</p>
+  </section>
+
+  <section class="wrap" style="padding-top:0;">
+    <div class="rl-shell reveal">
+
+      <div id="loginView" class="rl-card">
+        <div class="rl-topline"><div class="k">集 富 講 堂</div><h2>會員<span>推薦獎勵</span>輪盤</h2></div>
+        <div class="rl-subline">會員登入</div>
+        <label class="rl-label">姓名</label>
+        <input class="rl-input" id="name" placeholder="王小明" autocomplete="off">
+        <label class="rl-label">手機號碼</label>
+        <input class="rl-input" id="phone" placeholder="0912345678" inputmode="numeric" maxlength="10">
+        <button class="rl-btn" id="loginBtn">登入 · 進入推薦獎勵</button>
+        <div class="rl-hint">＊投標展示版，資料僅存本機瀏覽器，不上傳。<br>正式版將串接 OTP 簡訊驗證與會員資料庫。</div>
       </div>
-      <button class="btn ghost" id="resetBtn" style="margin-top:10px">重置活動</button>
+
+      <div id="gameView" class="rl-card hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-size:14px;color:var(--ink-secondary)">Hi，<b id="uName" style="color:var(--ink-primary)"></b> 會員</div>
+          <button class="rl-btn ghost" style="width:auto;margin:0;padding:8px 12px;font-size:12px" id="logoutBtn">登出</button>
+        </div>
+        <div class="rl-stage">
+          <div class="rl-pointer"></div>
+          <div class="rl-wheel" id="wheel"></div>
+          <div class="rl-hub">集富<br>抽獎</div>
+        </div>
+        <div class="rl-stats">
+          <div class="rl-stat"><b id="dealCount">0</b><span>推薦成交</span></div>
+          <div class="rl-stat"><b id="spinLeft">0</b><span>可抽次數</span></div>
+          <div class="rl-stat"><b id="winRate">0%</b><span>中獎機率</span></div>
+        </div>
+        <button class="rl-btn" id="spinBtn" disabled>抽獎（需要推薦成交）</button>
+        <div class="rl-list" id="slotList"></div>
+        <div class="rl-panel">
+          <h3>▶ 業主（管理端）模擬面板</h3>
+          <p>模擬「一位會員推薦朋友報名課程並成交」→ 系統把朋友代號填入一格、並 +1 抽獎次數。推薦滿 10 位成交 = 中獎率 100%。</p>
+          <div class="rl-row">
+            <input class="rl-input" id="friend" placeholder="被推薦人姓名 / 代號" autocomplete="off">
+            <button class="rl-btn" id="addBtn">＋推薦成交</button>
+          </div>
+          <button class="rl-btn ghost" id="resetBtn" style="margin-top:10px">重置活動</button>
+        </div>
+      </div>
+
     </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="footer-disclaimer">
+    <p>此頁為前端技術與 UI 練習作品，非正式上線產品，姓名／手機資料僅供本機示範，不會上傳或串接真實會員系統。</p>
   </div>
-</div>
+  <div class="footer-meta">Zorya · FDE &amp; Data Scientist 作品集</div>
+</footer>
+
 <div class="toast" id="toast"></div>
+
+<script src="../../assets/portfolio-theme.js"></script>
 <script>
 const COLORS=['#c9a227','#2e6f6a','#7a5cbf','#b8642f','#3a7bd5','#c04b7a','#4aa564','#9a7b1f','#5a6b8c','#8a4b2f'];
 const N=10;

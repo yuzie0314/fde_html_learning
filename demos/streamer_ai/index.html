@@ -2,18 +2,31 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Dr.Chen 官方 AI 小助手｜Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>直播主官方 AI 小助手 — Zorya 練習 Demo</title>
+<meta name="description" content="模擬直播主官方帳號的 AI 聊天助手介面：意圖比對回覆、語音朗讀開關與快速選項按鈕的前端技術練習 Demo。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/portfolio-theme.css">
 <style>
-  :root{--bg:#080b16;--panel:#0e1430;--card:#121830;--ink:#eaf0ff;--muted:#8891b4;
-    --cyan:#25e0e6;--mag:#b14dff;--line:#222b4d;--line2:#232c50;--ok:#2fe0a6;}
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-    background:#080b16;color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;
-    background-image:radial-gradient(600px 400px at 15% 0%,rgba(37,224,230,.14),transparent 60%),radial-gradient(600px 400px at 100% 100%,rgba(177,77,255,.16),transparent 55%);}
-  .phone{width:100%;max-width:410px;height:min(780px,94vh);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;
+  /* ---- page-scoped: bespoke neon chat-widget aesthetic (kept distinctive on purpose) ---- */
+  :root{--cyan:#25e0e6;--mag:#b14dff;--line2:#232c50;}
+
+  .demo-stage{
+    display:flex;align-items:center;justify-content:center;
+    padding: var(--space-5) var(--space-3) var(--space-7);
+    min-height: 72vh;
+    background-image:
+      radial-gradient(600px 400px at 15% 0%, rgba(37,224,230,.14), transparent 60%),
+      radial-gradient(600px 400px at 100% 100%, rgba(177,77,255,.16), transparent 55%);
+  }
+  .phone{width:100%;max-width:410px;height:min(780px,86vh);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;
     background:linear-gradient(180deg,#0d1226,#0a0e1c);
     border:1px solid #23305c;box-shadow:0 0 0 1px rgba(37,224,230,.08),0 30px 80px rgba(0,0,0,.6),inset 0 0 60px rgba(37,224,230,.03)}
+  .phone *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   .top{padding:16px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line2);
     background:linear-gradient(90deg,rgba(37,224,230,.10),rgba(177,77,255,.10))}
   .av{width:44px;height:44px;border-radius:13px;flex:none;position:relative;
@@ -21,50 +34,72 @@
     font-weight:900;color:#06121a;font-size:15px;box-shadow:0 0 18px rgba(37,224,230,.5)}
   .av .live{position:absolute;right:-4px;top:-6px;background:#ff3b5c;color:#fff;font-size:8px;font-weight:800;
     padding:2px 5px;border-radius:6px;letter-spacing:.5px;box-shadow:0 0 10px rgba(255,59,92,.7)}
-  .nm{font-weight:800;font-size:16px;letter-spacing:.3px}
+  .nm{font-weight:800;font-size:16px;letter-spacing:.3px;color:#eaf0ff}
   .st{font-size:11px;color:var(--cyan)}
   .voice{margin-left:auto;background:rgba(37,224,230,.12);border:1px solid rgba(37,224,230,.4);color:var(--cyan);
-    font-size:12px;font-weight:700;padding:7px 11px;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:5px}
-  .voice.off{opacity:.5;border-color:var(--line2);color:var(--muted)}
+    font-size:12px;font-weight:700;padding:7px 11px;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:5px;
+    flex:none;white-space:nowrap}
+  .voice.off{opacity:.5;border-color:var(--line2);color:#8891b4}
   .chat{flex:1;overflow-y:auto;padding:18px 15px;display:flex;flex-direction:column;gap:11px}
   .chat::-webkit-scrollbar{width:0}
-  .msg{max-width:82%;padding:12px 15px;font-size:14.5px;line-height:1.6;white-space:pre-wrap;border-radius:15px;animation:in .25s ease}
-  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .msg{max-width:82%;padding:12px 15px;font-size:14.5px;line-height:1.6;white-space:pre-wrap;border-radius:15px;animation:msgIn .25s ease;color:#eaf0ff}
+  @keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .bot{align-self:flex-start;background:rgba(28,36,66,.85);border:1px solid var(--line2);border-bottom-left-radius:4px}
   .me{align-self:flex-end;color:#06121a;font-weight:600;border-bottom-right-radius:4px;
     background:linear-gradient(135deg,var(--cyan),#54ecf0);box-shadow:0 4px 18px rgba(37,224,230,.35)}
-  .time{font-size:10px;color:var(--muted);margin:1px 4px}
+  .time{font-size:10px;color:#8891b4;margin:1px 4px}
   .me+.time{align-self:flex-end}
   .chips{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:94%}
   .chip{background:rgba(177,77,255,.10);border:1px solid rgba(177,77,255,.45);color:#d9b6ff;font-size:12.5px;font-weight:600;
     padding:8px 13px;border-radius:20px;cursor:pointer;transition:.12s}
   .chip:active{transform:scale(.96);background:rgba(177,77,255,.2)}
   .typing{align-self:flex-start;background:rgba(28,36,66,.85);border:1px solid var(--line2);padding:13px 16px;border-radius:15px;display:flex;gap:4px}
-  .typing i{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:b 1s infinite}
+  .typing i{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:blink 1s infinite}
   .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
-  @keyframes b{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+  @keyframes blink{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
   .foot{border-top:1px solid var(--line2);padding:11px 12px;display:flex;gap:8px;align-items:center;background:rgba(8,11,22,.6)}
-  .foot input{flex:1;border:1px solid var(--line2);border-radius:22px;padding:12px 15px;font-size:15px;outline:none;background:#0b1024;color:var(--ink)}
+  .foot input{flex:1;border:1px solid var(--line2);border-radius:22px;padding:12px 15px;font-size:15px;outline:none;background:#0b1024;color:#eaf0ff}
   .foot input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(37,224,230,.12)}
   .send{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;flex:none;color:#06121a;font-size:16px;
     background:linear-gradient(135deg,var(--cyan),var(--mag));box-shadow:0 0 16px rgba(37,224,230,.45)}
-  .badge{font-size:9px;text-align:center;color:var(--muted);padding:4px}
+  .badge{font-size:9px;text-align:center;color:#8891b4;padding:4px}
 </style>
 </head>
 <body>
-<div class="phone">
-  <div class="top">
-    <div class="av">DC<span class="live">LIVE</span></div>
-    <div><div class="nm">Dr.Chen · AI 小助手</div><div class="st">◉ 24H 線上　·　實況・社群・合作</div></div>
-    <button class="voice" id="voice">🔊 語音</button>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="../../index.html">Zorya<span>FDE &amp; Data Scientist</span></a>
+    <div style="display:flex; align-items:center;">
+      <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+    </div>
   </div>
-  <div class="chat" id="chat"></div>
-  <div class="foot">
-    <input id="inp" placeholder="輸入問題，或點下方按鈕…" autocomplete="off">
-    <button class="send" id="send">➤</button>
+</header>
+
+<main>
+  <div class="wrap reveal" style="padding-top: var(--space-4);">
+    <div class="eyebrow">練習 Demo · 對話介面</div>
+    <p style="color:var(--ink-secondary); font-size:15px; max-width:60ch; margin-top:8px;">模擬直播主官方帳號的 AI 聊天助手：意圖比對回覆、語音朗讀開關與快速選項按鈕，功能與內容維持原樣，僅統一頁面外觀以符合作品集風格。</p>
   </div>
-  <div class="badge">AI 小助手 Demo · 示範用（可依 Dr.Chen 需求持續調整）</div>
-</div>
+
+  <div class="demo-stage">
+    <div class="phone">
+      <div class="top">
+        <div class="av">DC<span class="live">LIVE</span></div>
+        <div><div class="nm">Dr.Chen · AI 小助手</div><div class="st">◉ 24H 線上　·　實況・社群・合作</div></div>
+        <button class="voice" id="voice">🔊 語音</button>
+      </div>
+      <div class="chat" id="chat"></div>
+      <div class="foot">
+        <input id="inp" placeholder="輸入問題，或點下方按鈕…" autocomplete="off">
+        <button class="send" id="send">➤</button>
+      </div>
+      <div class="badge">AI 小助手 Demo · 示範用（可依 Dr.Chen 需求持續調整）</div>
+    </div>
+  </div>
+</main>
+
+<script src="../../assets/portfolio-theme.js"></script>
 <script>
 const INTENTS=[
  {k:["直播","幾點","開播","時間","什麼時候","schedule","實況"],

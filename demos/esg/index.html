@@ -3,91 +3,155 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 多語種移工 DEI 認證平台｜Demo</title>
+<title>AI 多語種移工 DEI 認證平台 — Zorya 練習 Demo</title>
+<meta name="description" content="五語微課程 → 線上測驗 → QR 電子證書 → 企業戰情室，含語音朗讀的前端技術練習 Demo。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/portfolio-theme.css">
 <style>
-  :root{--bg:#0d1424;--card:#151d31;--card2:#1d2740;--brand:#18b6a6;--brand2:#3ad6c4;
-    --accent:#f5b53d;--ink:#eaf0f7;--muted:#8a97ad;--line:#26324c;--ok:#2fce8b;--bad:#ff5d6c;}
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-    background:radial-gradient(1000px 600px at 50% -10%,#16233f,var(--bg) 60%);color:var(--ink);min-height:100vh}
-  .top{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);
-    position:sticky;top:0;background:rgba(13,20,36,.9);backdrop-filter:blur(8px);z-index:10}
-  .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand2));
-    display:flex;align-items:center;justify-content:center;font-weight:900;color:#04201c}
-  .top h1{font-size:15px;margin:0;font-weight:800}
-  .top .sub{font-size:11px;color:var(--muted)}
-  .nav{margin-left:auto;display:flex;gap:8px}
-  .nav button{background:transparent;border:1px solid var(--line);color:var(--muted);padding:7px 12px;
-    border-radius:9px;font-size:12px;cursor:pointer;font-weight:600}
-  .nav button.on{background:var(--card2);color:var(--ink);border-color:var(--brand)}
-  .wrap{max-width:600px;margin:0 auto;padding:24px 18px 60px}
-  .card{background:linear-gradient(180deg,var(--card),#121a2c);border:1px solid var(--line);
-    border-radius:18px;padding:22px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
-  .badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#04201c;
-    background:linear-gradient(135deg,var(--brand2),var(--brand));padding:5px 10px;border-radius:20px}
-  h2{font-size:20px;margin:14px 0 6px}
-  .muted{color:var(--muted);font-size:13px;line-height:1.6}
-  .langgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
-  .lang{display:flex;align-items:center;gap:12px;background:var(--card2);border:2px solid var(--line);
-    border-radius:14px;padding:15px;cursor:pointer;transition:.12s}
-  .lang:hover{border-color:var(--brand)}
-  .lang .fl{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff}
-  .lang b{font-size:15px}.lang span{display:block;font-size:11px;color:var(--muted)}
-  .scene{background:var(--card2);border-left:3px solid var(--brand);border-radius:10px;padding:14px 16px;
-    margin:16px 0;font-size:15px;line-height:1.7}
-  .pts{list-style:none;padding:0;margin:8px 0}
-  .pts li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;font-size:14px}
-  .pts li:before{content:"✓";color:var(--ok);font-weight:900;flex:none}
-  .btn{width:100%;padding:15px;border:none;border-radius:13px;font-size:16px;font-weight:800;cursor:pointer;
-    color:#04201c;background:linear-gradient(135deg,var(--brand2),var(--brand));margin-top:16px;box-shadow:0 8px 20px rgba(24,182,166,.3)}
-  .btn:active{transform:translateY(2px)}
-  .btn.sec{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
-  .btn.play{width:auto;padding:9px 15px;font-size:13px;margin:0}
-  .q{margin:18px 0}
-  .q .qt{font-weight:700;font-size:15px;margin-bottom:10px}
-  .opt{display:block;background:var(--card2);border:2px solid var(--line);border-radius:12px;
-    padding:13px 15px;margin-bottom:9px;cursor:pointer;font-size:14px}
-  .opt.sel{border-color:var(--brand);background:rgba(24,182,166,.12)}
-  .opt.correct{border-color:var(--ok);background:rgba(47,206,139,.15)}
-  .opt.wrong{border-color:var(--bad);background:rgba(255,93,108,.12)}
-  .row{display:flex;gap:10px}
-  input.name{width:100%;padding:13px 15px;border-radius:12px;border:1px solid var(--line);background:#0f1626;color:var(--ink);font-size:15px;margin-top:8px}
-  /* certificate */
-  .cert{background:linear-gradient(160deg,#fbf7ec,#fff);color:#2a2416;border-radius:16px;padding:26px 22px;
-    border:2px solid var(--accent);position:relative;overflow:hidden;text-align:center}
-  .cert:before{content:"";position:absolute;inset:8px;border:1.5px solid #e6cf8a;border-radius:11px;pointer-events:none}
-  .cert .k{font-size:12px;color:#9a8a5a;letter-spacing:3px}
-  .cert h3{font-size:22px;margin:8px 0 2px;color:#1a1710}
-  .cert .nm{font-size:26px;font-weight:900;margin:14px 0 4px;color:#7a5c12}
-  .cert .cs{font-size:14px;color:#5a5240}
-  .cert .meta{display:flex;justify-content:space-between;align-items:flex-end;margin-top:20px;font-size:11px;color:#7a725a;text-align:left}
-  .qr{width:88px;height:88px;background:#fff;border:1px solid #ddd;padding:5px;border-radius:8px}
-  .dash{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
-  .kpi{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
-  .kpi b{display:block;font-size:26px;color:var(--brand2)}
-  .kpi span{font-size:11px;color:var(--muted)}
-  .bars{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:6px}
-  .bar{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:13px}
-  .bar .lb{width:96px;color:var(--muted)}
-  .bar .tr{flex:1;height:12px;background:#0f1626;border-radius:6px;overflow:hidden}
-  .bar .fi{height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2))}
-  .hide{display:none}
-  .steps{display:flex;gap:6px;margin:14px 0 2px}
-  .steps i{flex:1;height:4px;border-radius:3px;background:var(--line)}
-  .steps i.on{background:var(--brand)}
+  /* ---------- page-scoped bespoke UI (course / quiz / certificate / dashboard) ----------
+     Colors, radii and shadows below are re-pointed to the shared design-system tokens
+     defined in assets/portfolio-theme.css; only the interactive structure is bespoke. */
+  :root{
+    --demo-bad: #d64545;
+    --demo-bad-soft: rgba(214,69,69,.12);
+  }
+
+  .demo-shell{ max-width: 600px; margin: 0 auto; }
+  .demo-nav{ display:flex; gap:8px; margin-bottom: var(--space-3); }
+  .demo-nav-btn{
+    background:transparent; border:1px solid var(--border-strong); color:var(--ink-muted);
+    padding:7px 14px; border-radius:var(--radius-sm); font-size:12px; cursor:pointer; font-weight:600;
+    font-family:var(--font-sans);
+  }
+  .demo-nav-btn.on{ background:var(--accent-soft); color:var(--accent-ink); border-color:var(--accent); }
+
+  .card{
+    background:var(--surface-card); border:1px solid var(--gridline); border-radius:var(--radius-md);
+    padding:22px; box-shadow:var(--shadow-card);
+  }
+  .card h2{ font-size:20px; margin:14px 0 6px; }
+  .badge{
+    display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:#fff;
+    background:var(--accent); padding:5px 10px; border-radius:999px;
+  }
+  .muted{ color:var(--ink-muted); font-size:13px; line-height:1.6; }
+
+  .langgrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+  .lang{
+    display:flex; align-items:center; gap:12px; background:var(--surface-raised);
+    border:2px solid var(--gridline); border-radius:var(--radius-md); padding:15px; cursor:pointer; transition:.12s;
+  }
+  .lang:hover{ border-color:var(--accent); }
+  .lang .fl{ width:34px; height:34px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; }
+  .lang b{ font-size:15px; }
+  .lang span{ display:block; font-size:11px; color:var(--ink-muted); }
+
+  .scene{
+    background:var(--surface-raised); border-left:3px solid var(--accent); border-radius:var(--radius-sm);
+    padding:14px 16px; margin:16px 0; font-size:15px; line-height:1.7;
+  }
+  .pts{ list-style:none; padding:0; margin:8px 0; }
+  .pts li{ display:flex; gap:10px; align-items:flex-start; padding:8px 0; font-size:14px; }
+  .pts li:before{ content:"✓"; color:var(--good); font-weight:900; flex:none; }
+
+  .btn{
+    width:100%; padding:15px; border:none; border-radius:var(--radius-md); font-size:16px; font-weight:800;
+    cursor:pointer; color:#fff; background:var(--accent); margin-top:16px; box-shadow:var(--shadow-card);
+    font-family:var(--font-sans);
+  }
+  .btn:active{ transform:translateY(2px); }
+  .btn.sec{ background:transparent; color:var(--ink-primary); border:1px solid var(--border-strong); box-shadow:none; }
+  .btn.play{ width:auto; padding:9px 15px; font-size:13px; margin:0; }
+
+  .q{ margin:18px 0; }
+  .q .qt{ font-weight:700; font-size:15px; margin-bottom:10px; }
+  .opt{
+    display:block; background:var(--surface-raised); border:2px solid var(--gridline); border-radius:var(--radius-md);
+    padding:13px 15px; margin-bottom:9px; cursor:pointer; font-size:14px;
+  }
+  .opt.sel{ border-color:var(--accent); background:var(--accent-soft); }
+  .opt.correct{ border-color:var(--good); background:var(--good-soft); }
+  .opt.wrong{ border-color:var(--demo-bad); background:var(--demo-bad-soft); }
+
+  input.name{
+    width:100%; padding:13px 15px; border-radius:var(--radius-md); border:1px solid var(--gridline);
+    background:var(--surface-page); color:var(--ink-primary); font-size:15px; margin-top:8px; font-family:var(--font-sans);
+  }
+
+  /* certificate — intentionally kept as a fixed "paper" visual independent of site theme */
+  .cert{
+    background:linear-gradient(160deg,#fbf7ec,#fff); color:#2a2416; border-radius:var(--radius-md);
+    padding:26px 22px; border:2px solid var(--warn); position:relative; overflow:hidden; text-align:center;
+    box-shadow:var(--shadow-card);
+  }
+  .cert:before{ content:""; position:absolute; inset:8px; border:1.5px solid #e6cf8a; border-radius:calc(var(--radius-md) - 2px); pointer-events:none; }
+  .cert .k{ font-size:12px; color:#9a8a5a; letter-spacing:3px; }
+  .cert h3{ font-size:22px; margin:8px 0 2px; color:#1a1710; font-family:var(--font-serif); }
+  .cert .nm{ font-size:26px; font-weight:900; margin:14px 0 4px; color:#7a5c12; }
+  .cert .cs{ font-size:14px; color:#5a5240; }
+  .cert .meta{ display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px; font-size:11px; color:#7a725a; text-align:left; }
+  .qr{ width:88px; height:88px; background:#fff; border:1px solid #ddd; padding:5px; border-radius:var(--radius-sm); }
+
+  .dash{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0; }
+  .kpi{ background:var(--surface-raised); border:1px solid var(--gridline); border-radius:var(--radius-md); padding:14px; text-align:center; }
+  .kpi b{ display:block; font-size:26px; color:var(--accent-ink); font-family:var(--font-serif); }
+  .kpi span{ font-size:11px; color:var(--ink-muted); }
+  .bars{ background:var(--surface-raised); border:1px solid var(--gridline); border-radius:var(--radius-md); padding:16px; margin-top:6px; }
+  .bar{ display:flex; align-items:center; gap:10px; margin:9px 0; font-size:13px; }
+  .bar .lb{ width:96px; color:var(--ink-muted); }
+  .bar .tr{ flex:1; height:12px; background:var(--surface-page); border-radius:6px; overflow:hidden; }
+  .bar .fi{ height:100%; background:var(--accent); }
+
+  .hide{ display:none; }
+  .steps{ display:flex; gap:6px; margin:14px 0 2px; }
+  .steps i{ flex:1; height:4px; border-radius:3px; background:var(--gridline); }
+  .steps i.on{ background:var(--accent); }
 </style>
 </head>
 <body>
-<div class="top">
-  <div class="logo">ESG</div>
-  <div><h1>AI 多語種移工 DEI 合規認證平台</h1><div class="sub">AI-Bridge · AI-Edu · 企業戰情室　Demo</div></div>
-  <div class="nav">
-    <button id="nvLearn" class="on" onclick="goLearn()">培訓認證</button>
-    <button id="nvDash" onclick="goDash()">企業戰情室</button>
-  </div>
-</div>
-<div class="wrap" id="app"></div>
 
+<div class="disclaimer-strip">此頁面為前端技術練習 Demo，非正式上線產品；語音朗讀使用瀏覽器內建 Web Speech API，QR 為示範用視覺、非可掃描。</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="../../index.html">← Zorya<span>回作品集首頁</span></a>
+    <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div class="eyebrow">練習 DEMO · 多語系平台</div>
+    <h1>AI 多語種移工 DEI 合規認證平台</h1>
+    <p class="lede">五語微課程 → 線上測驗 → QR 電子證書 → 企業戰情室：AI 依學員語言自動生成教材與測驗，並即時彙整全體移工的合規進度。</p>
+    <p class="context-line">AI-Bridge（多語生成）· AI-Edu（教材與測驗）· 企業戰情室（彙整儀表板）</p>
+  </section>
+
+  <section class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">互動 DEMO</div>
+      <h2>立即體驗</h2>
+      <p>選擇語言開始微課程，完成測驗後即可產生電子證書；或切換至企業戰情室查看彙整儀表板。</p>
+    </div>
+
+    <div class="demo-shell reveal">
+      <div class="demo-nav">
+        <button id="nvLearn" class="demo-nav-btn on" onclick="goLearn()">培訓認證</button>
+        <button id="nvDash" class="demo-nav-btn" onclick="goDash()">企業戰情室</button>
+      </div>
+      <div id="app"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="footer-meta">Zorya · FDE &amp; Data Scientist 作品集 — 練習 Demo</div>
+</footer>
+
+<script src="../../assets/portfolio-theme.js"></script>
 <script>
 const I18N={
  zh:{name:"中文",en:"Chinese",col:"#d33",pick:"請選擇您的語言",picksub:"AI 依學員語言自動生成教材與測驗",
@@ -254,15 +318,15 @@ function renderDash(){
       <div class="kpi"><b>87%</b><span>認證通過率</span></div>
     </div>
     <div class="bars">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:8px">各語言完訓分佈</div>
+      <div style="font-size:13px;color:var(--ink-muted);margin-bottom:8px">各語言完訓分佈</div>
       ${[['印尼 Indonesia',88],['越南 Vietnam',76],['泰國 Thailand',54],['菲律賓 English',40],['中文 Chinese',22]]
         .map(([l,v])=>`<div class="bar"><span class="lb">${l}</span><div class="tr"><div class="fi" style="width:${v}%"></div></div><span>${v}</span></div>`).join('')}
     </div>
     <div class="bars" style="margin-top:12px">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:8px">最新發證紀錄</div>
-      <div class="bar"><span class="lb">DEI-2026-482913</span><span style="color:var(--muted)">Nguyen V. · 09:41 · 通過</span></div>
-      <div class="bar"><span class="lb">DEI-2026-482912</span><span style="color:var(--muted)">Sari D. · 09:37 · 通過</span></div>
-      <div class="bar"><span class="lb">DEI-2026-482911</span><span style="color:var(--muted)">Somchai P. · 09:30 · 通過</span></div>
+      <div style="font-size:13px;color:var(--ink-muted);margin-bottom:8px">最新發證紀錄</div>
+      <div class="bar"><span class="lb">DEI-2026-482913</span><span style="color:var(--ink-muted)">Nguyen V. · 09:41 · 通過</span></div>
+      <div class="bar"><span class="lb">DEI-2026-482912</span><span style="color:var(--ink-muted)">Sari D. · 09:37 · 通過</span></div>
+      <div class="bar"><span class="lb">DEI-2026-482911</span><span style="color:var(--ink-muted)">Somchai P. · 09:30 · 通過</span></div>
     </div>
     <button class="btn sec" onclick="goLearn()">← 回到培訓認證</button></div>`;
 }

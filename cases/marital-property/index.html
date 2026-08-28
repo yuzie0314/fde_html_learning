@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>婚前婚後財產交易明細分類與追溯 — 案例研究</title>
+<meta name="description" content="十年銀行交易、基金申購贖回、配息三來源資料整併與語意分類，產出可呈庭參考報表與方法說明書。由 Zorya（FDE & Data Scientist）製作之資料分析方法案例，非法律意見。">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Zorya">
+
+<!-- 部署後請將以下 og:url／canonical 換成實際網域 -->
+<!-- <link rel="canonical" href="https://your-domain.example/cases/marital-property"> -->
+<meta property="og:type" content="article">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:site_name" content="Zorya — FDE & Data Scientist">
+<meta property="og:title" content="婚前婚後財產交易明細分類與追溯｜案例研究">
+<meta property="og:description" content="兩位律師都說做不到的事：十年銀行、基金、配息三來源資料整併與語意分類，產出可呈庭報表與方法說明書。">
+<meta property="og:image" content="assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="婚前婚後財產交易明細分類與追溯 — 案例研究封面，標示婚後財產淨額 NT$2,778,968">
+<!-- <meta property="og:url" content="https://your-domain.example/cases/marital-property"> -->
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="婚前婚後財產交易明細分類與追溯｜案例研究">
+<meta name="twitter:description" content="兩位律師都說做不到的事：十年三來源資料整併與語意分類，產出可呈庭報表與方法說明書。">
+<meta name="twitter:image" content="assets/og-image.png">
+
+<meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "name": "婚前婚後財產交易明細分類與追溯",
+  "headline": "婚前婚後財產交易明細分類與追溯 — 案例研究",
+  "description": "十年銀行交易、基金申購贖回、配息三來源資料整併與語意分類，產出可呈庭參考報表與方法說明書。資料分析方法案例，非法律意見。",
+  "inLanguage": "zh-Hant",
+  "genre": "案例研究",
+  "about": "婚前婚後財產交易明細分類與追溯之資料分析方法",
+  "disclaimer": "本案例情境改編自公開刊登之外包需求，所有資料為合成生成，不對應任何真實個人或案件。所有產出均為資料分析方法說明，不構成法律意見。",
+  "author": {
+    "@type": "Person",
+    "name": "Zorya",
+    "jobTitle": "FDE & Data Scientist",
+    "email": "mailto:uzang199431465@gmail.com"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --surface-page:   #f9f9f7;
+    --surface-card:   #fcfcfb;
+    --surface-raised: #ffffff;
+    --ink-primary:    #0b0b0b;
+    --ink-secondary:  #52514e;
+    --ink-muted:      #898781;
+    --gridline:       #e1e0d9;
+    --border:         rgba(11,11,11,0.10);
+    --border-strong:  rgba(11,11,11,0.16);
+    --accent:         #2a78d6;
+    --accent-ink:     #184f95;
+    --accent-soft:    rgba(42,120,214,0.10);
+    --good:           #0ca30c;
+    --good-soft:      rgba(12,163,12,0.12);
+    --warn:           #eda100;
+    --warn-soft:      rgba(237,161,0,0.14);
+    --gray-status:    #898781;
+    --gray-status-soft: rgba(137,135,129,0.14);
+    --shadow-card:    0 1px 2px rgba(11,11,11,0.04), 0 4px 16px rgba(11,11,11,0.06);
+
+    --font-serif: "Noto Serif TC", "Noto Serif", serif;
+    --font-sans: "Noto Sans TC", "Noto Sans", -apple-system, "Segoe UI", sans-serif;
+
+    --space-1: 8px;
+    --space-2: 16px;
+    --space-3: 24px;
+    --space-4: 32px;
+    --space-5: 48px;
+    --space-6: 64px;
+    --space-7: 96px;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --container: 1080px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-page:   #0d0d0d;
+      --surface-card:   #1a1a19;
+      --surface-raised: #201f1e;
+      --ink-primary:    #ffffff;
+      --ink-secondary:  #c3c2b7;
+      --ink-muted:      #898781;
+      --gridline:       #2c2c2a;
+      --border:         rgba(255,255,255,0.10);
+      --border-strong:  rgba(255,255,255,0.18);
+      --accent:         #3987e5;
+      --accent-ink:     #9ec5f4;
+      --accent-soft:    rgba(57,135,229,0.16);
+      --good:           #0ca30c;
+      --good-soft:      rgba(12,163,12,0.18);
+      --warn:           #c98500;
+      --warn-soft:      rgba(201,133,0,0.20);
+      --gray-status:    #c3c2b7;
+      --gray-status-soft: rgba(195,194,183,0.14);
+      --shadow-card:    0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-page:   #0d0d0d;
+    --surface-card:   #1a1a19;
+    --surface-raised: #201f1e;
+    --ink-primary:    #ffffff;
+    --ink-secondary:  #c3c2b7;
+    --ink-muted:      #898781;
+    --gridline:       #2c2c2a;
+    --border:         rgba(255,255,255,0.10);
+    --border-strong:  rgba(255,255,255,0.18);
+    --accent:         #3987e5;
+    --accent-ink:     #9ec5f4;
+    --accent-soft:    rgba(57,135,229,0.16);
+    --good:           #0ca30c;
+    --good-soft:      rgba(12,163,12,0.18);
+    --warn:           #c98500;
+    --warn-soft:      rgba(201,133,0,0.20);
+    --gray-status:    #c3c2b7;
+    --gray-status-soft: rgba(195,194,183,0.14);
+    --shadow-card:    0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--surface-page);
+    color: var(--ink-primary);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { font-family: var(--font-serif); font-weight: 600; margin: 0; letter-spacing: 0.01em; }
+  p { margin: 0; text-wrap: pretty; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .wrap { max-width: var(--container); margin: 0 auto; padding: 0 var(--space-3); }
+
+  /* ---------- disclaimer strip ---------- */
+  .disclaimer-strip {
+    background: var(--surface-raised);
+    border-bottom: 1px solid var(--gridline);
+    font-size: 13px;
+    color: var(--ink-muted);
+    padding: 8px var(--space-3);
+    text-align: center;
+  }
+
+  /* ---------- header ---------- */
+  header.site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--surface-page) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--gridline);
+  }
+  .header-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px var(--space-3);
+    max-width: var(--container); margin: 0 auto;
+  }
+  .brand { font-family: var(--font-serif); font-weight: 600; font-size: 16px; letter-spacing: 0.02em; }
+  .brand span { color: var(--ink-muted); font-family: var(--font-sans); font-weight: 400; font-size: 13px; margin-left: 8px; }
+  nav.main-nav { display: flex; gap: var(--space-3); align-items: center; }
+  nav.main-nav a {
+    color: var(--ink-secondary); text-decoration: none; font-size: 14px; font-weight: 500;
+    padding: 6px 2px; border-bottom: 2px solid transparent;
+  }
+  nav.main-nav a:hover { color: var(--ink-primary); border-bottom-color: var(--accent); }
+  .theme-toggle {
+    border: 1px solid var(--border-strong); background: var(--surface-card); color: var(--ink-primary);
+    border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+    margin-left: var(--space-2);
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer; }
+  @media (max-width: 780px) {
+    nav.main-nav.links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-raised); border-bottom: 1px solid var(--gridline); flex-direction: column; align-items: flex-start; padding: var(--space-2) var(--space-3); gap: var(--space-2); }
+    nav.main-nav.links.open { display: flex; }
+    .nav-toggle { display: block; }
+  }
+
+  /* ---------- reveal ---------- */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+  /* ---------- hero ---------- */
+  .hero { padding: var(--space-7) 0 var(--space-6); }
+  .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent-ink); text-transform: uppercase; margin-bottom: var(--space-2); }
+  .hero h1 { font-size: clamp(28px, 4.4vw, 44px); line-height: 1.28; max-width: 18ch; }
+  .hero .lede { margin-top: var(--space-3); font-size: 18px; color: var(--ink-secondary); max-width: 60ch; }
+  .hero .context-line { margin-top: var(--space-3); font-size: 15px; color: var(--ink-muted); max-width: 62ch; border-left: 2px solid var(--border-strong); padding-left: var(--space-2); }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-top: var(--space-5); }
+  @media (max-width: 700px) { .stat-row { grid-template-columns: 1fr; } }
+  .stat-tile {
+    background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md);
+    padding: var(--space-3); box-shadow: var(--shadow-card);
+  }
+  .stat-tile .label { font-size: 13px; color: var(--ink-muted); margin-bottom: 6px; }
+  .stat-tile .value { font-size: 26px; font-weight: 700; font-family: var(--font-serif); }
+  .stat-tile.headline .value { color: var(--accent-ink); }
+  .stat-tile .sub { font-size: 12px; color: var(--ink-muted); margin-top: 4px; }
+
+  /* ---------- section shell ---------- */
+  section { padding: var(--space-7) 0; border-top: 1px solid var(--gridline); }
+  section:first-of-type { border-top: none; }
+  .section-head { max-width: 68ch; margin-bottom: var(--space-5); }
+  .section-kicker { font-size: 13px; font-weight: 600; color: var(--accent-ink); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-1); }
+  .section-head h2 { font-size: clamp(22px, 3vw, 30px); }
+  .section-head p { margin-top: var(--space-2); color: var(--ink-secondary); font-size: 16px; }
+
+  /* ---------- background info ---------- */
+  .bg-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: var(--space-5); align-items: start; }
+  @media (max-width: 820px) { .bg-grid { grid-template-columns: 1fr; } }
+  dl.info-list { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px var(--space-3); }
+  dl.info-list dt { color: var(--ink-muted); font-size: 14px; white-space: nowrap; padding-top: 2px; }
+  dl.info-list dd { margin: 0; font-size: 15px; }
+
+  .scope-card { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-3); }
+  .scope-card h3 { font-size: 15px; font-family: var(--font-sans); font-weight: 700; margin-bottom: var(--space-2); }
+  .scope-card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .scope-card li { display: flex; gap: 10px; font-size: 14.5px; color: var(--ink-secondary); }
+  .glyph { flex-shrink: 0; width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 2px; }
+  .glyph.yes { background: var(--good-soft); color: var(--good); }
+  .glyph.no { background: var(--gray-status-soft); color: var(--ink-muted); }
+  .scope-card + .scope-card { margin-top: var(--space-2); }
+
+  /* ---------- source cards ---------- */
+  .source-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+  @media (max-width: 900px) { .source-grid { grid-template-columns: 1fr; } }
+  .source-card { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-3); }
+  .source-card .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--accent-ink); background: var(--accent-soft); border-radius: 999px; padding: 3px 10px; margin-bottom: var(--space-2); }
+  .source-card h3 { font-family: var(--font-sans); font-size: 16px; margin-bottom: 6px; }
+  .source-card .desc { font-size: 14px; color: var(--ink-secondary); margin-bottom: var(--space-2); }
+  .source-card .issue { font-size: 13px; color: var(--ink-muted); border-top: 1px dashed var(--gridline); padding-top: 10px; }
+
+  .obstacle-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: var(--space-3); }
+  .obstacle-chip { font-size: 13px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--border-strong); color: var(--ink-secondary); background: var(--surface-raised); }
+
+  /* ---------- pipeline diagram ---------- */
+  .pipeline { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; }
+  .pipe-node {
+    flex: 1 1 160px; background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md);
+    padding: var(--space-2) 14px; font-size: 13.5px; color: var(--ink-secondary); position: relative; min-width: 150px;
+  }
+  .pipe-node strong { display: block; font-size: 13.5px; color: var(--ink-primary); font-weight: 700; margin-bottom: 4px; }
+  .pipe-arrow { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; padding: 0 8px; color: var(--ink-muted); font-size: 18px; }
+  @media (max-width: 900px) {
+    .pipeline { flex-direction: column; }
+    .pipe-arrow { transform: rotate(90deg); padding: 6px 0; align-self: center; }
+  }
+  .fork-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); margin-top: var(--space-2); }
+  @media (max-width: 900px) { .fork-row { grid-template-columns: repeat(2, 1fr); } }
+  .fork-node { background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 12px 14px; font-size: 13px; }
+  .fork-node strong { display: block; font-size: 13px; margin-bottom: 3px; }
+  .fork-node.out-yes { border-left: 3px solid var(--accent); }
+  .fork-node.out-no { border-left: 3px solid var(--gray-status); }
+
+  /* ---------- charts ---------- */
+  .chart-block { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-4); box-shadow: var(--shadow-card); }
+  .chart-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .chart-caption { font-size: 13px; color: var(--ink-muted); margin-bottom: var(--space-3); max-width: 70ch; }
+  .legend-row { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); font-size: 13px; color: var(--ink-secondary); }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  svg.chart-svg { width: 100%; height: auto; overflow: visible; font-family: var(--font-sans); }
+  .bar-cat-label { fill: var(--ink-secondary); font-size: 12.5px; }
+  .bar-value-label { fill: var(--ink-primary); font-size: 12.5px; font-weight: 600; }
+  .bar-rect { cursor: pointer; transition: opacity 0.15s ease; }
+  .bar-rect:hover, .bar-rect:focus { opacity: 0.82; }
+  .axis-muted { stroke: var(--gridline); }
+
+  /* ---------- classification chart (HTML bars, not SVG, so labels stay legible at any width) ---------- */
+  .cbar-list { display: flex; flex-direction: column; gap: 12px; }
+  .cbar-row .cbar-label { font-size: 13.5px; color: var(--ink-secondary); margin-bottom: 6px; }
+  .cbar-track { display: flex; align-items: center; gap: 10px; }
+  .cbar-fill {
+    height: 30px; border-radius: 4px; flex: 0 0 auto; min-width: 3px;
+    cursor: pointer; transition: opacity 0.15s ease; position: relative;
+  }
+  .cbar-fill:hover, .cbar-fill:focus { opacity: 0.82; }
+  .cbar-rest { flex: 1 1 auto; height: 30px; border-radius: 4px; background: var(--gridline); opacity: 0.35; }
+  .cbar-value { font-size: 13px; font-weight: 600; color: var(--ink-primary); white-space: nowrap; flex: 0 0 auto; }
+  details.table-toggle { margin-top: var(--space-3); }
+  details.table-toggle summary { cursor: pointer; font-size: 13px; color: var(--accent-ink); font-weight: 600; }
+  table.data-table { width: 100%; border-collapse: collapse; margin-top: var(--space-2); font-size: 13.5px; }
+  table.data-table th, table.data-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--gridline); }
+  table.data-table th { color: var(--ink-muted); font-weight: 600; }
+  table.data-table td.amount { text-align: right; }
+
+  .chart-tooltip {
+    position: fixed; pointer-events: none; z-index: 200;
+    background: var(--ink-primary); color: var(--surface-page);
+    font-size: 12.5px; padding: 6px 10px; border-radius: var(--radius-sm);
+    opacity: 0; transform: translateY(4px); transition: opacity 0.12s ease, transform 0.12s ease;
+    max-width: 260px; line-height: 1.5;
+  }
+  .chart-tooltip.show { opacity: 1; transform: translateY(0); }
+  .chart-tooltip b { font-weight: 700; }
+
+  .charts-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); align-items: start; }
+  @media (max-width: 900px) { .charts-two-col { grid-template-columns: 1fr; } }
+
+  /* ---------- case cards ---------- */
+  .case-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
+  @media (max-width: 820px) { .case-grid { grid-template-columns: 1fr; } }
+  .case-card { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-3); border-top: 3px solid var(--gray-status); }
+  .case-card.type-dispute { border-top-color: var(--accent); }
+  .case-card.type-trap { border-top-color: var(--warn); }
+  .case-card .case-kicker { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); margin-bottom: 6px; }
+  .case-card h3 { font-family: var(--font-sans); font-size: 16px; margin-bottom: 10px; }
+  .case-card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px var(--space-2); font-size: 13.5px; }
+  .case-card dt { color: var(--ink-muted); white-space: nowrap; }
+  .case-card dd { margin: 0; }
+  .case-card .impact { margin-top: var(--space-2); padding-top: var(--space-2); border-top: 1px dashed var(--gridline); font-size: 13.5px; color: var(--ink-secondary); }
+  .amt { color: var(--accent-ink); font-weight: 700; }
+
+  /* ---------- legal premises ---------- */
+  table.premise-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.premise-table th, table.premise-table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--gridline); vertical-align: top; }
+  table.premise-table th { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-muted); font-weight: 600; }
+  table.premise-table td.code { font-weight: 700; color: var(--accent-ink); white-space: nowrap; }
+  .premise-note { margin-top: var(--space-2); font-size: 13px; color: var(--ink-muted); }
+
+  .callout {
+    background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+    padding: var(--space-3); font-size: 14px; color: var(--ink-secondary); margin-top: var(--space-4);
+  }
+  .callout b { color: var(--ink-primary); }
+
+  /* ---------- contact ---------- */
+  .contact-card {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+    background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md);
+    padding: var(--space-5); box-shadow: var(--shadow-card);
+  }
+  @media (max-width: 720px) { .contact-card { flex-direction: column; align-items: flex-start; } }
+  .contact-name { font-family: var(--font-serif); font-size: 22px; font-weight: 700; }
+  .contact-role { font-size: 14px; color: var(--accent-ink); font-weight: 600; margin-top: 2px; }
+  .contact-lede { margin-top: var(--space-2); font-size: 15px; color: var(--ink-secondary); max-width: 46ch; }
+  .contact-cta {
+    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: var(--accent); color: #ffffff; text-decoration: none; text-align: center;
+    padding: 16px 28px; border-radius: var(--radius-md); font-weight: 700; font-size: 15px;
+    transition: opacity 0.15s ease, transform 0.15s ease; white-space: nowrap;
+  }
+  .contact-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+  .contact-cta .contact-email { font-weight: 500; font-size: 12.5px; opacity: 0.85; }
+  @media (max-width: 720px) { .contact-cta { width: 100%; } }
+
+  /* ---------- footer ---------- */
+  footer { padding: var(--space-6) 0 var(--space-7); border-top: 1px solid var(--gridline); }
+  .footer-position { font-family: var(--font-serif); font-size: 20px; line-height: 1.6; max-width: 56ch; margin-bottom: var(--space-4); }
+  .footer-disclaimer { font-size: 13px; color: var(--ink-muted); max-width: 78ch; line-height: 1.8; }
+  .footer-disclaimer p + p { margin-top: 8px; }
+  .footer-meta { margin-top: var(--space-4); font-size: 12.5px; color: var(--ink-muted); border-top: 1px solid var(--gridline); padding-top: var(--space-2); }
+</style>
+</head>
+<body>
+
+<div class="disclaimer-strip">本案例情境改編自公開刊登之外包需求，所有資料為合成生成，不對應任何真實個人或案件。所有產出均為資料分析方法說明，不構成法律意見。</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">婚前婚後財產分類與追溯<span>案例研究</span></div>
+    <nav class="main-nav links" id="mainNav">
+      <a href="#background">案件背景</a>
+      <a href="#sources">資料挑戰</a>
+      <a href="#method">分類邏輯</a>
+      <a href="#results">分析結果</a>
+      <a href="#cases">爭點案例</a>
+      <a href="#legal">法律前提</a>
+      <a href="#scope">交付範疇</a>
+      <a href="#contact">聯絡</a>
+    </nav>
+    <div style="display:flex; align-items:center;">
+      <button class="nav-toggle" id="navToggle" aria-label="開啟選單" aria-expanded="false">☰</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div class="eyebrow">案例研究 · 法律／會計資料分析</div>
+    <h1>婚前婚後財產<br>交易明細分類與追溯</h1>
+    <p class="lede">被繼承人約十年間的銀行交易、基金申購贖回、配息與淨值三項資料來源整併，依事先揭露之計算假設區分婚前與婚後財產，產出可呈庭參考報表與方法說明書。</p>
+    <p class="context-line">委託人已諮詢兩位律師，均表示「無法」或「很難」單憑交易明細判斷資產歸屬——問題不在律師不夠專業，而是十年份的銀行摘要、基金代碼、配息紀錄從未被整併過。</p>
+
+    <div class="stat-row">
+      <div class="stat-tile reveal">
+        <div class="label">資料時間跨度</div>
+        <div class="value num">10 年</div>
+        <div class="sub">2014-04 ～ 2024-03，婚姻登記日落在期間中段</div>
+      </div>
+      <div class="stat-tile reveal">
+        <div class="label">三來源交易筆數</div>
+        <div class="value num">3,296 筆</div>
+        <div class="sub">銀行 2,136｜基金 200｜配息與淨值 960</div>
+      </div>
+      <div class="stat-tile headline reveal">
+        <div class="label">婚後財產淨額（基準情境）</div>
+        <div class="value num">NT$ 2,778,968</div>
+        <div class="sub">另附敏感度區間，見下方分析</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="background" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">案件背景</div>
+      <h2>兩位委任律師都做不到的事，不是能力問題</h2>
+      <p>父親過世，繼母主張夫妻剩餘財產分配。委託人需要的不是法律意見，而是一份能把十年交易明細轉成可信賴分類結果的資料分析。</p>
+    </div>
+
+    <div class="bg-grid">
+      <div class="reveal">
+        <dl class="info-list">
+          <dt>委託人</dt><dd>陳先生（子）、陳小姐（女）共同委任</dd>
+          <dt>案由</dt><dd>繼母主張夫妻剩餘財產分配，需釐清婚前 / 婚後財產歸屬</dd>
+          <dt>資料期間</dt><dd>被繼承人婚前至過世約 10 年間之銀行與基金交易紀錄</dd>
+          <dt>已嘗試</dt><dd>已諮詢兩位律師，均表示無法單憑交易明細判斷資產歸屬</dd>
+          <dt>最終決策者</dt><dd>法官（不出席會議）；委託人期待「一份法官看得懂、對造難以反駁的計算書」</dd>
+        </dl>
+      </div>
+      <div class="reveal">
+        <div class="scope-card">
+          <h3>委任範圍</h3>
+          <ul>
+            <li><span class="glyph yes">✓</span>資料整併與分類邏輯建立</li>
+            <li><span class="glyph yes">✓</span>信心等級標註（可直接舉證／可推論／無法判定）</li>
+            <li><span class="glyph yes">✓</span>可呈庭參考報表與方法說明書</li>
+          </ul>
+        </div>
+        <div class="scope-card">
+          <h3>不在委任範圍</h3>
+          <ul>
+            <li><span class="glyph no">✕</span>任何法律意見或法律歸屬結論</li>
+            <li><span class="glyph no">✕</span>訴訟文件（狀紙）撰擬</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sources" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">資料挑戰（W1）</div>
+      <h2>三個來源，沒有一組能直接對上</h2>
+      <p>這不是「資料不乾淨」的問題，而是三份資料從設計時就用不同的鍵、不同的粒度、不同的金額基礎在記錄同一件事。</p>
+    </div>
+
+    <div class="source-grid reveal">
+      <div class="source-card">
+        <span class="tag">來源 A</span>
+        <h3>銀行交易明細</h3>
+        <p class="desc">3 個帳戶、約 10 年、逐日交易，含摘要文字欄</p>
+        <p class="issue">摘要為銀行內部縮寫，非標準化；同一檔基金不同年度縮寫寫法不同；約 5 個月明細缺漏且無註記</p>
+      </div>
+      <div class="source-card">
+        <span class="tag">來源 B</span>
+        <h3>基金交易紀錄</h3>
+        <p class="desc">8 檔基金之申購／贖回紀錄，含金額、單位數、淨值</p>
+        <p class="issue">與 A 表金額有手續費差額，無法直接勾稽；部分欄位偶有缺漏</p>
+      </div>
+      <div class="source-card">
+        <span class="tag">來源 C</span>
+        <h3>配息與淨值</h3>
+        <p class="desc">8 檔基金 × 120 個月，月底淨值與當月配息</p>
+        <p class="issue">資料粒度為「月」，A 表為「日」；部分配息屬「再投資」，未曾進入銀行帳戶，A 表完全看不到</p>
+      </div>
+    </div>
+
+    <div class="obstacle-row reveal">
+      <span class="obstacle-chip">摘要縮寫不標準化</span>
+      <span class="obstacle-chip">金額基礎不同（手續費差額）</span>
+      <span class="obstacle-chip">日期粒度不同（日 vs 月）</span>
+      <span class="obstacle-chip">資料缺漏且無註記</span>
+      <span class="obstacle-chip">再投資配息單一來源可見</span>
+    </div>
+  </section>
+
+  <section id="method" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">分類邏輯與方法</div>
+      <h2>把錢的血緣，拆成可以逐筆交代的軌跡</h2>
+      <p>先整併三來源，再依婚姻登記日切分，最後把每一分錢按性質分流並標註舉證強度——這是「釐清金流」實際在做的事。</p>
+    </div>
+
+    <div class="pipeline reveal">
+      <div class="pipe-node"><strong>01　三來源整合</strong>摘要對照表／金額基礎調整／帳戶互轉排除／缺漏期間標註</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-node"><strong>02　依婚姻登記日切分</strong>2021-03-15 為分界，區分登記日前後交易</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-node"><strong>03　依性質分流</strong>本金／替代物／孳息／新增收入四類</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-node"><strong>04　信心等級標註</strong>可直接舉證／可推論／無法判定</div>
+    </div>
+
+    <div class="fork-row reveal">
+      <div class="fork-node out-no"><strong>婚前財產本身</strong>婚姻登記日前已持有、未贖回或轉換 · 不列入</div>
+      <div class="fork-node out-no"><strong>婚前財產之替代物</strong>婚前資金婚後轉換之財產，追溯鏈完整前提下 · 不列入</div>
+      <div class="fork-node out-yes"><strong>婚姻存續期間孳息</strong>替代物於婚姻關係存續期間所生配息、利息 · 列入</div>
+      <div class="fork-node out-yes"><strong>婚後新增收入</strong>婚後薪資租金、新申購基金及其孳息 · 列入</div>
+    </div>
+  </section>
+
+  <section id="results" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">分析結果</div>
+      <h2>婚後財產淨額 ＝ 過世時總財產 − 可追溯至婚前財產之本金及其替代物</h2>
+      <p>下表為分類總表的十個項目，顏色代表是否計入基準情境之婚後財產淨額。同一筆資金在申購與贖回時點會分別產生一筆分類金額，因此「不計入」各列不宜直接加總視為婚前資產總額，僅供逐項對照。</p>
+    </div>
+
+    <div class="chart-block reveal" id="chart-classification">
+      <div class="chart-title">財產分類與金額對照</div>
+      <div class="chart-caption">依《分類邏輯與可呈庭報表.xlsx》分類總表工作表整理，金額單位為新台幣元。</div>
+      <div class="cbar-list" id="cbarClassification" role="img" aria-label="財產分類與金額對照長條圖"></div>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>計入婚後財產淨額</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--gray-status)"></span>不計入</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--warn)"></span>獨立揭露／無法判定</span>
+      </div>
+      <details class="table-toggle">
+        <summary>顯示完整數字表格</summary>
+        <table class="data-table" id="tableClassification">
+          <thead><tr><th>財產類別</th><th>金額（新台幣元）</th><th>是否計入</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </details>
+    </div>
+
+    <div class="charts-two-col" style="margin-top: var(--space-3);">
+      <div class="chart-block reveal" id="chart-confidence">
+        <div class="chart-title">信心等級分佈</div>
+        <div class="chart-caption">已分類總金額 NT$ 13,486,614 之舉證強度分布；不含獨立揭露之不明轉入 NT$ 4,650,000。</div>
+        <svg class="chart-svg" id="svgConfidence" viewBox="0 0 480 120" role="img" aria-label="信心等級分佈堆疊長條圖"></svg>
+        <div class="legend-row">
+          <span class="legend-item"><span class="legend-swatch" style="background:var(--good)"></span>可直接舉證 74.2%</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:var(--warn)"></span>可推論 25.8%</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:var(--gray-status)"></span>無法判定 0%</span>
+        </div>
+        <details class="table-toggle">
+          <summary>顯示完整數字表格</summary>
+          <table class="data-table" id="tableConfidence">
+            <thead><tr><th>信心等級</th><th>金額（新台幣元）</th><th>占比</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </details>
+      </div>
+
+      <div class="chart-block reveal" id="chart-sensitivity">
+        <div class="chart-title">婚後財產淨額敏感度分析</div>
+        <div class="chart-caption">依 L01～L04 四項法律前提之不同組合，呈現金額變動範圍，非提供單一「正確答案」。</div>
+        <svg class="chart-svg" id="svgSensitivity" viewBox="0 0 480 150" role="img" aria-label="婚後財產淨額敏感度區間圖"></svg>
+        <div class="legend-row">
+          <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>基準情境</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:var(--ink-muted)"></span>下限／上限情境</span>
+        </div>
+        <details class="table-toggle">
+          <summary>顯示完整數字表格</summary>
+          <table class="data-table" id="tableSensitivity">
+            <thead><tr><th>情境</th><th>婚後財產淨額（新台幣元）</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </details>
+      </div>
+    </div>
+    <p class="premise-note" style="margin-top:var(--space-2);">上限情境未納入 L04（未實現增值）以外之試算；如律師確認 L04 應列入未實現增值，需以過世日各基金淨值重新試算，實際區間可能高於本表上限。</p>
+  </section>
+
+  <section id="cases" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">重大爭點與異常案例</div>
+      <h2>兩個算得出金額的爭點，一個容易誤判的陷阱</h2>
+      <p>每一案例都標明信心等級與影響方向，讓委任律師確認法律前提時，看得到金額會怎麼變。</p>
+    </div>
+
+    <div class="case-grid reveal">
+      <div class="case-card type-dispute">
+        <div class="case-kicker">爭點一 · 對應法律前提 L01</div>
+        <h3>婚前基金之婚後配息歸屬</h3>
+        <dl>
+          <dt>標的</dt><dd>F01 寰宇收益債券基金（婚前申購 2015-06-10，婚後贖回 2022-09-20，持有 87 個月）</dd>
+          <dt>累積配息</dt><dd class="amt num">NT$ 2,145,347</dd>
+          <dt>婚姻登記日前</dt><dd class="num">NT$ 1,693,274（不列入爭議）</dd>
+          <dt>婚姻存續期間</dt><dd class="num">NT$ 452,073（爭議部分）</dd>
+        </dl>
+        <p class="impact">若婚姻存續期間配息歸屬反轉，婚後財產淨額將增減 <span class="amt num">NT$ 452,073</span>——本報表金額差異最大的單一項目。</p>
+      </div>
+
+      <div class="case-card type-dispute">
+        <div class="case-kicker">爭點二 · 避免虛增</div>
+        <h3>帳戶間轉存重複計算</h3>
+        <dl>
+          <dt>辨識結果</dt><dd>婚姻存續期間 ACC01→ACC02 共 7 筆同一人帳戶間轉存</dd>
+          <dt>金額</dt><dd class="amt num">NT$ 2,340,000</dd>
+          <dt>陷阱</dt><dd>兩端摘要寫法不一致（轉存-本行／轉入-本行等），需逐筆識別才能排除</dd>
+        </dl>
+        <p class="impact">若未識別排除，將於加總婚後新增財產時重複計入，虛增淨額同額 <span class="amt num">NT$ 2,340,000</span>。本報表已於分類總表中排除。</p>
+      </div>
+
+      <div class="case-card type-trap">
+        <div class="case-kicker">假異常 · 誤判陷阱</div>
+        <h3>定存到期轉續存</h3>
+        <dl>
+          <dt>交易</dt><dd>2019-05-10 入帳 NT$3,000,000（定存到期）；2019-05-13 出帳 NT$2,998,000（轉存-新定存）</dd>
+          <dt>判讀</dt><dd>三年期定存到期後 3 天內續作新定存，差額為帳戶管理費用，屬正常操作</dd>
+        </dl>
+        <p class="impact">金額相近、相隔僅 3 天，容易被誤判為可疑異常——查核摘要文字與帳戶類型後即可排除，避免浪費查證資源。</p>
+      </div>
+
+      <div class="case-card">
+        <div class="case-kicker">資料完整度三態 · 對應法律前提 L03</div>
+        <h3>不明大額轉入</h3>
+        <dl>
+          <dt>交易</dt><dd>2022-02-14，ACC01，摘要「轉入」，備註空白</dd>
+          <dt>金額</dt><dd class="amt num">NT$ 4,650,000</dd>
+          <dt>處理方式</dt><dd>標註信心等級為「無法判定」，獨立揭露，不預先歸類</dd>
+        </dl>
+        <p class="impact">待委託人補充佐證資料（如遺產分割協議書、不動產買賣契約）後，再行分類——不代為認定事實。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="legal" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">法律前提假設表（節錄）</div>
+      <h2>把「需要律師判斷的」與「可以先試算的」明確切開</h2>
+      <p>完整 8 條前提詳見《法律前提假設表.md》。以下 4 條對婚後財產淨額影響金額最大，且彼此獨立。</p>
+    </div>
+
+    <div class="chart-block reveal">
+      <div style="overflow-x:auto;">
+        <table class="premise-table">
+          <thead><tr><th>編號</th><th>法律前提</th><th>本計算採用之假設</th><th>若假設不成立</th></tr></thead>
+          <tbody>
+            <tr><td class="code">L01</td><td>婚前財產於婚姻存續期間所生孳息之歸屬</td><td>假設歸屬婚後財產，列入分配計算</td><td>單一標的即涉及約 45.2 萬元變動</td></tr>
+            <tr><td class="code">L02</td><td>婚前現金婚後轉換為基金，本金部分之定性</td><td>追溯鏈完整前提下，仍屬婚前財產之替代物</td><td>個別基金 30～195 萬元可能改列婚後</td></tr>
+            <tr><td class="code">L03</td><td>無法證明來源之大額財產（約 465 萬元）之歸屬推定</td><td>不預設歸屬，獨立揭露，不列入亦不排除</td><td>依舉證責任分配結果，全額可能轉向</td></tr>
+            <tr><td class="code">L04</td><td>婚姻存續期間之已實現／未實現增值是否列入</td><td>僅計入已實現部分，未實現增值不列入</td><td>需以過世日淨值重新估算，區間可能上修</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="premise-note">本表不主張任何前提之法律上成立與否，金額試算所採用之假設值僅為資料分析上需要明確、可重複執行之規則，非法律上之主張。</p>
+    </div>
+  </section>
+
+  <section id="scope" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">交付範疇</div>
+      <h2>四項交付物</h2>
+    </div>
+    <div class="fork-row reveal" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="fork-node out-yes"><strong>01　整併與分類邏輯</strong>三來源資料整併，含信心等級標註</div>
+      <div class="fork-node out-yes"><strong>02　可呈庭報表</strong>Excel，含淨額試算與敏感度分析</div>
+      <div class="fork-node out-yes"><strong>03　方法說明書</strong>資料分析方法，非法律意見</div>
+      <div class="fork-node out-yes"><strong>04　法律前提假設表</strong>計算所依據之假設，須由委任律師逐條確認</div>
+    </div>
+    <div class="callout reveal">
+      <b>為什麼兩個角色都需要，缺一不可：</b>律師算不出來的原因是資料工程問題——十年份的銀行摘要、基金代碼、配息紀錄從未被整併過；而資料工程回答不出來的原因是法律定性問題——孳息歸屬、替代物追溯是否成立，取決於個案見解與民法規定。這份案例的價值，是把兩者接起來，並把不確定性顯性化，而不是假裝算出一個唯一正確答案。
+    </div>
+  </section>
+
+  <section id="contact" class="wrap">
+    <div class="contact-card reveal">
+      <div class="contact-info">
+        <div class="contact-name">Zorya</div>
+        <div class="contact-role">FDE &amp; Data Scientist</div>
+        <p class="contact-lede">如果你手上也有一份「資料很多、但沒人整理得出來」的案子——不管是法律、財務還是內部流程，都歡迎聊聊。</p>
+      </div>
+      <a class="contact-cta" href="mailto:uzang199431465@gmail.com">
+        寄信聊聊這個案例
+        <span class="contact-email">uzang199431465@gmail.com</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p class="footer-position">「一份法官看得懂、對造難以反駁的計算書」不是靠算出一個更有利的數字，而是靠每一筆分類都能交代舉證強度與計算前提。</p>
+  <div class="footer-disclaimer">
+    <p>本頁面所使用之姓名、帳號、金額、日期均為合成生成，不對應任何真實個人或案件。本案例情境改編自公開刊登之外包需求。</p>
+    <p>本頁面與相關報表為資料分析方法說明，不構成法律意見。所有涉及法律定性之分類結果，均應由委任律師依個案事實與民法相關規定認定。本頁面非訴訟文件，未採用任何狀紙格式，亦非具名計算書，不得作為訴訟書狀使用。</p>
+  </div>
+  <div class="footer-meta">婚前婚後財產交易明細分類與追溯 · 作品集案例研究 · 製作與分析：Zorya（FDE &amp; Data Scientist）</div>
+</footer>
+
+<div class="chart-tooltip" id="chartTooltip"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- theme toggle ---------- */
+  var root = document.documentElement;
+  var themeBtn = document.getElementById('themeToggle');
+  function getStoredTheme() {
+    try { return localStorage.getItem('b-case-theme'); } catch (e) { return null; }
+  }
+  function setStoredTheme(v) {
+    try { localStorage.setItem('b-case-theme', v); } catch (e) {}
+  }
+  var stored = getStoredTheme();
+  if (stored === 'light' || stored === 'dark') root.setAttribute('data-theme', stored);
+  themeBtn.addEventListener('click', function () {
+    var current = root.getAttribute('data-theme');
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var effectiveDark = current ? current === 'dark' : prefersDark;
+    var next = effectiveDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    setStoredTheme(next);
+  });
+
+  /* ---------- mobile nav ---------- */
+  var navToggle = document.getElementById('navToggle');
+  var mainNav = document.getElementById('mainNav');
+  navToggle.addEventListener('click', function () {
+    var open = mainNav.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  mainNav.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () { mainNav.classList.remove('open'); });
+  });
+
+  /* ---------- reveal on scroll ---------- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(function (el) { io.observe(el); });
+  } else {
+    revealEls.forEach(function (el) { el.classList.add('is-visible'); });
+  }
+
+  /* ---------- shared tooltip ---------- */
+  var tooltip = document.getElementById('chartTooltip');
+  function showTooltip(evt, html) {
+    tooltip.innerHTML = html;
+    tooltip.classList.add('show');
+    moveTooltip(evt);
+  }
+  function moveTooltip(evt) {
+    var x = evt.clientX, y = evt.clientY;
+    var padding = 14;
+    tooltip.style.left = Math.min(x + padding, window.innerWidth - 270) + 'px';
+    tooltip.style.top = Math.max(y - 40, 8) + 'px';
+  }
+  function hideTooltip() { tooltip.classList.remove('show'); }
+
+  function fmt(n) { return 'NT$ ' + n.toLocaleString('en-US'); }
+  function pct(n) { return (n * 100).toFixed(1) + '%'; }
+  var css = getComputedStyle(root);
+  function cssVar(name) { return css.getPropertyValue(name).trim(); }
+
+  var COLOR_YES = 'var(--accent)';
+  var COLOR_NO = 'var(--gray-status)';
+  var COLOR_WARN = 'var(--warn)';
+  var COLOR_GOOD = 'var(--good)';
+
+  /* ================= chart 1: classification bars ================= */
+  var classData = [
+    { label: '婚前財產之替代物－本金申購總額', amount: 5850000, group: 'no' },
+    { label: '婚前財產之替代物－本金收回', amount: 2570000, group: 'no' },
+    { label: '婚後一般收支淨額', amount: 369107, group: 'yes' },
+    { label: '婚姻存續期間已實現增值', amount: 250000, group: 'yes' },
+    { label: '婚姻存續期間孳息（爭點一）', amount: 627897, group: 'yes' },
+    { label: '婚後新增財產', amount: 1531964, group: 'yes' },
+    { label: '婚前財產本身（已結清）', amount: 640000, group: 'no' },
+    { label: '婚前財產本身之孳息', amount: 2016753, group: 'no' },
+    { label: '帳戶間互轉（爭點二，應排除）', amount: 2340000, group: 'no' },
+    { label: '不明大額轉入（無法判定）', amount: 4650000, group: 'warn' }
+  ].sort(function (a, b) { return b.amount - a.amount; });
+
+  (function renderClassification() {
+    var container = document.getElementById('cbarClassification');
+    var maxVal = Math.max.apply(null, classData.map(function (d) { return d.amount; }));
+    var colorFor = { yes: 'var(--accent)', no: 'var(--gray-status)', warn: 'var(--warn)' };
+    var groupLabel = { yes: '計入婚後財產淨額', no: '不計入', warn: '獨立揭露／無法判定' };
+
+    classData.forEach(function (d) {
+      var pctW = Math.max((d.amount / maxVal) * 100, 1.2);
+      var row = document.createElement('div');
+      row.className = 'cbar-row';
+
+      var label = document.createElement('div');
+      label.className = 'cbar-label';
+      label.textContent = d.label;
+      row.appendChild(label);
+
+      var track = document.createElement('div');
+      track.className = 'cbar-track';
+
+      var fill = document.createElement('div');
+      fill.className = 'cbar-fill';
+      fill.style.width = pctW + '%';
+      fill.style.background = colorFor[d.group];
+      fill.tabIndex = 0;
+      fill.addEventListener('mousemove', function (evt) {
+        showTooltip(evt, '<b>' + d.label + '</b><br>' + fmt(d.amount) + '<br>' + groupLabel[d.group]);
+      });
+      fill.addEventListener('mouseleave', hideTooltip);
+      track.appendChild(fill);
+
+      var rest = document.createElement('div');
+      rest.className = 'cbar-rest';
+      track.appendChild(rest);
+
+      var value = document.createElement('span');
+      value.className = 'cbar-value';
+      value.textContent = (d.amount / 10000).toLocaleString('en-US', { maximumFractionDigits: 1 }) + ' 萬';
+      track.appendChild(value);
+
+      row.appendChild(track);
+      container.appendChild(row);
+    });
+
+    var tbody = document.querySelector('#tableClassification tbody');
+    classData.forEach(function (d) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + d.label + '</td><td class="amount num">' + fmt(d.amount) + '</td><td>' + groupLabel[d.group] + '</td>';
+      tbody.appendChild(tr);
+    });
+  })();
+
+  /* ================= chart 2: confidence stacked bar ================= */
+  (function renderConfidence() {
+    var svg = document.getElementById('svgConfidence');
+    var data = [
+      { label: '可直接舉證', amount: 10001881, ratio: 0.7416154269707727, color: COLOR_GOOD },
+      { label: '可推論', amount: 3484733, ratio: 0.2583845730292273, color: COLOR_WARN },
+      { label: '無法判定', amount: 0, ratio: 0, color: COLOR_NO }
+    ];
+    var W = 480, H = 120, barY = 30, barH = 40, left = 8, right = W - 8;
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var x = left;
+    data.forEach(function (d) {
+      var w = d.ratio * (right - left);
+      if (w <= 0) return;
+      var rect = document.createElementNS(svgNS, 'rect');
+      rect.setAttribute('x', x);
+      rect.setAttribute('y', barY);
+      rect.setAttribute('width', w);
+      rect.setAttribute('height', barH);
+      rect.setAttribute('fill', d.color);
+      rect.setAttribute('class', 'bar-rect');
+      rect.setAttribute('tabindex', '0');
+      if (x !== left) {
+        rect.setAttribute('x', x + 1);
+      }
+      rect.addEventListener('mousemove', function (evt) {
+        showTooltip(evt, '<b>' + d.label + '</b><br>' + fmt(d.amount) + '<br>' + pct(d.ratio));
+      });
+      rect.addEventListener('mouseleave', hideTooltip);
+      svg.appendChild(rect);
+
+      if (w > 60) {
+        var text = document.createElementNS(svgNS, 'text');
+        text.setAttribute('x', x + w / 2);
+        text.setAttribute('y', barY + barH / 2 + 5);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('fill', '#ffffff');
+        text.setAttribute('font-size', '13');
+        text.setAttribute('font-weight', '700');
+        text.textContent = pct(d.ratio);
+        svg.appendChild(text);
+      }
+      x += w;
+    });
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    var tbody = document.querySelector('#tableConfidence tbody');
+    data.forEach(function (d) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + d.label + '</td><td class="amount num">' + fmt(d.amount) + '</td><td>' + pct(d.ratio) + '</td>';
+      tbody.appendChild(tr);
+    });
+  })();
+
+  /* ================= chart 3: sensitivity range ================= */
+  (function renderSensitivity() {
+    var svg = document.getElementById('svgSensitivity');
+    var W = 480, H = 150;
+    var low = 1901071, base = 2778968, high = 7428968;
+    var left = 16, right = W - 16, top = 70;
+    var scale = function (v) { return left + (v / high) * (right - left); };
+    var svgNS = 'http://www.w3.org/2000/svg';
+
+    var axis = document.createElementNS(svgNS, 'line');
+    axis.setAttribute('x1', left); axis.setAttribute('x2', right);
+    axis.setAttribute('y1', top); axis.setAttribute('y2', top);
+    axis.setAttribute('stroke', cssVar('--gridline'));
+    axis.setAttribute('stroke-width', '2');
+    svg.appendChild(axis);
+
+    var range = document.createElementNS(svgNS, 'line');
+    range.setAttribute('x1', scale(low)); range.setAttribute('x2', scale(high));
+    range.setAttribute('y1', top); range.setAttribute('y2', top);
+    range.setAttribute('stroke', cssVar('--ink-muted'));
+    range.setAttribute('stroke-width', '4');
+    range.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(range);
+
+    function marker(value, label, color, isBase) {
+      var cx = scale(value);
+      var circle = document.createElementNS(svgNS, 'circle');
+      circle.setAttribute('cx', cx);
+      circle.setAttribute('cy', top);
+      circle.setAttribute('r', isBase ? 9 : 6);
+      circle.setAttribute('fill', color);
+      circle.setAttribute('stroke', cssVar('--surface-card'));
+      circle.setAttribute('stroke-width', '2');
+      circle.setAttribute('class', 'bar-rect');
+      circle.setAttribute('tabindex', '0');
+      circle.addEventListener('mousemove', function (evt) {
+        showTooltip(evt, '<b>' + label + '</b><br>' + fmt(value));
+      });
+      circle.addEventListener('mouseleave', hideTooltip);
+      svg.appendChild(circle);
+
+      var text = document.createElementNS(svgNS, 'text');
+      text.setAttribute('x', cx);
+      text.setAttribute('y', isBase ? top - 20 : top + 28);
+      text.setAttribute('text-anchor', cx < 60 ? 'start' : (cx > right - 60 ? 'end' : 'middle'));
+      text.setAttribute('class', 'bar-value-label');
+      text.textContent = label + ' ' + (value / 10000).toLocaleString('en-US', { maximumFractionDigits: 1 }) + '萬';
+      svg.appendChild(text);
+    }
+    marker(low, '下限', cssVar('--ink-muted'), false);
+    marker(high, '上限', cssVar('--ink-muted'), false);
+    marker(base, '基準', cssVar('--accent'), true);
+
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    var tbody = document.querySelector('#tableSensitivity tbody');
+    [['下限情境', low], ['基準情境', base], ['上限情境', high]].forEach(function (d) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + d[0] + '</td><td class="amount num">' + fmt(d[1]) + '</td>';
+      tbody.appendChild(tr);
+    });
+  })();
+
+  window.addEventListener('mousemove', function (evt) {
+    if (tooltip.classList.contains('show')) moveTooltip(evt);
+  });
+})();
+</script>
+</body>
+</html>

@@ -3,62 +3,96 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AI 客服｜Demo</title>
+<title>電商 AI 客服 — Zorya 練習 Demo</title>
+<meta name="description" content="電商 AI 客服對話介面練習 Demo：即時回覆訂單、退換貨、運費等常見問題，並可選擇語音朗讀回覆內容。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/portfolio-theme.css">
 <style>
-  :root{
-    --bg:#eef1f6; --panel:#ffffff; --brand:#4f6bff; --brand2:#6d86ff;
-    --ink:#1f2430; --muted:#8a90a2; --line:#e7eaf2; --bot:#f2f4fb; --ok:#25b06a;
+  /* ---------- page-scoped: demo shell ---------- */
+  .demo-shell{
+    display:flex; flex-direction:column; align-items:center;
+    padding-top:var(--space-5); padding-bottom:var(--space-7); gap:var(--space-4);
   }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-    background:var(--bg);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-  .phone{width:100%;max-width:400px;height:min(760px,92vh);background:var(--panel);border-radius:26px;overflow:hidden;
-    display:flex;flex-direction:column;box-shadow:0 30px 70px rgba(31,40,64,.25);border:1px solid var(--line)}
-  .top{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:16px 18px;display:flex;align-items:center;gap:12px}
+  .demo-intro{ max-width:60ch; text-align:center; }
+  .demo-intro p{ margin-top:var(--space-2); font-size:15px; color:var(--ink-secondary); }
+
+  /* ---------- page-scoped: chat widget (bespoke visual design, token-driven) ---------- */
+  .phone{
+    width:100%; max-width:400px; height:min(760px,80vh);
+    background:var(--surface-card); border-radius:26px; overflow:hidden;
+    display:flex; flex-direction:column;
+    box-shadow:var(--shadow-card); border:1px solid var(--gridline);
+  }
+  .top{
+    background:linear-gradient(135deg,var(--accent),var(--accent-ink));
+    color:#fff; padding:16px 18px; display:flex; align-items:center; gap:12px; flex-shrink:0;
+  }
   .av{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;position:relative}
-  .av .dot{position:absolute;right:1px;bottom:1px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid #5a74ff}
+  .av .dot{position:absolute;right:1px;bottom:1px;width:11px;height:11px;border-radius:50%;background:var(--good);border:2px solid rgba(255,255,255,.55)}
   .top .nm{font-weight:800;font-size:16px}
   .top .st{font-size:11px;opacity:.9}
   .voice{margin-left:auto;background:rgba(255,255,255,.18);border:none;color:#fff;font-size:12px;
     padding:8px 11px;border-radius:20px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:5px}
   .voice.off{opacity:.55}
-  .chat{flex:1;overflow-y:auto;padding:18px 16px;background:linear-gradient(180deg,#f6f8fc,#eef1f6);display:flex;flex-direction:column;gap:10px}
+  .chat{flex:1;overflow-y:auto;padding:18px 16px;background:linear-gradient(180deg,var(--surface-raised),var(--surface-page));display:flex;flex-direction:column;gap:10px}
   .msg{max-width:80%;padding:11px 14px;border-radius:16px;font-size:14.5px;line-height:1.55;white-space:pre-wrap;animation:in .25s ease}
   @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  .bot{align-self:flex-start;background:var(--panel);border:1px solid var(--line);border-bottom-left-radius:5px;box-shadow:0 2px 6px rgba(31,40,64,.05)}
-  .me{align-self:flex-end;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border-bottom-right-radius:5px}
-  .time{font-size:10px;color:var(--muted);margin:2px 4px 0}
+  .bot{align-self:flex-start;background:var(--surface-raised);border:1px solid var(--gridline);border-bottom-left-radius:5px;color:var(--ink-primary);box-shadow:0 2px 6px rgba(11,11,11,.05)}
+  .me{align-self:flex-end;background:linear-gradient(135deg,var(--accent),var(--accent-ink));color:#fff;border-bottom-right-radius:5px}
+  .time{font-size:10px;color:var(--ink-muted);margin:2px 4px 0}
   .me + .time{align-self:flex-end}
   .chips{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:92%}
-  .chip{background:#fff;border:1.5px solid #d6ddf5;color:var(--brand);font-size:13px;font-weight:600;
+  .chip{background:var(--surface-raised);border:1.5px solid var(--border-strong);color:var(--accent-ink);font-size:13px;font-weight:600;
     padding:8px 13px;border-radius:20px;cursor:pointer;transition:.12s}
-  .chip:active{transform:scale(.96);background:#eef2ff}
-  .typing{align-self:flex-start;background:#fff;border:1px solid var(--line);padding:13px 16px;border-radius:16px;border-bottom-left-radius:5px;display:flex;gap:4px}
-  .typing i{width:7px;height:7px;border-radius:50%;background:#c3cae0;animation:b 1s infinite}
+  .chip:active{transform:scale(.96);background:var(--accent-soft)}
+  .typing{align-self:flex-start;background:var(--surface-raised);border:1px solid var(--gridline);padding:13px 16px;border-radius:16px;border-bottom-left-radius:5px;display:flex;gap:4px}
+  .typing i{width:7px;height:7px;border-radius:50%;background:var(--ink-muted);animation:b 1s infinite}
   .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
   @keyframes b{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
-  .foot{border-top:1px solid var(--line);padding:10px 12px;display:flex;gap:8px;align-items:center;background:#fff}
-  .foot input{flex:1;border:1.5px solid var(--line);border-radius:22px;padding:11px 15px;font-size:15px;outline:none}
-  .foot input:focus{border-color:var(--brand)}
-  .send{width:44px;height:44px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-size:18px;cursor:pointer;flex:none}
-  .badge{font-size:9px;text-align:center;color:var(--muted);padding:4px}
+  .foot{border-top:1px solid var(--gridline);padding:10px 12px;display:flex;gap:8px;align-items:center;background:var(--surface-raised);flex-shrink:0}
+  .foot input{flex:1;border:1.5px solid var(--gridline);border-radius:22px;padding:11px 15px;font-size:15px;outline:none;background:var(--surface-page);color:var(--ink-primary);font-family:inherit}
+  .foot input:focus{border-color:var(--accent)}
+  .send{width:44px;height:44px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-ink));color:#fff;font-size:18px;cursor:pointer;flex:none}
+  .badge{font-size:9px;text-align:center;color:var(--ink-muted);padding:4px;background:var(--surface-card);flex-shrink:0}
 </style>
 </head>
 <body>
-<div class="phone">
-  <div class="top">
-    <div class="av">🤖<span class="dot"></span></div>
-    <div><div class="nm">小雲 AI 客服</div><div class="st">線上・平均 2 秒回覆</div></div>
-    <button class="voice" id="voice">🔊 語音</button>
-  </div>
-  <div class="chat" id="chat"></div>
-  <div class="foot">
-    <input id="inp" placeholder="輸入問題，或點下方按鈕…" autocomplete="off">
-    <button class="send" id="send">➤</button>
-  </div>
-  <div class="badge">AI 客服 Demo・示範用（可串接真實訂單系統與大型語言模型）</div>
-</div>
 
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="../../index.html">Zorya<span>FDE &amp; Data Scientist</span></a>
+    <div style="display:flex;align-items:center;">
+      <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap demo-shell">
+  <div class="demo-intro reveal">
+    <div class="eyebrow">練習 Demo・對話介面</div>
+    <p>電商情境的 AI 客服對話練習：即時回覆訂單物流、退換貨、運費、付款等常見問題，可切換語音朗讀回覆內容。</p>
+  </div>
+
+  <div class="phone reveal">
+    <div class="top">
+      <div class="av">🤖<span class="dot"></span></div>
+      <div><div class="nm">小雲 AI 客服</div><div class="st">線上・平均 2 秒回覆</div></div>
+      <button class="voice" id="voice">🔊 語音</button>
+    </div>
+    <div class="chat" id="chat"></div>
+    <div class="foot">
+      <input id="inp" placeholder="輸入問題，或點下方按鈕…" autocomplete="off">
+      <button class="send" id="send">➤</button>
+    </div>
+    <div class="badge">AI 客服 Demo・示範用（可串接真實訂單系統與大型語言模型）</div>
+  </div>
+</main>
+
+<script src="../../assets/portfolio-theme.js"></script>
 <script>
 const chat=document.getElementById('chat');
 let voiceOn=true;
