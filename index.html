@@ -48,46 +48,96 @@
   /* homepage-only tweaks */
   .hero .persona-line { margin-top: var(--space-2); font-size: 15px; color: var(--ink-muted); }
 
-  /* ---------- category cards (scatter-card hover) ---------- */
+  /* ---------- category cards ---------- */
   .category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
   @media (max-width: 700px) { .category-grid { grid-template-columns: 1fr; } }
 
   .category-card {
-    display: block; text-decoration: none; color: inherit; text-align: center;
     background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md);
-    padding: var(--space-6) var(--space-4) var(--space-5);
+    padding: var(--space-4);
     box-shadow: var(--shadow-card);
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
   }
-  .category-card:hover, .category-card:focus-visible {
-    transform: translateY(-4px);
-    border-color: var(--accent);
-    box-shadow: 0 4px 8px rgba(11,11,11,0.06), 0 16px 32px rgba(11,11,11,0.10);
+  .category-card:hover { border-color: var(--accent); box-shadow: 0 4px 8px rgba(11,11,11,0.06), 0 16px 32px rgba(11,11,11,0.10); }
+
+  .category-card h2 { font-family: var(--font-sans); font-size: 20px; margin: var(--space-3) 0 6px; }
+  .category-card .card-desc { max-width: 48ch; }
+  .category-card .card-footer-link {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: var(--space-2);
+    color: var(--accent-ink); text-decoration: none; font-size: 14px; font-weight: 600;
   }
+  .category-card .card-footer-link:hover { text-decoration: underline; }
 
-  .category-visual { position: relative; width: 8rem; height: 8rem; margin: 0 auto var(--space-4); }
-  .scatter-card {
-    position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: auto;
-    width: 5rem; height: 6.5rem; border-radius: var(--radius-md);
-    background: var(--surface-raised); border: 1px solid var(--border-strong);
-    box-shadow: 0 4px 12px rgba(11,11,11,0.15);
-    transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* ---------- time-machine card stack widget ---------- */
+  .tm-widget {
+    --tm-bg: #09090b;
+    --tm-card: #1c1c1f;
+    --tm-card-active-border: var(--accent);
+    position: relative;
+    display: flex; align-items: center; justify-content: center; gap: 18px;
+    background: var(--tm-bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    height: 168px;
+    overflow: hidden;
   }
-  .scatter-card.sc-1 { z-index: 3; }
-  .scatter-card.sc-2 { z-index: 4; }
-  .scatter-card.sc-3 { z-index: 5; background: var(--accent-soft); border-color: var(--accent); }
-  .scatter-card.sc-4 { z-index: 4; }
-  .scatter-card.sc-5 { z-index: 3; }
+  .tm-stack {
+    position: relative; flex: 0 0 auto;
+    width: 220px; height: 135px;
+    perspective: 800px;
+  }
+  .tm-slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    border-radius: 14px;
+    background: var(--tm-card);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    text-decoration: none;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease;
+    transform-style: preserve-3d;
+  }
+  .tm-slide.is-active { border-color: var(--tm-card-active-border); }
+  .tm-slide-code { font-family: var(--font-serif); font-size: 26px; font-weight: 700; color: #ffffff; }
+  .tm-slide-title { font-family: var(--font-sans); font-size: 12px; color: rgba(255,255,255,0.55); text-align: center; padding: 0 12px; }
 
-  .category-card:hover .sc-1, .category-card:focus-visible .sc-1 { transform: translate(-2.6rem, 0.5rem) rotate(-14deg) scale(0.96); }
-  .category-card:hover .sc-2, .category-card:focus-visible .sc-2 { transform: translate(-1.2rem, -0.5rem) rotate(-6deg) scale(0.96); }
-  .category-card:hover .sc-3, .category-card:focus-visible .sc-3 { transform: translate(0, -1rem) rotate(2deg) scale(1.05); }
-  .category-card:hover .sc-4, .category-card:focus-visible .sc-4 { transform: translate(1.2rem, -0.35rem) rotate(8deg) scale(0.96); }
-  .category-card:hover .sc-5, .category-card:focus-visible .sc-5 { transform: translate(2.6rem, 0.65rem) rotate(15deg) scale(0.96); }
+  .tm-timeline {
+    position: relative; flex: 0 0 auto;
+    display: flex; flex-direction: column; align-items: flex-end;
+    padding: 4px 2px;
+    z-index: 5;
+  }
+  .tm-node { position: relative; display: flex; align-items: center; justify-content: flex-end; width: 76px; padding: 2px 0; text-decoration: none; }
+  .tm-node.tm-sub { width: 76px; }
+  .tm-dash {
+    height: 3px; border-radius: 999px; background: rgba(255,255,255,0.28);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease, opacity 0.2s ease;
+    transform-origin: right center;
+  }
+  .tm-node.tm-main .tm-dash { width: 24px; background: rgba(255,255,255,0.5); }
+  .tm-node.tm-sub .tm-dash { width: 24px; opacity: 0.35; }
+  .tm-node.tm-main.is-active .tm-dash { background: var(--accent); transform: scaleX(1.4); }
+  .tm-node.tm-main:hover .tm-dash { background: rgba(255,255,255,0.85); }
+  .tm-node-label {
+    position: absolute; right: 32px; top: 50%; transform: translateY(-50%);
+    font-size: 10px; font-weight: 600; white-space: nowrap; color: rgba(255,255,255,0.9);
+    opacity: 0; transition: opacity 0.15s ease;
+    pointer-events: none;
+  }
+  .tm-node.tm-main.is-active .tm-node-label { color: var(--accent-ink); }
+  .tm-node.tm-main:hover .tm-node-label { opacity: 1; }
 
-  .category-card h2 { font-family: var(--font-sans); font-size: 20px; margin-bottom: 8px; }
-  .category-card .card-desc { max-width: 40ch; margin-left: auto; margin-right: auto; }
-  .category-card .card-arrow { display: inline-block; margin-top: var(--space-2); }
+  @media (max-width: 480px) {
+    .category-card { padding: var(--space-3); }
+    .tm-widget { gap: 8px; padding: 10px; height: 140px; }
+    .tm-stack { width: 148px; height: 105px; }
+    .tm-node, .tm-node.tm-sub { width: 34px; }
+    .tm-node.tm-main .tm-dash, .tm-node.tm-sub .tm-dash { width: 16px; }
+    .tm-node-label { display: none; }
+    .tm-slide-code { font-size: 18px; }
+    .tm-slide-title { font-size: 10px; padding: 0 6px; }
+  }
 </style>
 </head>
 <body>
@@ -118,33 +168,75 @@
 
   <section class="wrap">
     <div class="category-grid reveal">
-      <a class="category-card" href="cases/index.html">
-        <div class="category-visual" aria-hidden="true">
-          <span class="scatter-card sc-1"></span>
-          <span class="scatter-card sc-2"></span>
-          <span class="scatter-card sc-3"></span>
-          <span class="scatter-card sc-4"></span>
-          <span class="scatter-card sc-5"></span>
+      <div class="category-card">
+        <div class="tm-widget" data-tm-widget>
+          <div class="tm-stack" data-tm-stack>
+            <a class="tm-slide" data-tm-i="0" href="cases/frozen-food/"><span class="tm-slide-code">A</span><span class="tm-slide-title">冷凍食品巡補</span></a>
+            <a class="tm-slide" data-tm-i="1" href="cases/marital-property/"><span class="tm-slide-code">B</span><span class="tm-slide-title">財產分類追溯</span></a>
+            <a class="tm-slide" data-tm-i="2" href="cases/trip-pricing/"><span class="tm-slide-code">C</span><span class="tm-slide-title">旅遊估價原型</span></a>
+            <a class="tm-slide" data-tm-i="3" href="cases/nutrition-liff/"><span class="tm-slide-code">D</span><span class="tm-slide-title">營養紀錄 LIFF</span></a>
+            <a class="tm-slide" data-tm-i="4" href="cases/label-compliance/"><span class="tm-slide-code">E</span><span class="tm-slide-title">標示合規查核</span></a>
+            <a class="tm-slide" data-tm-i="5" href="cases/video-production/"><span class="tm-slide-code">F</span><span class="tm-slide-title">影片產能規模化</span></a>
+          </div>
+          <div class="tm-timeline" data-tm-timeline>
+            <a class="tm-node tm-main" data-tm-i="0" href="cases/frozen-food/"><span class="tm-node-label">A 冷凍食品巡補</span><span class="tm-dash"></span></a>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <a class="tm-node tm-main" data-tm-i="1" href="cases/marital-property/"><span class="tm-node-label">B 財產分類追溯</span><span class="tm-dash"></span></a>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <a class="tm-node tm-main" data-tm-i="2" href="cases/trip-pricing/"><span class="tm-node-label">C 旅遊估價原型</span><span class="tm-dash"></span></a>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <a class="tm-node tm-main" data-tm-i="3" href="cases/nutrition-liff/"><span class="tm-node-label">D 營養紀錄 LIFF</span><span class="tm-dash"></span></a>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <a class="tm-node tm-main" data-tm-i="4" href="cases/label-compliance/"><span class="tm-node-label">E 標示合規查核</span><span class="tm-dash"></span></a>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <a class="tm-node tm-main" data-tm-i="5" href="cases/video-production/"><span class="tm-node-label">F 影片產能規模化</span><span class="tm-dash"></span></a>
+          </div>
         </div>
         <span class="card-kicker">6 件作品</span>
         <h2>案例研究</h2>
         <p class="card-desc">六個改編自真實外包刊登的案例，各附訪談逐字稿、合成資料與交付物原型。</p>
-        <span class="card-arrow">→</span>
-      </a>
+        <a class="card-footer-link" href="cases/index.html">查看全部 →</a>
+      </div>
 
-      <a class="category-card" href="demos/index.html">
-        <div class="category-visual" aria-hidden="true">
-          <span class="scatter-card sc-1"></span>
-          <span class="scatter-card sc-2"></span>
-          <span class="scatter-card sc-3"></span>
-          <span class="scatter-card sc-4"></span>
-          <span class="scatter-card sc-5"></span>
+      <div class="category-card">
+        <div class="tm-widget" data-tm-widget>
+          <div class="tm-stack" data-tm-stack>
+            <a class="tm-slide" data-tm-i="0" href="demos/bakery/"><span class="tm-slide-code">01</span><span class="tm-slide-title">手作烘焙預購</span></a>
+            <a class="tm-slide" data-tm-i="1" href="demos/esg/"><span class="tm-slide-code">02</span><span class="tm-slide-title">DEI 認證平台</span></a>
+            <a class="tm-slide" data-tm-i="2" href="demos/ai-service/"><span class="tm-slide-code">03</span><span class="tm-slide-title">電商 AI 客服</span></a>
+            <a class="tm-slide" data-tm-i="3" href="demos/order/"><span class="tm-slide-code">04</span><span class="tm-slide-title">掃碼點餐系統</span></a>
+            <a class="tm-slide" data-tm-i="4" href="demos/roulette/"><span class="tm-slide-code">05</span><span class="tm-slide-title">推薦幸運輪盤</span></a>
+            <a class="tm-slide" data-tm-i="5" href="demos/streamer_ai/"><span class="tm-slide-code">06</span><span class="tm-slide-title">直播 AI 小助手</span></a>
+          </div>
+          <div class="tm-timeline" data-tm-timeline>
+            <a class="tm-node tm-main" data-tm-i="0" href="demos/bakery/"><span class="tm-node-label">手作烘焙預購</span><span class="tm-dash"></span></a>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <a class="tm-node tm-main" data-tm-i="1" href="demos/esg/"><span class="tm-node-label">DEI 認證平台</span><span class="tm-dash"></span></a>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <a class="tm-node tm-main" data-tm-i="2" href="demos/ai-service/"><span class="tm-node-label">電商 AI 客服</span><span class="tm-dash"></span></a>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <a class="tm-node tm-main" data-tm-i="3" href="demos/order/"><span class="tm-node-label">掃碼點餐系統</span><span class="tm-dash"></span></a>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <a class="tm-node tm-main" data-tm-i="4" href="demos/roulette/"><span class="tm-node-label">推薦幸運輪盤</span><span class="tm-dash"></span></a>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <span class="tm-node tm-sub"><span class="tm-dash"></span></span>
+            <a class="tm-node tm-main" data-tm-i="5" href="demos/streamer_ai/"><span class="tm-node-label">直播 AI 小助手</span><span class="tm-dash"></span></a>
+          </div>
         </div>
         <span class="card-kicker">6 件作品</span>
         <h2>練習 Demo</h2>
         <p class="card-desc">前端技術與 UI 練習作品，功能完整可操作，非正式案例研究。</p>
-        <span class="card-arrow">→</span>
-      </a>
+        <a class="card-footer-link" href="demos/index.html">查看全部 →</a>
+      </div>
     </div>
   </section>
 
@@ -175,5 +267,61 @@
 <div class="chart-tooltip" id="chartTooltip"></div>
 
 <script src="assets/portfolio-theme.js"></script>
+<script>
+(function () {
+  "use strict";
+  // ---- time-machine card-stack widget (plain JS port, no framework) ----
+  document.querySelectorAll('[data-tm-widget]').forEach(function (widget) {
+    var stack = widget.querySelector('[data-tm-stack]');
+    var timeline = widget.querySelector('[data-tm-timeline]');
+    var slides = Array.prototype.slice.call(stack.querySelectorAll('.tm-slide'));
+    var mainNodes = Array.prototype.slice.call(timeline.querySelectorAll('.tm-node.tm-main'));
+    var subNodes = Array.prototype.slice.call(timeline.querySelectorAll('.tm-node.tm-sub'));
+    var count = slides.length;
+    var active = 0;
+
+    function render() {
+      slides.forEach(function (slide, i) {
+        var offset = i - active;
+        var isPast = i < active;
+        var z = isPast ? 160 : -offset * 46;
+        var y = isPast ? 220 : -offset * 10;
+        var rx = isPast ? -16 : offset * 2;
+        var opacity = isPast ? 0 : Math.max(0, 1 - Math.abs(offset) * 0.22);
+        var scale = isPast ? 1.2 : 1;
+        slide.style.transform = 'translate3d(0,' + y + 'px,' + z + 'px) rotateX(' + rx + 'deg) scale(' + scale + ')';
+        slide.style.opacity = opacity;
+        slide.style.zIndex = count - i;
+        slide.style.pointerEvents = isPast ? 'none' : 'auto';
+        slide.classList.toggle('is-active', i === active);
+      });
+      mainNodes.forEach(function (node) {
+        node.classList.toggle('is-active', Number(node.getAttribute('data-tm-i')) === active);
+      });
+    }
+
+    function setActive(i) {
+      active = Math.max(0, Math.min(count - 1, Math.round(i)));
+      render();
+    }
+
+    mainNodes.forEach(function (node) {
+      node.addEventListener('mouseenter', function () { setActive(Number(node.getAttribute('data-tm-i'))); });
+      node.addEventListener('focus', function () { setActive(Number(node.getAttribute('data-tm-i'))); });
+    });
+    subNodes.forEach(function (node, subIdx) {
+      // each pair of subs sits between mainNodes[k] and mainNodes[k+1]
+      var groupIdx = Math.floor(subIdx / 2);
+      node.addEventListener('mouseenter', function () { setActive(groupIdx + (subIdx % 2 === 0 ? 0.33 : 0.66)); });
+    });
+    stack.addEventListener('mouseenter', function (evt) {
+      var slide = evt.target.closest('.tm-slide');
+      if (slide) setActive(Number(slide.getAttribute('data-tm-i')));
+    }, true);
+
+    render();
+  });
+})();
+</script>
 </body>
 </html>
