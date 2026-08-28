@@ -2,15 +2,99 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=../index.html#demos">
-<link rel="canonical" href="../index.html#demos">
-<title>Zorya · 練習 Demo — 已搬移</title>
-<style>
-  body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; background:#0d0d0d; color:#fff; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; }
-  a { color:#3987e5; }
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>練習 Demo — Zorya 作品集</title>
+<meta name="description" content="六個前端技術練習與 UI 練習 Demo，功能完整可操作，非正式案例研究。">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Zorya">
+<meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/portfolio-theme.css">
 </head>
 <body>
-  <p>此頁已整合進 <a href="../index.html#demos">作品集首頁的「練習 Demo」區</a>，即將自動跳轉…</p>
+
+<div class="disclaimer-strip">練習 Demo 區為前端技術與 UI 練習作品，非正式上線產品，內容資料為示範用途。</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="../index.html">Zorya<span>FDE &amp; Data Scientist</span></a>
+    <nav class="main-nav links" id="mainNav">
+      <a href="../index.html">首頁</a>
+      <a href="../cases/index.html">案例研究</a>
+      <a href="../index.html#contact">聯絡</a>
+    </nav>
+    <div style="display:flex; align-items:center;">
+      <button class="nav-toggle" id="navToggle" aria-label="開啟選單" aria-expanded="false">☰</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap" style="padding-bottom: var(--space-5);">
+    <div class="eyebrow">練習 Demo</div>
+    <h1>技術練習作品</h1>
+    <p class="lede">這些是純前端技術練習與 UI 練習，功能與內容維持原樣，僅統一視覺設計系統以符合整個作品集風格。非正式案例研究，不附訪談稿或合成資料方法論。</p>
+  </section>
+
+  <section class="wrap" style="padding-top:0;">
+    <div class="portfolio-grid reveal">
+      <a class="portfolio-card demo" href="bakery/">
+        <span class="card-kicker">行銷頁面</span>
+        <h3>手作烘焙預購 Landing Page</h3>
+        <p class="card-desc">天然酵母烘焙工作室的品牌行銷頁：菜單展示、試吃活動倒數、預購登記表單。</p>
+        <span class="card-arrow">→</span>
+      </a>
+
+      <a class="portfolio-card demo" href="esg/">
+        <span class="card-kicker">多語系平台</span>
+        <h3>AI 多語種移工 DEI 認證平台</h3>
+        <p class="card-desc">五語微課程 → 線上測驗 → QR 電子證書 → 企業戰情室，含語音朗讀。</p>
+        <span class="card-arrow">→</span>
+      </a>
+
+      <a class="portfolio-card demo" href="ai-service/">
+        <span class="card-kicker">對話介面</span>
+        <h3>電商 AI 客服</h3>
+        <p class="card-desc">即時回覆訂單、退換貨、運費等常見問題，可語音朗讀回覆內容。</p>
+        <span class="card-arrow">→</span>
+      </a>
+
+      <a class="portfolio-card demo" href="order/">
+        <span class="card-kicker">互動流程</span>
+        <h3>掃碼點餐系統</h3>
+        <p class="card-desc">外帶／桌號 → 主食 → 三菜 → 送出，另有廚房看板頁即時同步顯示訂單。</p>
+        <span class="card-arrow">→</span>
+      </a>
+
+      <a class="portfolio-card demo" href="roulette/">
+        <span class="card-kicker">互動元件</span>
+        <h3>推薦幸運輪盤</h3>
+        <p class="card-desc">姓名手機登入，推薦成交填格，依次數抽獎的互動輪盤元件。</p>
+        <span class="card-arrow">→</span>
+      </a>
+
+      <a class="portfolio-card demo" href="streamer_ai/">
+        <span class="card-kicker">對話介面</span>
+        <h3>直播主官方 AI 小助手</h3>
+        <p class="card-desc">模擬直播主官方帳號的 AI 聊天助手介面，含語音開關與快速選項按鈕。</p>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="footer-disclaimer">
+    <p>練習 Demo 區為前端技術與 UI 練習作品，非正式上線產品，內容資料亦為示範用途。</p>
+  </div>
+  <div class="footer-meta"><a href="../index.html">← 回作品集首頁</a></div>
+</footer>
+
+<script src="../assets/portfolio-theme.js"></script>
 </body>
 </html>
