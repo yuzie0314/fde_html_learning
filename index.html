@@ -46,7 +46,8 @@
 <link rel="stylesheet" href="assets/portfolio-theme.css">
 <style>
   /* ---------- featured showcase (single full-width widget) ---------- */
-  .showcase-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); flex-wrap: wrap; }
+  .showcase-wide { max-width: 1360px; }
+  .showcase-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap; }
   .showcase-head h2 { font-family: var(--font-sans); font-size: 20px; }
   .showcase-head .card-footer-link {
     display: inline-flex; align-items: center; gap: 6px;
@@ -54,41 +55,32 @@
   }
   .showcase-head .card-footer-link:hover { text-decoration: underline; }
 
-  /* ---------- time-machine card stack widget ---------- */
+  /* ---------- time-machine card stack widget (theme-aware, no outer frame) ---------- */
   .tm-widget {
-    --tm-bg: #09090b;
-    --tm-card: #1c1c1f;
-    --tm-card-active-border: var(--accent);
     position: relative;
-    display: flex; align-items: center; justify-content: center; gap: 48px;
-    background: var(--tm-bg);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: var(--radius-md);
-    padding: 48px 56px;
-    min-height: 420px;
-    overflow: hidden;
-    box-shadow: var(--shadow-card);
+    display: flex; align-items: center; justify-content: center; gap: 64px;
+    min-height: 600px;
   }
   .tm-stack {
     position: relative; flex: 0 0 auto;
-    width: 520px; height: 320px;
+    width: 850px; height: 525px;
     max-width: 100%;
-    perspective: 1400px;
+    perspective: 1800px;
   }
   .tm-slide {
     position: absolute; inset: 0;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-    border-radius: 22px;
-    background: var(--tm-card);
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+    border-radius: 24px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border-strong);
+    box-shadow: var(--shadow-card);
     text-decoration: none;
     transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.55s ease;
     transform-style: preserve-3d;
   }
-  .tm-slide.is-active { border-color: var(--tm-card-active-border); }
-  .tm-slide-code { font-family: var(--font-serif); font-size: 60px; font-weight: 700; color: #ffffff; }
-  .tm-slide-title { font-family: var(--font-sans); font-size: 19px; color: rgba(255,255,255,0.6); text-align: center; padding: 0 20px; }
+  .tm-slide.is-active { border-color: var(--accent); border-width: 2px; }
+  .tm-slide-code { font-family: var(--font-serif); font-size: 88px; font-weight: 700; color: var(--ink-primary); }
+  .tm-slide-title { font-family: var(--font-sans); font-size: 22px; color: var(--ink-secondary); text-align: center; padding: 0 24px; }
 
   .tm-timeline {
     position: relative; flex: 0 0 auto;
@@ -96,39 +88,38 @@
     padding: 4px 2px;
     z-index: 5;
   }
-  .tm-node { position: relative; display: flex; align-items: center; justify-content: flex-end; width: 140px; padding: 6px 0; text-decoration: none; }
-  .tm-node.tm-sub { width: 140px; }
+  .tm-node { position: relative; display: flex; align-items: center; justify-content: flex-end; width: 180px; padding: 8px 0; text-decoration: none; }
+  .tm-node.tm-sub { width: 180px; }
   .tm-dash {
-    height: 4px; border-radius: 999px; background: rgba(255,255,255,0.28);
+    height: 4px; border-radius: 999px; background: var(--gridline);
     transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease, opacity 0.2s ease;
     transform-origin: right center;
   }
-  .tm-node.tm-main .tm-dash { width: 40px; background: rgba(255,255,255,0.5); }
-  .tm-node.tm-sub .tm-dash { width: 40px; opacity: 0.35; }
+  .tm-node.tm-main .tm-dash { width: 48px; background: var(--border-strong); }
+  .tm-node.tm-sub .tm-dash { width: 48px; opacity: 0.5; }
   .tm-node.tm-main.is-active .tm-dash { background: var(--accent); transform: scaleX(1.4); }
-  .tm-node.tm-main:hover .tm-dash { background: rgba(255,255,255,0.85); }
+  .tm-node.tm-main:hover .tm-dash { background: var(--ink-muted); }
   .tm-node-label {
-    position: absolute; right: 50px; top: 50%; transform: translateY(-50%);
-    font-size: 14px; font-weight: 600; white-space: nowrap; color: rgba(255,255,255,0.9);
+    position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+    font-size: 15px; font-weight: 600; white-space: nowrap; color: var(--ink-primary);
     opacity: 0; transition: opacity 0.15s ease;
     pointer-events: none;
   }
   .tm-node.tm-main.is-active .tm-node-label { color: var(--accent-ink); }
   .tm-node.tm-main:hover .tm-node-label { opacity: 1; }
 
-  @media (max-width: 900px) {
-    .tm-widget { flex-direction: column; min-height: 0; gap: 20px; padding: 32px 20px 28px; }
-    .tm-stack { width: 100%; max-width: 420px; height: min(52vw, 280px); margin-top: 24px; }
+  @media (max-width: 1100px) {
+    .tm-widget { flex-direction: column; min-height: 0; gap: 28px; }
+    .tm-stack { width: 100%; max-width: 620px; height: min(58vw, 400px); margin-top: 24px; }
     .tm-timeline { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; max-width: 100%; width: 100%; }
-    .tm-node, .tm-node.tm-sub { width: auto; padding: 5px 6px; }
+    .tm-node, .tm-node.tm-sub { width: auto; padding: 5px 8px; }
     .tm-node-label { position: static; transform: none; display: none; }
   }
   @media (max-width: 480px) {
-    .tm-widget { padding: 28px 14px 20px; }
-    .tm-stack { max-width: 300px; height: 185px; margin-top: 18px; }
-    .tm-slide-code { font-size: 32px; }
-    .tm-slide-title { font-size: 13px; padding: 0 12px; }
-    .tm-node.tm-main .tm-dash, .tm-node.tm-sub .tm-dash { width: 20px; }
+    .tm-stack { max-width: 320px; height: 200px; margin-top: 18px; }
+    .tm-slide-code { font-size: 40px; }
+    .tm-slide-title { font-size: 14px; padding: 0 14px; }
+    .tm-node.tm-main .tm-dash, .tm-node.tm-sub .tm-dash { width: 22px; }
   }
 </style>
 </head>
@@ -169,10 +160,10 @@
     <p class="lede">客戶原本說的需求，往往不是真正該解決的問題。</p>
   </section>
 
-  <section class="wrap">
+  <section class="wrap showcase-wide">
     <div class="reveal">
       <div class="showcase-head">
-        <h2>練習 Demo</h2>
+        <h2>作品集</h2>
         <a class="card-footer-link" href="demos/index.html">查看全部 →</a>
       </div>
       <div class="tm-widget" data-tm-widget>
@@ -248,8 +239,8 @@
       slides.forEach(function (slide, i) {
         var offset = i - active;
         var isPast = i < active;
-        var z = isPast ? 240 : -offset * 70;
-        var y = isPast ? 320 : -offset * 15;
+        var z = isPast ? 400 : -offset * 115;
+        var y = isPast ? 550 : -offset * 25;
         var rx = isPast ? -16 : offset * 2;
         var opacity = isPast ? 0 : Math.max(0, 1 - Math.abs(offset) * 0.22);
         var scale = isPast ? 1.2 : 1;
