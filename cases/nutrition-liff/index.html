@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>營養諮詢飲食紀錄 LIFF 應用 — 案例研究</title>
+<meta name="description" content="客戶只給一句「飲食紀錄系統」——從一句話問出五個核心分歧、劃出專業界線、建出可操作原型。由 Zorya（FDE & Data Scientist）製作之從零建立需求案例，非醫療或營養專業意見。">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Zorya">
+
+<!-- 部署後請將以下 og:url／canonical 換成實際網域 -->
+<!-- <link rel="canonical" href="https://your-domain.example/cases/nutrition-liff"> -->
+<meta property="og:type" content="article">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:site_name" content="Zorya — FDE & Data Scientist">
+<meta property="og:title" content="營養諮詢飲食紀錄 LIFF 應用｜案例研究">
+<meta property="og:description" content="客戶只給一句「飲食紀錄系統」：從一句話問出五個核心分歧，用資料證明依從性追蹤比熱量計算更值得做，並明確劃出「本工具不做什麼」的專業界線。">
+<meta property="og:image" content="assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="營養諮詢飲食紀錄 LIFF 應用 — 案例研究封面，標示有效紀錄天數比率 32.1%">
+<!-- <meta property="og:url" content="https://your-domain.example/cases/nutrition-liff"> -->
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="營養諮詢飲食紀錄 LIFF 應用｜案例研究">
+<meta name="twitter:description" content="客戶只給一句「飲食紀錄系統」：從一句話問出五個核心分歧，並明確劃出「本工具不做什麼」的專業界線。">
+<meta name="twitter:image" content="assets/og-image.png">
+
+<meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "name": "營養諮詢飲食紀錄 LIFF 應用",
+  "headline": "營養諮詢飲食紀錄 LIFF 應用 — 案例研究",
+  "description": "客戶只給一句「飲食紀錄系統」——從一句話問出五個核心分歧、以資料佐證核心指標選擇、明確劃出專業界線並產出可操作原型。從零建立需求之案例，非醫療或營養專業意見。",
+  "inLanguage": "zh-Hant",
+  "genre": "案例研究",
+  "about": "從一句話需求出發之營養諮詢飲食紀錄系統設計方法",
+  "disclaimer": "本案例情境改編自公開刊登之外包需求，所有資料為合成生成，不對應任何真實個人、診所或案件。所有產出均為系統設計與資料分析方法說明，不構成醫療或營養專業意見。",
+  "author": {
+    "@type": "Person",
+    "name": "Zorya",
+    "jobTitle": "FDE & Data Scientist",
+    "email": "mailto:uzang199431465@gmail.com"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --surface-page:   #f9f9f7;
+    --surface-card:   #fcfcfb;
+    --surface-raised: #ffffff;
+    --ink-primary:    #0b0b0b;
+    --ink-secondary:  #52514e;
+    --ink-muted:      #898781;
+    --gridline:       #e1e0d9;
+    --border:         rgba(11,11,11,0.10);
+    --border-strong:  rgba(11,11,11,0.16);
+    --accent:         #2a78d6;
+    --accent-ink:     #184f95;
+    --accent-soft:    rgba(42,120,214,0.10);
+    --good:           #0ca30c;
+    --good-soft:      rgba(12,163,12,0.12);
+    --warn:           #eda100;
+    --warn-soft:      rgba(237,161,0,0.14);
+    --bad:            #c23b3b;
+    --bad-soft:       rgba(194,59,59,0.10);
+    --gray-status:    #898781;
+    --gray-status-soft: rgba(137,135,129,0.14);
+    --shadow-card:    0 1px 2px rgba(11,11,11,0.04), 0 4px 16px rgba(11,11,11,0.06);
+
+    --font-serif: "Noto Serif TC", "Noto Serif", serif;
+    --font-sans: "Noto Sans TC", "Noto Sans", -apple-system, "Segoe UI", sans-serif;
+
+    --space-1: 8px;
+    --space-2: 16px;
+    --space-3: 24px;
+    --space-4: 32px;
+    --space-5: 48px;
+    --space-6: 64px;
+    --space-7: 96px;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --container: 1080px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-page:   #0d0d0d;
+      --surface-card:   #1a1a19;
+      --surface-raised: #201f1e;
+      --ink-primary:    #ffffff;
+      --ink-secondary:  #c3c2b7;
+      --ink-muted:      #898781;
+      --gridline:       #2c2c2a;
+      --border:         rgba(255,255,255,0.10);
+      --border-strong:  rgba(255,255,255,0.18);
+      --accent:         #3987e5;
+      --accent-ink:     #9ec5f4;
+      --accent-soft:    rgba(57,135,229,0.16);
+      --good:           #0ca30c;
+      --good-soft:      rgba(12,163,12,0.18);
+      --warn:           #c98500;
+      --warn-soft:      rgba(201,133,0,0.20);
+      --bad:            #e05a5a;
+      --bad-soft:       rgba(224,90,90,0.16);
+      --gray-status:    #c3c2b7;
+      --gray-status-soft: rgba(195,194,183,0.14);
+      --shadow-card:    0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-page:   #0d0d0d;
+    --surface-card:   #1a1a19;
+    --surface-raised: #201f1e;
+    --ink-primary:    #ffffff;
+    --ink-secondary:  #c3c2b7;
+    --ink-muted:      #898781;
+    --gridline:       #2c2c2a;
+    --border:         rgba(255,255,255,0.10);
+    --border-strong:  rgba(255,255,255,0.18);
+    --accent:         #3987e5;
+    --accent-ink:     #9ec5f4;
+    --accent-soft:    rgba(57,135,229,0.16);
+    --good:           #0ca30c;
+    --good-soft:      rgba(12,163,12,0.18);
+    --warn:           #c98500;
+    --warn-soft:      rgba(201,133,0,0.20);
+    --bad:            #e05a5a;
+    --bad-soft:       rgba(224,90,90,0.16);
+    --gray-status:    #c3c2b7;
+    --gray-status-soft: rgba(195,194,183,0.14);
+    --shadow-card:    0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--surface-page);
+    color: var(--ink-primary);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { font-family: var(--font-serif); font-weight: 600; margin: 0; letter-spacing: 0.01em; }
+  p { margin: 0; text-wrap: pretty; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .wrap { max-width: var(--container); margin: 0 auto; padding: 0 var(--space-3); }
+
+  /* ---------- disclaimer strip ---------- */
+  .disclaimer-strip {
+    background: var(--surface-raised);
+    border-bottom: 1px solid var(--gridline);
+    font-size: 13px;
+    color: var(--ink-muted);
+    padding: 8px var(--space-3);
+    text-align: center;
+  }
+
+  /* ---------- header ---------- */
+  header.site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--surface-page) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--gridline);
+  }
+  .header-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px var(--space-3);
+    max-width: var(--container); margin: 0 auto;
+  }
+  .brand { font-family: var(--font-serif); font-weight: 600; font-size: 16px; letter-spacing: 0.02em; }
+  .brand span { color: var(--ink-muted); font-family: var(--font-sans); font-weight: 400; font-size: 13px; margin-left: 8px; }
+  nav.main-nav { display: flex; gap: var(--space-3); align-items: center; }
+  nav.main-nav a {
+    color: var(--ink-secondary); text-decoration: none; font-size: 14px; font-weight: 500;
+    padding: 6px 2px; border-bottom: 2px solid transparent;
+  }
+  nav.main-nav a:hover { color: var(--ink-primary); border-bottom-color: var(--accent); }
+  .theme-toggle {
+    border: 1px solid var(--border-strong); background: var(--surface-card); color: var(--ink-primary);
+    border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+    margin-left: var(--space-2);
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer; }
+  @media (max-width: 780px) {
+    nav.main-nav.links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-raised); border-bottom: 1px solid var(--gridline); flex-direction: column; align-items: flex-start; padding: var(--space-2) var(--space-3); gap: var(--space-2); }
+    nav.main-nav.links.open { display: flex; }
+    .nav-toggle { display: block; }
+  }
+
+  /* ---------- reveal ---------- */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+  /* ---------- hero ---------- */
+  .hero { padding: var(--space-7) 0 var(--space-6); }
+  .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent-ink); text-transform: uppercase; margin-bottom: var(--space-2); }
+  .hero h1 { font-size: clamp(28px, 4.4vw, 44px); line-height: 1.28; max-width: 20ch; }
+  .hero .lede { margin-top: var(--space-3); font-size: 18px; color: var(--ink-secondary); max-width: 62ch; }
+  .hero .context-line { margin-top: var(--space-3); font-size: 15px; color: var(--ink-muted); max-width: 64ch; border-left: 2px solid var(--border-strong); padding-left: var(--space-2); }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-top: var(--space-5); }
+  @media (max-width: 700px) { .stat-row { grid-template-columns: 1fr; } }
+  .stat-tile {
+    background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md);
+    padding: var(--space-3); box-shadow: var(--shadow-card);
+  }
+  .stat-tile .label { font-size: 13px; color: var(--ink-muted); margin-bottom: 6px; }
+  .stat-tile .value { font-size: 26px; font-weight: 700; font-family: var(--font-serif); }
+  .stat-tile.headline .value { color: var(--accent-ink); }
+  .stat-tile .sub { font-size: 12px; color: var(--ink-muted); margin-top: 4px; }
+
+  /* ---------- section shell ---------- */
+  section { padding: var(--space-7) 0; border-top: 1px solid var(--gridline); }
+  section:first-of-type { border-top: none; }
+  .section-head { max-width: 68ch; margin-bottom: var(--space-5); }
+  .section-kicker { font-size: 13px; font-weight: 600; color: var(--accent-ink); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-1); }
+  .section-head h2 { font-size: clamp(22px, 3vw, 30px); }
+  .section-head p { margin-top: var(--space-2); color: var(--ink-secondary); font-size: 16px; }
+
+  /* ---------- background info ---------- */
+  .bg-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: var(--space-5); align-items: start; }
+  @media (max-width: 820px) { .bg-grid { grid-template-columns: 1fr; } }
+  dl.info-list { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px var(--space-3); }
+  dl.info-list dt { color: var(--ink-muted); font-size: 14px; white-space: nowrap; padding-top: 2px; }
+  dl.info-list dd { margin: 0; font-size: 15px; }
+
+  .scope-card { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-3); }
+  .scope-card h3 { font-size: 15px; font-family: var(--font-sans); font-weight: 700; margin-bottom: var(--space-2); }
+  .scope-card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .scope-card li { display: flex; gap: 10px; font-size: 14.5px; color: var(--ink-secondary); }
+  .glyph { flex-shrink: 0; width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 2px; }
+  .glyph.yes { background: var(--good-soft); color: var(--good); }
+  .glyph.no { background: var(--gray-status-soft); color: var(--ink-muted); }
+  .scope-card + .scope-card { margin-top: var(--space-2); }
+
+  /* ---------- case / question grid (Q1-Q5) ---------- */
+  .case-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
+  @media (max-width: 820px) { .case-grid { grid-template-columns: 1fr; } }
+  .case-card { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-3); border-top: 3px solid var(--gray-status); }
+  .case-card.type-dispute { border-top-color: var(--accent); }
+  .case-card.type-trap { border-top-color: var(--warn); }
+  .case-card .case-kicker { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); margin-bottom: 6px; }
+  .case-card h3 { font-family: var(--font-sans); font-size: 16px; margin-bottom: 10px; }
+  .case-card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px var(--space-2); font-size: 13.5px; }
+  .case-card dt { color: var(--ink-muted); white-space: nowrap; }
+  .case-card dd { margin: 0; }
+  .case-card .impact { margin-top: var(--space-2); padding-top: var(--space-2); border-top: 1px dashed var(--gridline); font-size: 13.5px; color: var(--ink-secondary); }
+  .amt { color: var(--accent-ink); font-weight: 700; }
+
+  /* ---------- source cards ---------- */
+  .source-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+  @media (max-width: 900px) { .source-grid { grid-template-columns: 1fr; } }
+  .source-card { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-3); }
+  .source-card .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--accent-ink); background: var(--accent-soft); border-radius: 999px; padding: 3px 10px; margin-bottom: var(--space-2); }
+  .source-card h3 { font-family: var(--font-sans); font-size: 16px; margin-bottom: 6px; }
+  .source-card .desc { font-size: 14px; color: var(--ink-secondary); margin-bottom: var(--space-2); }
+  .source-card .issue { font-size: 13px; color: var(--ink-muted); border-top: 1px dashed var(--gridline); padding-top: 10px; }
+
+  .obstacle-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: var(--space-3); }
+  .obstacle-chip { font-size: 13px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--border-strong); color: var(--ink-secondary); background: var(--surface-raised); }
+
+  /* ---------- fork rows (scope decisions) ---------- */
+  .fork-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); margin-top: var(--space-2); }
+  @media (max-width: 900px) { .fork-row { grid-template-columns: repeat(2, 1fr); } }
+  .fork-node { background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 12px 14px; font-size: 13px; }
+  .fork-node strong { display: block; font-size: 13px; margin-bottom: 3px; }
+  .fork-node.out-yes { border-left: 3px solid var(--accent); }
+  .fork-node.out-no { border-left: 3px solid var(--gray-status); }
+
+  /* ---------- charts ---------- */
+  .chart-block { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); padding: var(--space-4); box-shadow: var(--shadow-card); }
+  .chart-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .chart-caption { font-size: 13px; color: var(--ink-muted); margin-bottom: var(--space-3); max-width: 70ch; }
+  .legend-row { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); font-size: 13px; color: var(--ink-secondary); }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  svg.chart-svg { width: 100%; height: auto; overflow: visible; font-family: var(--font-sans); }
+  .bar-rect { cursor: pointer; transition: opacity 0.15s ease; }
+  .bar-rect:hover, .bar-rect:focus { opacity: 0.82; }
+
+  /* ---------- HTML bar chart (labels stay legible at any width) ---------- */
+  .cbar-list { display: flex; flex-direction: column; gap: 14px; }
+  .cbar-row .cbar-label { font-size: 13.5px; color: var(--ink-secondary); margin-bottom: 6px; }
+  .cbar-track { display: flex; align-items: center; gap: 10px; }
+  .cbar-fill {
+    height: 30px; border-radius: 4px; flex: 0 0 auto; min-width: 3px;
+    cursor: pointer; transition: opacity 0.15s ease; position: relative;
+  }
+  .cbar-fill:hover, .cbar-fill:focus { opacity: 0.82; }
+  .cbar-rest { flex: 1 1 auto; height: 30px; border-radius: 4px; background: var(--gridline); opacity: 0.35; }
+  .cbar-value { font-size: 13px; font-weight: 600; color: var(--ink-primary); white-space: nowrap; flex: 0 0 auto; }
+  details.table-toggle { margin-top: var(--space-3); }
+  details.table-toggle summary { cursor: pointer; font-size: 13px; color: var(--accent-ink); font-weight: 600; }
+  table.data-table { width: 100%; border-collapse: collapse; margin-top: var(--space-2); font-size: 13.5px; }
+  table.data-table th, table.data-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--gridline); }
+  table.data-table th { color: var(--ink-muted); font-weight: 600; }
+  table.data-table td.amount { text-align: right; }
+
+  .chart-tooltip {
+    position: fixed; pointer-events: none; z-index: 200;
+    background: var(--ink-primary); color: var(--surface-page);
+    font-size: 12.5px; padding: 6px 10px; border-radius: var(--radius-sm);
+    opacity: 0; transform: translateY(4px); transition: opacity 0.12s ease, transform 0.12s ease;
+    max-width: 260px; line-height: 1.5;
+  }
+  .chart-tooltip.show { opacity: 1; transform: translateY(0); }
+  .chart-tooltip b { font-weight: 700; }
+
+  .charts-two-col { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-3); align-items: start; }
+  @media (max-width: 900px) { .charts-two-col { grid-template-columns: 1fr; } }
+
+  /* ---------- trap callout (49.2% inflation number) ---------- */
+  .trap-callout {
+    display: flex; gap: var(--space-3); align-items: flex-start;
+    background: var(--warn-soft); border: 1px solid var(--warn); border-radius: var(--radius-md);
+    padding: var(--space-3); margin-top: var(--space-3);
+  }
+  .trap-callout .trap-figure { flex-shrink: 0; text-align: center; min-width: 110px; }
+  .trap-callout .trap-figure .num { font-family: var(--font-serif); font-size: 30px; font-weight: 700; color: var(--warn); }
+  .trap-callout .trap-figure .cap { font-size: 11.5px; color: var(--ink-muted); margin-top: 2px; }
+  .trap-callout .trap-text { font-size: 14px; color: var(--ink-secondary); }
+  .trap-callout .trap-text b { color: var(--ink-primary); }
+
+  /* ---------- boundary section (本工具不做什麼) ---------- */
+  .boundary-block {
+    background: var(--surface-card); border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+  .boundary-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+  .boundary-list li { display: flex; gap: 14px; align-items: flex-start; padding: var(--space-2) 0; border-bottom: 1px dashed var(--gridline); }
+  .boundary-list li:last-child { border-bottom: none; }
+  .boundary-glyph {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 6px; background: var(--bad-soft); color: var(--bad);
+    display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; margin-top: 2px;
+  }
+  .boundary-text strong { display: block; font-size: 15px; margin-bottom: 3px; }
+  .boundary-text span { font-size: 13.5px; color: var(--ink-secondary); }
+  .boundary-principle {
+    margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--gridline);
+    font-size: 14px; color: var(--ink-secondary);
+  }
+  .boundary-principle b { color: var(--ink-primary); }
+
+  /* ---------- AC before/after ---------- */
+  .ac-block { display: flex; flex-direction: column; gap: var(--space-3); }
+  .ac-pair { background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md); overflow: hidden; }
+  .ac-before, .ac-after { padding: var(--space-3); }
+  .ac-before { background: var(--gray-status-soft); border-bottom: 1px dashed var(--gridline); }
+  .ac-after { background: var(--good-soft); }
+  .ac-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 8px; }
+  .ac-before .ac-tag { color: var(--ink-muted); }
+  .ac-after .ac-tag { color: var(--good); }
+  .ac-quote { font-size: 14.5px; color: var(--ink-secondary); font-style: italic; }
+  .ac-rewrite { font-size: 14px; color: var(--ink-primary); line-height: 1.75; }
+  .ac-why { margin-top: 8px; font-size: 13px; color: var(--ink-muted); }
+
+  .callout {
+    background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+    padding: var(--space-3); font-size: 14px; color: var(--ink-secondary); margin-top: var(--space-4);
+  }
+  .callout b { color: var(--ink-primary); }
+
+  /* ---------- contact ---------- */
+  .contact-card {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+    background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md);
+    padding: var(--space-5); box-shadow: var(--shadow-card);
+  }
+  @media (max-width: 720px) { .contact-card { flex-direction: column; align-items: flex-start; } }
+  .contact-name { font-family: var(--font-serif); font-size: 22px; font-weight: 700; }
+  .contact-role { font-size: 14px; color: var(--accent-ink); font-weight: 600; margin-top: 2px; }
+  .contact-lede { margin-top: var(--space-2); font-size: 15px; color: var(--ink-secondary); max-width: 46ch; }
+  .contact-cta {
+    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: var(--accent); color: #ffffff; text-decoration: none; text-align: center;
+    padding: 16px 28px; border-radius: var(--radius-md); font-weight: 700; font-size: 15px;
+    transition: opacity 0.15s ease, transform 0.15s ease; white-space: nowrap;
+  }
+  .contact-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+  .contact-cta .contact-email { font-weight: 500; font-size: 12.5px; opacity: 0.85; }
+  @media (max-width: 720px) { .contact-cta { width: 100%; } }
+
+  /* ---------- footer ---------- */
+  footer { padding: var(--space-6) 0 var(--space-7); border-top: 1px solid var(--gridline); }
+  .footer-position { font-family: var(--font-serif); font-size: 20px; line-height: 1.6; max-width: 56ch; margin-bottom: var(--space-4); }
+  .footer-disclaimer { font-size: 13px; color: var(--ink-muted); max-width: 78ch; line-height: 1.8; }
+  .footer-disclaimer p + p { margin-top: 8px; }
+  .footer-meta { margin-top: var(--space-4); font-size: 12.5px; color: var(--ink-muted); border-top: 1px solid var(--gridline); padding-top: var(--space-2); }
+</style>
+<link rel="stylesheet" href="../../assets/case-extras.css">
+</head>
+<body data-case="nutrition-liff">
+
+<div class="disclaimer-strip">本案例情境改編自公開刊登之外包需求，所有資料為合成生成，不對應任何真實個人、診所或案件。所有產出均為系統設計與資料分析方法說明，不構成醫療或營養專業意見。</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="../index.html">營養諮詢飲食紀錄 LIFF<span>案例研究</span></a>
+    <nav class="main-nav links" id="mainNav">
+      <a href="#background">案件背景</a>
+      <a href="#ambiguities">五個分歧</a>
+      <a href="#sources">資料挑戰</a>
+      <a href="#metric">核心指標</a>
+      <a href="#boundary">不做什麼</a>
+      <a href="#acceptance">驗收標準</a>
+      <a href="#scope">交付範疇</a>
+      <a href="#contact">聯絡</a>
+    </nav>
+    <div style="display:flex; align-items:center;">
+      <button class="nav-toggle" id="navToggle" aria-label="開啟選單" aria-expanded="false">☰</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div class="eyebrow">案例研究 · 從零建立需求</div>
+    <h1>營養諮詢飲食紀錄<br>LIFF 應用</h1>
+    <p class="lede">刊登內容只有一句話：「app/liff 開發，用於營養師，飲食紀錄系統」。沒有規格、沒有驗收——本案要從一句話問出整份需求。</p>
+    <p class="context-line">案主陳品瑄營養師自己也還沒想清楚系統該長什麼樣子：系統給誰用、紀錄是為了算熱量還是看有沒有持續記錄、要不要即時回覆、資料保存多久——這幾個關鍵分歧，她在 kickoff 會議中直接丟回來：「這個你們決定就好」。</p>
+
+    <div class="stat-row">
+      <div class="stat-tile headline reveal">
+        <div class="label">有效紀錄天數比率（正確算法）</div>
+        <div class="value num">32.1%</div>
+        <div class="sub">904 天 ÷ 2,820 天，相異且可歸屬正確日期之紀錄日</div>
+      </div>
+      <div class="stat-tile reveal">
+        <div class="label">個案數</div>
+        <div class="value num">30 位</div>
+        <div class="sub">含 1 組共用 LINE 帳號之夫妻個案</div>
+      </div>
+      <div class="stat-tile reveal">
+        <div class="label">全體個案合計方案天數</div>
+        <div class="value num">2,820 天</div>
+        <div class="sub">一個月／三個月／六個月三種方案長度混合</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="background" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">案件背景</div>
+      <h2>回不完訊息的工作室</h2>
+      <p>營養師自營工作室；個案用 LINE 傳食物照片，營養師人工看、人工回、手動記 Excel。個案一多，訊息就回不完。</p>
+    </div>
+
+    <div class="bg-grid">
+      <div class="reveal">
+        <dl class="info-list">
+          <dt>委託單位</dt><dd>陳品瑄營養師自營諮詢工作室</dd>
+          <dt>公司規模</dt><dd>營養師 2 位 ＋ 行政 1 位（小庭）</dd>
+          <dt>業態</dt><dd>一對一營養諮詢，個案多為代謝症候群、術後恢復、運動族群；以三個月方案為主</dd>
+          <dt>現況</dt><dd>個案 LINE 傳照片 → 營養師人工看、人工回覆 → 手動記錄於 Excel，無分流機制</dd>
+          <dt>原始刊登內容</dt><dd>「程式開發｜app/liff 開發，用於營養師，飲食紀錄系統」，預算詳談，25 人已提案</dd>
+        </dl>
+      </div>
+      <div class="reveal">
+        <div class="scope-card">
+          <h3>委任範圍</h3>
+          <ul>
+            <li><span class="glyph yes">✓</span>需求釐清文件（Q1-Q5 分歧、本工具不做什麼、驗收標準）</li>
+            <li><span class="glyph yes">✓</span>假設與待確認清單（每項均給出建議值）</li>
+            <li><span class="glyph yes">✓</span>可操作原型（個案端上傳、營養師端批次檢視佇列、有效紀錄天數儀表板）</li>
+          </ul>
+        </div>
+        <div class="scope-card">
+          <h3>不在委任範圍</h3>
+          <ul>
+            <li><span class="glyph no">✕</span>正式系統開發合約（本案為原型驗證階段）</li>
+            <li><span class="glyph no">✕</span>任何未經營養師確認即直接送出個案的自動化輸出</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="ambiguities" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">從一句話問出來的五個分歧</div>
+      <h2>客戶自己也沒想過的五件事</h2>
+      <p>五個決定系統長相的分歧，客戶都還沒想清楚，直接丟回來：「看你們建議」。</p>
+    </div>
+
+    <div class="case-grid reveal">
+      <div class="case-card type-dispute">
+        <div class="case-kicker">Q1 · 系統給誰用</div>
+        <h3>個案用、營養師用、還是兩邊都用？</h3>
+        <dl>
+          <dt>客戶原話</dt><dd>「兩邊應該都要吧……可能你們比較懂這種系統，可以幫我們評估」</dd>
+          <dt>釐清結論</dt><dd>兩端都做，但營養師端（批次檢視佇列、有效紀錄天數儀表板）優先；個案端第一版僅做「上傳」</dd>
+        </dl>
+        <p class="impact">小庭明確指出「我們這邊比較急」——實際痛點在營養師端回覆負荷，個案端只需「傳得進去」即可驗證核心價值。</p>
+      </div>
+
+      <div class="case-card type-dispute">
+        <div class="case-kicker">Q2 · 核心指標</div>
+        <h3>營養素計算，還是依從性追蹤？</h3>
+        <dl>
+          <dt>客戶原話</dt><dd>「熱量當然要準啊，不然我怎麼給建議。不過老實說，能不能做到很準我也不知道」</dd>
+          <dt>釐清結論</dt><dd>以「有效紀錄天數比率」（依從性追蹤）為核心指標，熱量計算不列入第一版範圍</dd>
+        </dl>
+        <p class="impact">約 18% 照片無法辨識份量、文字份量單位極不統一，熱量計算技術可行性低且有專業風險；詳見下方「核心指標」章節之資料佐證。</p>
+      </div>
+
+      <div class="case-card type-dispute">
+        <div class="case-kicker">Q3 · 回覆時效</div>
+        <h3>即時回覆，還是每日批次彙整？</h3>
+        <dl>
+          <dt>客戶原話</dt><dd>「是不是可以一收到就馬上分析、馬上回覆？……這個部分你們覺得呢？我沒有特別的想法，看你們建議」</dd>
+          <dt>釐清結論</dt><dd>不做即時自動回覆；系統先做初步整理，營養師每日固定一次批次檢視佇列</dd>
+        </dl>
+        <p class="impact">與陳營養師本人主動提出的「所有給個案的東西都要經過營養師確認」原則一致，避免未經確認的自動回覆造成專業風險。</p>
+      </div>
+
+      <div class="case-card">
+        <div class="case-kicker">Q4 · 提醒機制</div>
+        <h3>個案不記錄時，要不要主動提醒？</h3>
+        <dl>
+          <dt>客戶原話</dt><dd>「這個……應該要提醒吧？不過提醒的頻率、要提醒幾次，這個我還沒想過」</dd>
+          <dt>釐清結論</dt><dd>第一版不做系統自動提醒；營養師端僅標示「本週未記錄」清單，由人工決定是否催促</dd>
+        </dl>
+        <p class="impact">小庭提出疑慮「發太多次個案會不會覺得很煩，直接封鎖我們」——提醒頻率與退場機制尚無共識，貿然自動化風險更高。</p>
+      </div>
+
+      <div class="case-card">
+        <div class="case-kicker">Q5 · 資料保存</div>
+        <h3>資料保存多久？結束後個案還看得到嗎？</h3>
+        <dl>
+          <dt>客戶原話</dt><dd>「這個我沒有特別想過欸……可能要看合約怎麼寫，這部分你們比較懂法規」</dd>
+          <dt>釐清結論</dt><dd>保存至方案結束後 1 年，供營養師回顧與續約參考；個案本人結束後不再能查看歷史紀錄</dd>
+        </dl>
+        <p class="impact">涉及既有合約與個資保護範圍，非本次原型驗證核心；先給保守建議值，待客戶對照合約內容後確認。</p>
+      </div>
+
+      <div class="case-card type-trap">
+        <div class="case-kicker">兩位與會者的說法矛盾</div>
+        <h3>「個案都很配合」vs.「第二週後很多人就不傳了」</h3>
+        <dl>
+          <dt>陳營養師</dt><dd>「我這邊看到的狀況是個案都蠻配合的」</dd>
+          <dt>小庭</dt><dd>「其實很多人第二週後就不太傳了……你看到的是有傳過來的那些，沒傳的妳看不到啊」</dd>
+        </dl>
+        <p class="impact">資料證實兩人都沒說錯：持續型個案（10 位）平均有效紀錄天數比率 50.8%，衰退型個案（20 位）僅 22.0%——兩人只是各自看到不同的資料子集。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="sources" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">三種輸入通道的資料挑戰</div>
+      <h2>三份資料都算不出熱量</h2>
+      <p>挑戰不是金額對不上，而是三種輸入通道的格式與品質不一致——這也是選依從性、不選熱量的證據。</p>
+    </div>
+
+    <div class="source-grid reveal">
+      <div class="source-card">
+        <span class="tag">通道 A</span>
+        <h3>照片紀錄</h3>
+        <p class="desc">個案上傳的食物照片與時間戳，約 985 筆</p>
+        <p class="issue">無文字描述；部分照片是多人合菜，無法歸屬單一個案；約 18% 照片無法辨識份量；有人一天補傳三天份</p>
+      </div>
+      <div class="source-card">
+        <span class="tag">通道 B</span>
+        <h3>文字紀錄</h3>
+        <p class="desc">個案打字描述的飲食內容，約 458 筆</p>
+        <p class="issue">用語極度口語化（「早餐吃了店裡的那個」）；份量單位不統一，「碗」「份」「一點點」混用</p>
+      </div>
+      <div class="source-card">
+        <span class="tag">通道 C</span>
+        <h3>營養師手動註記</h3>
+        <p class="desc">營養師在 Excel 上的觀察筆記，約 120 筆</p>
+        <p class="issue">自由文字，無固定格式；只有部分個案有記錄，且不定期漏登打；但是判斷「假異常」的關鍵佐證來源</p>
+      </div>
+    </div>
+
+    <div class="obstacle-row reveal">
+      <span class="obstacle-chip">上傳時間 ≠ 用餐時間</span>
+      <span class="obstacle-chip">共用 LINE 帳號無法可靠歸屬個人</span>
+      <span class="obstacle-chip">同一人姓名多種寫法（陳品瑄營養師／陳營養師／Ivy）</span>
+      <span class="obstacle-chip">時間顆粒度不一（秒 vs 日）</span>
+      <span class="obstacle-chip">份量單位極不統一</span>
+      <span class="obstacle-chip">約 18% 照片無法辨識份量</span>
+    </div>
+  </section>
+
+  <section id="metric" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">核心指標</div>
+      <h2>核心指標：有效紀錄天數比率</h2>
+      <p>三個月方案真正要驗證的是「個案有沒有持續配合」，不是每餐的精準熱量。這個指標也解釋了兩人矛盾的說法。</p>
+    </div>
+
+    <div class="chart-block reveal" id="chart-persist">
+      <div class="chart-title">有效紀錄天數比率：持續型 vs. 衰退型個案</div>
+      <div class="chart-caption">持續型（10 位）穩定配合；衰退型（20 位）第二週後大幅減少上傳。</div>
+      <div class="cbar-list" id="cbarPersist" role="img" aria-label="持續型與衰退型個案有效紀錄天數比率長條圖"></div>
+      <details class="table-toggle">
+        <summary>顯示完整數字表格</summary>
+        <table class="data-table" id="tablePersist">
+          <thead><tr><th>類型</th><th>個案數</th><th>平均有效紀錄天數比率</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </details>
+    </div>
+
+    <div class="trap-callout reveal">
+      <div class="trap-figure">
+        <div class="num">49.2%</div>
+        <div class="cap">若誤用「總筆數 ÷ 方案天數」</div>
+      </div>
+      <div class="trap-text">
+        <b>筆數 vs. 天數的計算陷阱：</b>若直接拿 A、B 兩表的原始上傳「筆數」除以方案天數，會被同一天多筆上傳、批次補傳系統性灌水——整體比率會從正確算法的 <b>32.1%</b> 膨脹到 <b>49.2%</b>，個別個案最高甚至可膨脹到 <b>86.1%</b>。正確算法必須先把紀錄去重到「相異且可歸屬正確日期」的日期層級，再計算比率，同一天不論上傳幾筆只算 1 天。
+      </div>
+    </div>
+
+    <div class="callout reveal">
+      <b>為什麼選依從性追蹤，不選熱量計算：</b>約 18% 的照片本身無法辨識份量（多為合菜、模糊或補傳照片），文字紀錄份量單位極不統一（碗／份／一點點混用），連「吃了什麼」都無法精確量化，更遑論精準熱量。相對地，「是否有可歸屬到正確日期的紀錄」只需要「內容可辨識＋上傳時間」，資料品質即可支撐，技術門檻低得多，也更貼近三個月方案真正要驗證的商業問題。
+    </div>
+  </section>
+
+  <section id="boundary" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">本工具不做什麼</div>
+      <h2>刻意不做的五件事</h2>
+      <p>本系統是<b>營養師的執業輔助工具</b>，不是消費者健康 App。「給個案看的都要經過營養師確認」——這條原則是營養師自己設的。</p>
+    </div>
+
+    <div class="boundary-block reveal">
+      <ul class="boundary-list">
+        <li>
+          <span class="boundary-glyph">✕</span>
+          <div class="boundary-text">
+            <strong>自動熱量計算</strong>
+            <span>現有資料的份量精準度不足以支撐可信的熱量數字（約 18% 照片無法辨識份量、文字份量單位不統一），勉強做出來的數字反而有誤導營養師專業判斷的風險。</span>
+          </div>
+        </li>
+        <li>
+          <span class="boundary-glyph">✕</span>
+          <div class="boundary-text">
+            <strong>自動飲食建議</strong>
+            <span>陳營養師本人主動提出「所有要給個案看的東西都要經過營養師確認」的原則；系統若自動產生建議並直接送給個案，等同繞過這個原則，有實質的專業與法規風險。</span>
+          </div>
+        </li>
+        <li>
+          <span class="boundary-glyph">✕</span>
+          <div class="boundary-text">
+            <strong>營養素分析報告</strong>
+            <span>建立在精準熱量／營養素計算之上，Q2 已確認第一版核心指標為依從性而非熱量，此功能的前提尚未成立。</span>
+          </div>
+        </li>
+        <li>
+          <span class="boundary-glyph">✕</span>
+          <div class="boundary-text">
+            <strong>個案排行榜或比較功能</strong>
+            <span>涉及個案間資料比較與個資揭露疑慮，且與核心驗證問題（個案是否持續配合）無直接關聯，屬於周邊功能。</span>
+          </div>
+        </li>
+        <li>
+          <span class="boundary-glyph">✕</span>
+          <div class="boundary-text">
+            <strong>系統自動主動提醒個案</strong>
+            <span>提醒頻率、退場機制客戶尚無共識，貿然自動化可能造成個案反感甚至封鎖官方帳號（詳見 Q4）。</span>
+          </div>
+        </li>
+      </ul>
+      <p class="boundary-principle"><b>共同原則：</b>核心指標與批次檢視流程尚未經過實際使用驗證前，任何涉及自動化判斷並直接影響個案的功能，都應該先排除。多數提案者會直接做出一個自動算熱量的 App；這一節本身就是本案刻意要展示的差異化重點。</p>
+    </div>
+  </section>
+
+  <section id="acceptance" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">驗收標準亮點</div>
+      <h2>把期待改成可驗收條件</h2>
+      <p>「持續記錄」多久算持續？「負擔減輕」減多少才算？以下示範兩條改寫。</p>
+    </div>
+
+    <div class="ac-block reveal">
+      <div class="ac-pair">
+        <div class="ac-before">
+          <span class="ac-tag">改寫前 · 不可驗收</span>
+          <p class="ac-quote">「我比較希望的是，做出來之後個案願意持續記錄下去。」</p>
+        </div>
+        <div class="ac-after">
+          <span class="ac-tag">改寫後 · 可驗收</span>
+          <p class="ac-rewrite">以本次 30 位個案的實測資料為基準線（整體有效紀錄天數比率 32.1%），原型上線後 3 個月內新收案個案，其整體有效紀錄天數比率應不低於此基準線；若低於基準線，需能從營養師端儀表板直接看出是哪些個案、哪個時間點開始下降。</p>
+          <p class="ac-why">改寫後有明確的比對基準（32.1%）與可觀察的判定依據（儀表板是否能定位問題個案與時間點），任何人依此檢查都會得到相同結論。</p>
+        </div>
+      </div>
+
+      <div class="ac-pair">
+        <div class="ac-before">
+          <span class="ac-tag">改寫前 · 不可驗收</span>
+          <p class="ac-quote">「然後我們這邊的負擔也可以減輕一點，這是我最主要的期待啦。」</p>
+        </div>
+        <div class="ac-after">
+          <span class="ac-tag">改寫後 · 可驗收</span>
+          <p class="ac-rewrite">營養師使用批次檢視佇列時，對於已標記「份量可辨識」的紀錄，應能在瀏覽過程中不需另外切換到 Excel 或 LINE 對話記錄查找個案背景資訊；對於「無法判讀」的紀錄，系統應提供一鍵標記並請個案補充說明的功能，取代目前手動於 LINE 逐字輸入詢問的方式。</p>
+          <p class="ac-why">改寫後是可直接操作觀察的具體行為（是否需要切換工具、是否有一鍵標記功能），可以用「是／否」判斷，不依賴主觀感受。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="scope" class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">交付範疇</div>
+      <h2>原型必做四項，明確不做四項</h2>
+      <p>排除項目並非「還沒做完」，而是核心邏輯（有效紀錄天數比率的計算方式、批次檢視佇列的可用性）未經驗證通過前，任何自動化判斷或周邊功能的投入都是浪費。</p>
+    </div>
+
+    <div class="fork-row reveal">
+      <div class="fork-node out-yes"><strong>01　個案端上傳</strong>照片＋文字，第一版僅做「傳得進去」</div>
+      <div class="fork-node out-yes"><strong>02　營養師端批次檢視佇列</strong>每日固定一次，依上傳時間排序，可標記無法判讀</div>
+      <div class="fork-node out-yes"><strong>03　有效紀錄天數儀表板</strong>依比率排序，標示共用帳號與異常個案之營養師註記</div>
+      <div class="fork-node out-yes"><strong>04　標記無法判讀請補充</strong>合菜、模糊、份量不明之照片可標記，觸發個案補充</div>
+    </div>
+    <div class="fork-row reveal" style="margin-top:var(--space-3);">
+      <div class="fork-node out-no"><strong>✕ 自動熱量計算</strong>資料品質不支撐、有專業誤導風險</div>
+      <div class="fork-node out-no"><strong>✕ 自動飲食建議</strong>違背營養師本人設下之確認原則</div>
+      <div class="fork-node out-no"><strong>✕ 營養素分析報告</strong>前提（精準熱量）尚未成立</div>
+      <div class="fork-node out-no"><strong>✕ 個案排行榜／比較</strong>與核心驗證問題無關，涉個資揭露</div>
+    </div>
+
+    <div class="callout reveal">
+      <b>為什麼兩件事缺一不可：</b>客戶只給一句話，看起來像是「需求很自由、可以隨便做」；實際上正相反——沒有規格書代表每一個分歧都要主動問出來，而不是等客戶發現漏洞。從一句話問出五個分歧、用資料證明指標選擇、再明確劃出專業界線，這三件事合起來才是本案真正的交付物，原型只是驗證這套邏輯可行的載體。
+    </div>
+  </section>
+
+  <section id="contact" class="wrap">
+    <div class="contact-card reveal">
+      <div class="contact-info">
+        <div class="contact-name">Zorya</div>
+        <div class="contact-role">FDE &amp; Data Scientist</div>
+        <p class="contact-lede">如果你手上也有一個「客戶只給一句話」的案子——需求全靠你自己問出來，歡迎聊聊怎麼把它變成一份可驗收的規格。</p>
+      </div>
+      <a class="contact-cta" href="mailto:uzang199431465@gmail.com">
+        寄信聊聊這個案例
+        <span class="contact-email">uzang199431465@gmail.com</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p class="footer-position">客戶給的一句話從來不是需求的全部，而是需求的起點——知道要問什麼、知道哪裡該由你決定、也知道哪裡不該自動化，這三件事合起來才是從零建立需求的完整能力。</p>
+  <div class="footer-disclaimer">
+    <p>本頁面所使用之姓名、診所、對話、資料均為合成生成，不對應任何真實個人、診所或案件。本案例情境改編自公開刊登之外包需求。</p>
+    <p>本頁面與相關原型為系統設計與資料分析方法說明，不構成醫療或營養專業意見。所有涉及飲食建議之判斷，均應由執業營養師依個案狀況確認後方可提供。本原型非正式系統開發合約之交付物，僅供概念驗證與作品集展示用途。</p>
+  </div>
+  <div class="footer-meta">營養諮詢飲食紀錄 LIFF 應用 · 作品集案例研究 · 製作與分析：Zorya（FDE &amp; Data Scientist）</div>
+</footer>
+
+<div class="chart-tooltip" id="chartTooltip"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- theme toggle ---------- */
+  var root = document.documentElement;
+  var themeBtn = document.getElementById('themeToggle');
+  function getStoredTheme() {
+    try { return localStorage.getItem('d-case-theme'); } catch (e) { return null; }
+  }
+  function setStoredTheme(v) {
+    try { localStorage.setItem('d-case-theme', v); } catch (e) {}
+  }
+  var stored = getStoredTheme();
+  if (stored === 'light' || stored === 'dark') root.setAttribute('data-theme', stored);
+  themeBtn.addEventListener('click', function () {
+    var current = root.getAttribute('data-theme');
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var effectiveDark = current ? current === 'dark' : prefersDark;
+    var next = effectiveDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    setStoredTheme(next);
+  });
+
+  /* ---------- mobile nav ---------- */
+  var navToggle = document.getElementById('navToggle');
+  var mainNav = document.getElementById('mainNav');
+  navToggle.addEventListener('click', function () {
+    var open = mainNav.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  mainNav.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () { mainNav.classList.remove('open'); });
+  });
+
+  /* ---------- reveal on scroll ---------- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(function (el) { io.observe(el); });
+  } else {
+    revealEls.forEach(function (el) { el.classList.add('is-visible'); });
+  }
+
+  /* ---------- shared tooltip ---------- */
+  var tooltip = document.getElementById('chartTooltip');
+  function showTooltip(evt, html) {
+    tooltip.innerHTML = html;
+    tooltip.classList.add('show');
+    moveTooltip(evt);
+  }
+  function moveTooltip(evt) {
+    var x = evt.clientX, y = evt.clientY;
+    var padding = 14;
+    tooltip.style.left = Math.min(x + padding, window.innerWidth - 270) + 'px';
+    tooltip.style.top = Math.max(y - 40, 8) + 'px';
+  }
+  function hideTooltip() { tooltip.classList.remove('show'); }
+
+  function pct(n) { return n.toFixed(1) + '%'; }
+
+  var COLOR_ACCENT = 'var(--accent)';
+  var COLOR_GRAY = 'var(--gray-status)';
+
+  /* ================= chart: persist vs decay bar chart ================= */
+  var persistData = [
+    { label: '整體平均（全體 30 位個案）', value: 32.1, n: 30, color: COLOR_GRAY, note: '904 天 ÷ 2,820 天' },
+    { label: '持續型個案（10 位）', value: 50.8, n: 10, color: COLOR_ACCENT, note: '前兩週後仍穩定配合' },
+    { label: '衰退型個案（20 位）', value: 22.0, n: 20, color: 'var(--warn)', note: '第二週後大幅減少上傳' }
+  ];
+
+  (function renderPersist() {
+    var container = document.getElementById('cbarPersist');
+    var maxVal = 100;
+
+    persistData.forEach(function (d) {
+      var pctW = Math.max((d.value / maxVal) * 100, 1.2);
+      var row = document.createElement('div');
+      row.className = 'cbar-row';
+
+      var label = document.createElement('div');
+      label.className = 'cbar-label';
+      label.textContent = d.label;
+      row.appendChild(label);
+
+      var track = document.createElement('div');
+      track.className = 'cbar-track';
+
+      var fill = document.createElement('div');
+      fill.className = 'cbar-fill';
+      fill.style.width = pctW + '%';
+      fill.style.background = d.color;
+      fill.tabIndex = 0;
+      fill.addEventListener('mousemove', function (evt) {
+        showTooltip(evt, '<b>' + d.label + '</b><br>' + pct(d.value) + '<br>' + d.note);
+      });
+      fill.addEventListener('mouseleave', hideTooltip);
+      track.appendChild(fill);
+
+      var rest = document.createElement('div');
+      rest.className = 'cbar-rest';
+      track.appendChild(rest);
+
+      var value = document.createElement('span');
+      value.className = 'cbar-value';
+      value.textContent = pct(d.value);
+      track.appendChild(value);
+
+      row.appendChild(track);
+      container.appendChild(row);
+    });
+
+    var tbody = document.querySelector('#tablePersist tbody');
+    persistData.forEach(function (d) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + d.label + '</td><td class="amount num">' + d.n + ' 位</td><td class="amount num">' + pct(d.value) + '</td>';
+      tbody.appendChild(tr);
+    });
+  })();
+
+  window.addEventListener('mousemove', function (evt) {
+    if (tooltip.classList.contains('show')) moveTooltip(evt);
+  });
+})();
+</script>
+<script src="../../assets/works-data.js"></script>
+<script src="../../assets/case-extras.js"></script>
+</body>
+</html>

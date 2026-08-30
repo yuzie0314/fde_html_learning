@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 多語種移工 DEI 認證平台 — Zorya Demo</title>
+<meta name="description" content="五語微課程 → 線上測驗 → QR 電子證書 → 企業戰情室，含語音朗讀的前端技術Demo。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/portfolio-theme.css">
+<style>
+  /* ---------- page-scoped bespoke UI (course / quiz / certificate / dashboard) ----------
+     Colors, radii and shadows below are re-pointed to the shared design-system tokens
+     defined in assets/portfolio-theme.css; only the interactive structure is bespoke. */
+  :root{
+    --demo-bad: #d64545;
+    --demo-bad-soft: rgba(214,69,69,.12);
+  }
+
+  .demo-shell{ max-width: 600px; margin: 0 auto; }
+  .demo-nav{ display:flex; gap:8px; margin-bottom: var(--space-3); }
+  .demo-nav-btn{
+    background:transparent; border:1px solid var(--border-strong); color:var(--ink-muted);
+    padding:7px 14px; border-radius:var(--radius-sm); font-size:12px; cursor:pointer; font-weight:600;
+    font-family:var(--font-sans);
+  }
+  .demo-nav-btn.on{ background:var(--accent-soft); color:var(--accent-ink); border-color:var(--accent); }
+
+  .card{
+    background:var(--surface-card); border:1px solid var(--gridline); border-radius:var(--radius-md);
+    padding:22px; box-shadow:var(--shadow-card);
+  }
+  .card h2{ font-size:20px; margin:14px 0 6px; }
+  .badge{
+    display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:#fff;
+    background:var(--accent); padding:5px 10px; border-radius:999px;
+  }
+  .muted{ color:var(--ink-muted); font-size:13px; line-height:1.6; }
+
+  .langgrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+  .lang{
+    display:flex; align-items:center; gap:12px; background:var(--surface-raised);
+    border:2px solid var(--gridline); border-radius:var(--radius-md); padding:15px; cursor:pointer; transition:.12s;
+  }
+  .lang:hover{ border-color:var(--accent); }
+  .lang .fl{ width:34px; height:34px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; }
+  .lang b{ font-size:15px; }
+  .lang span{ display:block; font-size:11px; color:var(--ink-muted); }
+
+  .scene{
+    background:var(--surface-raised); border-left:3px solid var(--accent); border-radius:var(--radius-sm);
+    padding:14px 16px; margin:16px 0; font-size:15px; line-height:1.7;
+  }
+  .pts{ list-style:none; padding:0; margin:8px 0; }
+  .pts li{ display:flex; gap:10px; align-items:flex-start; padding:8px 0; font-size:14px; }
+  .pts li:before{ content:"✓"; color:var(--good); font-weight:900; flex:none; }
+
+  .btn{
+    width:100%; padding:15px; border:none; border-radius:var(--radius-md); font-size:16px; font-weight:800;
+    cursor:pointer; color:#fff; background:var(--accent); margin-top:16px; box-shadow:var(--shadow-card);
+    font-family:var(--font-sans);
+  }
+  .btn:active{ transform:translateY(2px); }
+  .btn.sec{ background:transparent; color:var(--ink-primary); border:1px solid var(--border-strong); box-shadow:none; }
+  .btn.play{ width:auto; padding:9px 15px; font-size:13px; margin:0; }
+
+  .q{ margin:18px 0; }
+  .q .qt{ font-weight:700; font-size:15px; margin-bottom:10px; }
+  .opt{
+    display:block; background:var(--surface-raised); border:2px solid var(--gridline); border-radius:var(--radius-md);
+    padding:13px 15px; margin-bottom:9px; cursor:pointer; font-size:14px;
+  }
+  .opt.sel{ border-color:var(--accent); background:var(--accent-soft); }
+  .opt.correct{ border-color:var(--good); background:var(--good-soft); }
+  .opt.wrong{ border-color:var(--demo-bad); background:var(--demo-bad-soft); }
+
+  input.name{
+    width:100%; padding:13px 15px; border-radius:var(--radius-md); border:1px solid var(--gridline);
+    background:var(--surface-page); color:var(--ink-primary); font-size:15px; margin-top:8px; font-family:var(--font-sans);
+  }
+
+  /* certificate — intentionally kept as a fixed "paper" visual independent of site theme */
+  .cert{
+    background:linear-gradient(160deg,#fbf7ec,#fff); color:#2a2416; border-radius:var(--radius-md);
+    padding:26px 22px; border:2px solid var(--warn); position:relative; overflow:hidden; text-align:center;
+    box-shadow:var(--shadow-card);
+  }
+  .cert:before{ content:""; position:absolute; inset:8px; border:1.5px solid #e6cf8a; border-radius:calc(var(--radius-md) - 2px); pointer-events:none; }
+  .cert .k{ font-size:12px; color:#9a8a5a; letter-spacing:3px; }
+  .cert h3{ font-size:22px; margin:8px 0 2px; color:#1a1710; font-family:var(--font-serif); }
+  .cert .nm{ font-size:26px; font-weight:900; margin:14px 0 4px; color:#7a5c12; }
+  .cert .cs{ font-size:14px; color:#5a5240; }
+  .cert .meta{ display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px; font-size:11px; color:#7a725a; text-align:left; }
+  .qr{ width:88px; height:88px; background:#fff; border:1px solid #ddd; padding:5px; border-radius:var(--radius-sm); }
+
+  .dash{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0; }
+  .kpi{ background:var(--surface-raised); border:1px solid var(--gridline); border-radius:var(--radius-md); padding:14px; text-align:center; }
+  .kpi b{ display:block; font-size:26px; color:var(--accent-ink); font-family:var(--font-serif); }
+  .kpi span{ font-size:11px; color:var(--ink-muted); }
+  .bars{ background:var(--surface-raised); border:1px solid var(--gridline); border-radius:var(--radius-md); padding:16px; margin-top:6px; }
+  .bar{ display:flex; align-items:center; gap:10px; margin:9px 0; font-size:13px; }
+  .bar .lb{ width:96px; color:var(--ink-muted); }
+  .bar .tr{ flex:1; height:12px; background:var(--surface-page); border-radius:6px; overflow:hidden; }
+  .bar .fi{ height:100%; background:var(--accent); }
+
+  .hide{ display:none; }
+  .steps{ display:flex; gap:6px; margin:14px 0 2px; }
+  .steps i{ flex:1; height:4px; border-radius:3px; background:var(--gridline); }
+  .steps i.on{ background:var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="disclaimer-strip">此頁面為前端技術Demo，非正式上線產品；語音朗讀使用瀏覽器內建 Web Speech API，QR 為示範用視覺、非可掃描。</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="../index.html">← Zorya<span>回Demo 列表</span></a>
+    <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div class="eyebrow">練習 DEMO · 多語系平台</div>
+    <h1>AI 多語種移工 DEI 合規認證平台</h1>
+    <p class="lede">五語微課程 → 線上測驗 → QR 電子證書 → 企業戰情室：AI 依學員語言自動生成教材與測驗，並即時彙整全體移工的合規進度。</p>
+    <p class="context-line">AI-Bridge（多語生成）· AI-Edu（教材與測驗）· 企業戰情室（彙整儀表板）</p>
+  </section>
+
+  <section class="wrap">
+    <div class="section-head reveal">
+      <div class="section-kicker">互動 DEMO</div>
+      <h2>立即體驗</h2>
+      <p>選擇語言開始微課程，完成測驗後即可產生電子證書；或切換至企業戰情室查看彙整儀表板。</p>
+    </div>
+
+    <div class="demo-shell reveal">
+      <div class="demo-nav">
+        <button id="nvLearn" class="demo-nav-btn on" onclick="goLearn()">培訓認證</button>
+        <button id="nvDash" class="demo-nav-btn" onclick="goDash()">企業戰情室</button>
+      </div>
+      <div id="app"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="footer-meta">Zorya · FDE &amp; Data Scientist 作品集 — Demo</div>
+</footer>
+
+<script src="../../assets/portfolio-theme.js"></script>
+<script>
+const I18N={
+ zh:{name:"中文",en:"Chinese",col:"#d33",pick:"請選擇您的語言",picksub:"AI 依學員語言自動生成教材與測驗",
+   course:"職場平等與尊重",start:"開始微課程",lesson:"情境微課程",gen:"AI 生成教材",play:"🔊 朗讀教材",
+   scene:"每位員工，不論國籍、性別或宗教，都應獲得平等對待與尊重。若遭遇歧視或不公平對待，你有權透過公司申訴管道反映。",
+   pts:["平等對待，不歧視","安全的工作環境","暢通的申訴管道"],toExam:"前往測驗",
+   exam:"線上測驗",submit:"交卷",namePH:"請輸入您的姓名",passed:"恭喜通過認證！",failed:"未通過，請再試一次",retry:"重新測驗",
+   score:"得分",certK:"CERTIFICATE OF COMPLIANCE",certTitle:"DEI 合規認證證書",
+   completes:"完成課程並通過測驗",issued:"發證日期",cid:"證書編號",verify:"掃描 QR 驗證",getCert:"產生電子證書",again:"換一種語言體驗",
+   Q:[{q:"若在職場遭遇歧視，最適當的做法是？",o:["透過公司申訴管道反映","默默忍耐","立刻辭職"],a:0},
+      {q:"下列何者是員工的基本權利？",o:["平等對待與尊重","無償加班","被任意調職"],a:0},
+      {q:"安全的工作環境是誰的責任？",o:["雇主與全體員工共同","只有新進員工","沒有人"],a:0}]},
+ en:{name:"English",en:"English",col:"#2563eb",pick:"Select your language",picksub:"AI auto-generates materials & quiz in the learner's language",
+   course:"Workplace Equality & Respect",start:"Start Micro-course",lesson:"Scenario Micro-course",gen:"AI-generated",play:"🔊 Read aloud",
+   scene:"Every worker, regardless of nationality, gender or religion, deserves equal treatment and respect. If you face discrimination or unfair treatment, you have the right to report it through the company's grievance channel.",
+   pts:["Equal treatment, no discrimination","A safe workplace","Accessible grievance channel"],toExam:"Go to Quiz",
+   exam:"Online Quiz",submit:"Submit",namePH:"Enter your name",passed:"Congratulations, you passed!",failed:"Not passed, please try again",retry:"Retry",
+   score:"Score",certK:"CERTIFICATE OF COMPLIANCE",certTitle:"DEI Compliance Certificate",
+   completes:"completed the course and passed the assessment",issued:"Issued",cid:"Cert No.",verify:"Scan QR to verify",getCert:"Generate Certificate",again:"Try another language",
+   Q:[{q:"If you face discrimination at work, the best action is?",o:["Report via the company grievance channel","Endure silently","Quit immediately"],a:0},
+      {q:"Which is a basic right of a worker?",o:["Equal treatment and respect","Unpaid overtime","Arbitrary transfer"],a:0},
+      {q:"Who is responsible for a safe workplace?",o:["Both employer and all workers","Only new workers","No one"],a:0}]},
+ id:{name:"Bahasa Indonesia",en:"Indonesian",col:"#e11",pick:"Pilih bahasa Anda",picksub:"AI membuat materi & kuis sesuai bahasa peserta",
+   course:"Kesetaraan & Rasa Hormat di Tempat Kerja",start:"Mulai Kursus",lesson:"Kursus Skenario",gen:"Dibuat oleh AI",play:"🔊 Bacakan",
+   scene:"Setiap pekerja, tanpa memandang kebangsaan, jenis kelamin, atau agama, berhak mendapat perlakuan setara dan hormat. Jika mengalami diskriminasi atau perlakuan tidak adil, Anda berhak melaporkannya melalui saluran pengaduan perusahaan.",
+   pts:["Perlakuan setara, tanpa diskriminasi","Tempat kerja yang aman","Saluran pengaduan yang mudah diakses"],toExam:"Ke Kuis",
+   exam:"Kuis Online",submit:"Kirim",namePH:"Masukkan nama Anda",passed:"Selamat, Anda lulus!",failed:"Belum lulus, coba lagi",retry:"Ulangi",
+   score:"Skor",certK:"SERTIFIKAT KEPATUHAN",certTitle:"Sertifikat Kepatuhan DEI",
+   completes:"menyelesaikan kursus dan lulus penilaian",issued:"Diterbitkan",cid:"No. Sertifikat",verify:"Pindai QR untuk verifikasi",getCert:"Buat Sertifikat",again:"Coba bahasa lain",
+   Q:[{q:"Jika mengalami diskriminasi di tempat kerja, tindakan terbaik adalah?",o:["Melapor melalui saluran pengaduan perusahaan","Diam dan menahan","Langsung berhenti kerja"],a:0},
+      {q:"Manakah hak dasar pekerja?",o:["Perlakuan setara dan hormat","Lembur tanpa bayaran","Dipindah sewenang-wenang"],a:0},
+      {q:"Siapa yang bertanggung jawab atas tempat kerja yang aman?",o:["Pemberi kerja dan semua pekerja","Hanya pekerja baru","Tidak ada"],a:0}]},
+ vi:{name:"Tiếng Việt",en:"Vietnamese",col:"#c00",pick:"Chọn ngôn ngữ của bạn",picksub:"AI tự tạo tài liệu & bài kiểm tra theo ngôn ngữ học viên",
+   course:"Bình đẳng & Tôn trọng tại nơi làm việc",start:"Bắt đầu khóa học",lesson:"Khóa học tình huống",gen:"Do AI tạo",play:"🔊 Đọc to",
+   scene:"Mọi người lao động, bất kể quốc tịch, giới tính hay tôn giáo, đều xứng đáng được đối xử bình đẳng và tôn trọng. Nếu bị phân biệt đối xử hoặc đối xử bất công, bạn có quyền phản ánh qua kênh khiếu nại của công ty.",
+   pts:["Đối xử bình đẳng, không phân biệt","Nơi làm việc an toàn","Kênh khiếu nại thông suốt"],toExam:"Đến bài kiểm tra",
+   exam:"Bài kiểm tra trực tuyến",submit:"Nộp bài",namePH:"Nhập tên của bạn",passed:"Chúc mừng, bạn đã đạt!",failed:"Chưa đạt, vui lòng thử lại",retry:"Làm lại",
+   score:"Điểm",certK:"CHỨNG CHỈ TUÂN THỦ",certTitle:"Chứng chỉ Tuân thủ DEI",
+   completes:"đã hoàn thành khóa học và vượt qua bài đánh giá",issued:"Ngày cấp",cid:"Số chứng chỉ",verify:"Quét QR để xác minh",getCert:"Tạo chứng chỉ",again:"Thử ngôn ngữ khác",
+   Q:[{q:"Nếu bị phân biệt đối xử tại nơi làm việc, cách tốt nhất là?",o:["Phản ánh qua kênh khiếu nại của công ty","Im lặng chịu đựng","Nghỉ việc ngay"],a:0},
+      {q:"Đâu là quyền cơ bản của người lao động?",o:["Được đối xử bình đẳng và tôn trọng","Tăng ca không lương","Bị điều chuyển tùy tiện"],a:0},
+      {q:"Ai chịu trách nhiệm cho nơi làm việc an toàn?",o:["Cả người sử dụng lao động và tất cả người lao động","Chỉ lao động mới","Không ai"],a:0}]},
+ th:{name:"ไทย",en:"Thai",col:"#1e40af",pick:"เลือกภาษาของคุณ",picksub:"AI สร้างสื่อและแบบทดสอบตามภาษาของผู้เรียน",
+   course:"ความเท่าเทียมและการเคารพในที่ทำงาน",start:"เริ่มบทเรียน",lesson:"บทเรียนสถานการณ์",gen:"สร้างโดย AI",play:"🔊 อ่านออกเสียง",
+   scene:"พนักงานทุกคนไม่ว่าจะสัญชาติ เพศ หรือศาสนาใด ควรได้รับการปฏิบัติอย่างเท่าเทียมและได้รับความเคารพ หากพบการเลือกปฏิบัติหรือการปฏิบัติที่ไม่เป็นธรรม คุณมีสิทธิ์แจ้งผ่านช่องทางร้องเรียนของบริษัท",
+   pts:["ปฏิบัติอย่างเท่าเทียม ไม่เลือกปฏิบัติ","สถานที่ทำงานที่ปลอดภัย","ช่องทางร้องเรียนที่เข้าถึงได้"],toExam:"ไปที่แบบทดสอบ",
+   exam:"แบบทดสอบออนไลน์",submit:"ส่งคำตอบ",namePH:"กรอกชื่อของคุณ",passed:"ยินดีด้วย คุณสอบผ่าน!",failed:"ยังไม่ผ่าน กรุณาลองใหม่",retry:"ทำอีกครั้ง",
+   score:"คะแนน",certK:"ใบรับรองการปฏิบัติตามกฎ",certTitle:"ใบรับรอง DEI",
+   completes:"เรียนจบหลักสูตรและผ่านการประเมิน",issued:"วันที่ออก",cid:"เลขที่ใบรับรอง",verify:"สแกน QR เพื่อตรวจสอบ",getCert:"สร้างใบรับรอง",again:"ลองภาษาอื่น",
+   Q:[{q:"หากถูกเลือกปฏิบัติในที่ทำงาน ควรทำอย่างไร?",o:["แจ้งผ่านช่องทางร้องเรียนของบริษัท","อดทนเงียบ ๆ","ลาออกทันที"],a:0},
+      {q:"ข้อใดเป็นสิทธิขั้นพื้นฐานของพนักงาน?",o:["ได้รับการปฏิบัติที่เท่าเทียมและเคารพ","ทำงานล่วงเวลาโดยไม่ได้ค่าจ้าง","ถูกโยกย้ายตามอำเภอใจ"],a:0},
+      {q:"ใครรับผิดชอบต่อความปลอดภัยในที่ทำงาน?",o:["ทั้งนายจ้างและพนักงานทุกคน","เฉพาะพนักงานใหม่","ไม่มีใคร"],a:0}]}
+};
+const VOICE={zh:"zh-TW",en:"en-US",id:"id-ID",vi:"vi-VN",th:"th-TH"};
+const app=document.getElementById('app');
+let lang='zh', step='lang', answers=[null,null,null], learnerName='', mode='learn';
+
+function T(){return I18N[lang];}
+function setStep(s){step=s;render();}
+function stepbar(n){return `<div class="steps">${[0,1,2,3].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div>`;}
+
+function render(){
+  if(mode==='dash'){renderDash();return;}
+  const t=T();
+  if(step==='lang'){
+    app.innerHTML=`<div class="card">
+      <span class="badge">AI-Bridge · 多語生成</span>
+      <h2>${t.pick}</h2><div class="muted">${t.picksub}</div>
+      <div class="langgrid">${Object.keys(I18N).map(k=>`
+        <div class="lang" onclick="pickLang('${k}')">
+          <div class="fl" style="background:${I18N[k].col}">${k.toUpperCase()}</div>
+          <div><b>${I18N[k].name}</b><span>${I18N[k].en}</span></div>
+        </div>`).join('')}</div></div>`;
+  }
+  else if(step==='lesson'){
+    app.innerHTML=`<div class="card">${stepbar(0)}
+      <span class="badge">${t.gen} · AI-Edu</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+        <h2 style="margin:0">${t.course}</h2>
+        <button class="btn play" onclick="speak()">${t.play}</button></div>
+      <div class="muted">${t.lesson}</div>
+      <div class="scene">${t.scene}</div>
+      <ul class="pts">${t.pts.map(p=>`<li>${p}</li>`).join('')}</ul>
+      <button class="btn" onclick="setStep('exam')">${t.toExam} →</button>
+      <button class="btn sec" onclick="setStep('lang')">${t.again}</button></div>`;
+    setTimeout(speak,300);
+  }
+  else if(step==='exam'){
+    app.innerHTML=`<div class="card">${stepbar(1)}
+      <span class="badge">AI-Edu · 線上考試</span><h2>${t.exam}</h2>
+      ${t.Q.map((q,qi)=>`<div class="q"><div class="qt">${qi+1}. ${q.q}</div>
+        ${q.o.map((o,oi)=>`<label class="opt" id="o${qi}_${oi}" onclick="pick(${qi},${oi})">${o}</label>`).join('')}</div>`).join('')}
+      <button class="btn" onclick="grade()">${t.submit}</button></div>`;
+    answers=[null,null,null];
+  }
+  else if(step==='name'){
+    app.innerHTML=`<div class="card">${stepbar(2)}
+      <span class="badge">${t.passed}</span>
+      <h2>${t.score}: ${score}/3　✅</h2>
+      <div class="muted">${t.certTitle}</div>
+      <input class="name" id="nm" placeholder="${t.namePH}" value="${learnerName}">
+      <button class="btn" onclick="makeCert()">${t.getCert} →</button></div>`;
+  }
+  else if(step==='cert'){
+    const d=new Date(); const ds=d.getFullYear()+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0');
+    const cid='DEI-'+d.getFullYear()+'-'+Math.floor(100000+Math.random()*899999);
+    app.innerHTML=`<div class="card">${stepbar(3)}
+      <div class="cert">
+        <div class="k">${t.certK}</div>
+        <h3>${t.certTitle}</h3>
+        <div class="nm">${learnerName||'—'}</div>
+        <div class="cs">${t.completes}<br><b>${t.course}</b></div>
+        <div class="meta">
+          <div>${t.issued}: ${ds}<br>${t.cid}: ${cid}<br>${t.verify}</div>
+          <div class="qr">${qrSVG(cid)}</div>
+        </div>
+      </div>
+      <button class="btn" onclick="goDash()">查看企業戰情室 →</button>
+      <button class="btn sec" onclick="setStep('lang')">${t.again}</button></div>`;
+  }
+}
+window.pickLang=(k)=>{lang=k;setStep('lesson');};
+window.pick=(qi,oi)=>{answers[qi]=oi;T().Q[qi].o.forEach((_,i)=>{document.getElementById('o'+qi+'_'+i).classList.toggle('sel',i===oi);});};
+let score=0;
+window.grade=()=>{
+  if(answers.includes(null)){alert('請作答所有題目 / Please answer all');return;}
+  score=T().Q.reduce((n,q,i)=>n+(answers[i]===q.a?1:0),0);
+  T().Q.forEach((q,qi)=>{const s=document.getElementById('o'+qi+'_'+q.a);s&&s.classList.add('correct');
+    if(answers[qi]!==q.a){const w=document.getElementById('o'+qi+'_'+answers[qi]);w&&w.classList.add('wrong');}});
+  setTimeout(()=>{ if(score>=2) setStep('name'); else { alert(T().failed+' ('+score+'/3)'); setStep('exam'); } },900);
+};
+window.makeCert=()=>{learnerName=document.getElementById('nm').value.trim()||'Worker';setStep('cert');};
+window.speak=()=>{ if(!window.speechSynthesis)return; const u=new SpeechSynthesisUtterance(T().scene);
+  u.lang=VOICE[lang];u.rate=1; speechSynthesis.cancel(); speechSynthesis.speak(u); };
+window.setStep=setStep;
+window.goLearn=()=>{mode='learn';document.getElementById('nvLearn').classList.add('on');document.getElementById('nvDash').classList.remove('on');render();};
+window.goDash=()=>{mode='dash';document.getElementById('nvDash').classList.add('on');document.getElementById('nvLearn').classList.remove('on');renderDash();};
+
+// pseudo-QR (示範用視覺，非可掃描)
+function qrSVG(seed){
+  let h=0;for(const c of seed)h=(h*31+c.charCodeAt(0))>>>0;
+  const N=21,cell=100/N;let r='<svg viewBox="0 0 100 100" width="78" height="78">';
+  const finder=(x,y)=>{r+=`<rect x="${x*cell}" y="${y*cell}" width="${cell*7}" height="${cell*7}" fill="#111"/>`+
+    `<rect x="${(x+1)*cell}" y="${(y+1)*cell}" width="${cell*5}" height="${cell*5}" fill="#fff"/>`+
+    `<rect x="${(x+2)*cell}" y="${(y+2)*cell}" width="${cell*3}" height="${cell*3}" fill="#111"/>`;};
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    const inF=(x<7&&y<7)||(x>=N-7&&y<7)||(x<7&&y>=N-7);
+    if(inF)continue;
+    h=(h*1103515245+12345)>>>0;
+    if((h>>16&1)) r+=`<rect x="${x*cell}" y="${y*cell}" width="${cell}" height="${cell}" fill="#111"/>`;
+  }
+  finder(0,0);finder(N-7,0);finder(0,N-7);
+  return r+'</svg>';
+}
+
+function renderDash(){
+  app.innerHTML=`<div class="card">
+    <span class="badge">AI-Edu · 企業端數據戰情室</span>
+    <h2 style="margin-top:10px">企業合規儀表板</h2>
+    <div class="muted">即時掌握全體移工 DEI 認證進度（示範數據）</div>
+    <div class="dash">
+      <div class="kpi"><b>128</b><span>應訓人數</span></div>
+      <div class="kpi"><b>92%</b><span>完訓率</span></div>
+      <div class="kpi"><b>87%</b><span>認證通過率</span></div>
+    </div>
+    <div class="bars">
+      <div style="font-size:13px;color:var(--ink-muted);margin-bottom:8px">各語言完訓分佈</div>
+      ${[['印尼 Indonesia',88],['越南 Vietnam',76],['泰國 Thailand',54],['菲律賓 English',40],['中文 Chinese',22]]
+        .map(([l,v])=>`<div class="bar"><span class="lb">${l}</span><div class="tr"><div class="fi" style="width:${v}%"></div></div><span>${v}</span></div>`).join('')}
+    </div>
+    <div class="bars" style="margin-top:12px">
+      <div style="font-size:13px;color:var(--ink-muted);margin-bottom:8px">最新發證紀錄</div>
+      <div class="bar"><span class="lb">DEI-2026-482913</span><span style="color:var(--ink-muted)">Nguyen V. · 09:41 · 通過</span></div>
+      <div class="bar"><span class="lb">DEI-2026-482912</span><span style="color:var(--ink-muted)">Sari D. · 09:37 · 通過</span></div>
+      <div class="bar"><span class="lb">DEI-2026-482911</span><span style="color:var(--ink-muted)">Somchai P. · 09:30 · 通過</span></div>
+    </div>
+    <button class="btn sec" onclick="goLearn()">← 回到培訓認證</button></div>`;
+}
+render();
+</script>
+</body>
+</html>

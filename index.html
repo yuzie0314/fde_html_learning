@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zorya — FDE & Data Scientist 作品集</title>
+<meta name="description" content="六個 FDE（Forward-Deployed Engineer）案例研究，涵蓋診斷、分類追溯、原型收斂、需求釐清、合規查核、產能規模化；另附技術Demo。">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Zorya">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:site_name" content="Zorya — FDE & Data Scientist">
+<meta property="og:title" content="Zorya — FDE & Data Scientist 作品集">
+<meta property="og:description" content="六個 FDE 案例研究：診斷、分類追溯、原型收斂、需求釐清、合規查核、產能規模化。">
+<meta property="og:image" content="assets/img/og-home.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Zorya — FDE & Data Scientist 作品集">
+<meta name="twitter:description" content="六個 FDE 案例研究，另附技術Demo。">
+<meta name="twitter:image" content="assets/img/og-home.jpg">
+
+<meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "name": "Zorya — FDE & Data Scientist 作品集",
+  "description": "六個 FDE 案例研究，涵蓋診斷、分類追溯、原型收斂、需求釐清、合規查核、產能規模化；另附技術Demo。",
+  "inLanguage": "zh-Hant",
+  "disclaimer": "作品集中的案例研究情境改編自公開刊登之外包需求，所有資料為合成生成，不對應任何真實個人或案件。",
+  "author": {
+    "@type": "Person",
+    "name": "Zorya",
+    "jobTitle": "FDE & Data Scientist",
+    "email": "mailto:uzang199431465@gmail.com"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/portfolio-theme.css">
+<link rel="preload" as="image" href="assets/img/hero.webp">
+</head>
+<body>
+
+<div class="disclaimer-strip">案例情境改編自公開外包需求，公司名、人名、金額均為虛構合成；Demo 為技術練習，非上線產品。</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html">Zorya<span>FDE &amp; Data Scientist</span></a>
+    <nav class="main-nav links" id="mainNav">
+      <a href="#works">案例研究</a>
+      <a href="#demos">Demo</a>
+      <a href="#contact">聯絡</a>
+    </nav>
+    <div style="display:flex; align-items:center;">
+      <button class="nav-toggle" id="navToggle" aria-label="開啟選單" aria-expanded="false">☰</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ========== HERO ========== -->
+  <section class="hero-split wrap">
+    <div class="hero-copy">
+      <div class="eyebrow">FDE &amp; Data Scientist</div>
+      <h1>把講不清楚的問題，變成講得清楚的交付物。</h1>
+      <p class="lede">客戶說的需求，往往不是真正該解決的問題。六個案例，示範怎麼找到那個問題。</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#works">看 <span data-count="cases">6</span> 個案例 ↓</a>
+        <a class="btn btn-ghost" href="#contact">寄信聊聊</a>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <img src="assets/img/hero.webp" alt="" width="1536" height="1024" fetchpriority="high" onerror="this.classList.add('is-missing')">
+      <div class="visual-fallback"></div>
+    </div>
+  </section>
+
+  <!-- ========== CASES (rendered from assets/works-data.js) ========== -->
+  <section id="works" class="wrap tight">
+    <div class="section-row">
+      <h2>案例研究<span class="count"><span data-count="cases">6</span> 件</span></h2>
+      <a href="cases/index.html">列表頁 →</a>
+    </div>
+    <div class="works-grid" data-works="cases" data-root="."></div>
+  </section>
+
+  <!-- ========== HOW I WORK ========== -->
+  <section class="wrap tight">
+    <div class="section-row"><h2>每一案都走同一條路</h2></div>
+    <div class="steps reveal">
+      <div class="step"><span class="n">1</span><div><b>先聽原話</b><span>把客戶「講不清楚」的話逐字留下來。</span></div></div>
+      <div class="step"><span class="n">2</span><div><b>找真問題</b><span>用資料把「說的需求」換成「該解的問題」。</span></div></div>
+      <div class="step"><span class="n">3</span><div><b>交可驗收的東西</b><span>合成資料、原型、清單——每一項都能重算。</span></div></div>
+    </div>
+  </section>
+
+  <!-- ========== DEMOS ========== -->
+  <section id="demos" class="wrap tight">
+    <div class="section-row">
+      <h2>Demo<span class="count"><span data-count="demos">6</span> 件</span></h2>
+      <a href="demos/index.html">列表頁 →</a>
+    </div>
+    <div class="works-grid" data-works="demos" data-root="."></div>
+  </section>
+
+  <!-- ========== CONTACT ========== -->
+  <section id="contact" class="wrap tight">
+    <div class="contact-card reveal">
+      <div class="contact-info">
+        <div class="contact-name">Zorya</div>
+        <div class="contact-role">FDE &amp; Data Scientist</div>
+        <p class="contact-lede">手上有「客戶講不清楚要什麼」或「資料很多、沒人整理得出來」的案子？歡迎聊聊。</p>
+      </div>
+      <a class="contact-cta" href="mailto:uzang199431465@gmail.com">
+        寄信聊聊
+        <span class="contact-email">uzang199431465@gmail.com</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p class="footer-position">交付物的價值，不是把客戶說的話做出來，而是先弄清楚客戶真正該問的問題是什麼。</p>
+  <div class="footer-disclaimer">
+    <p>案例研究區所使用之公司名、人名、金額、資料均為虛構合成，情境改編自公開刊登之外包需求，不對應任何真實個人或案件。各案內部之法律／法規相關敘述僅為資料分析方法之工作假設，不構成法律或法規意見。</p>
+    <p>Demo 區為前端技術與 UI 練習作品，非正式上線產品，內容資料亦為示範用途。</p>
+  </div>
+  <div class="footer-meta">Zorya · FDE &amp; Data Scientist 作品集</div>
+</footer>
+
+<div class="chart-tooltip" id="chartTooltip"></div>
+
+<script src="assets/works-data.js"></script>
+<script src="assets/portfolio-theme.js"></script>
+</body>
+</html>

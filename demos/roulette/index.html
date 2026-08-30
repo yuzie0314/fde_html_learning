@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>推薦幸運輪盤 — Zorya Demo</title>
+<meta name="description" content="姓名手機登入、推薦成交累積抽獎次數、依次數動態調整中獎機率的互動輪盤前端Demo。">
+<meta name="author" content="Zorya">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/portfolio-theme.css">
+<style>
+  /* ---- roulette demo: 復古遊藝場 × 文青灰調 × 像素元件 ---- */
+  :root{
+    --rl-brand:#cdb59b;          /* 奶茶：主色（按鈕、指針備援） */
+    --rl-brass:#b89a5e;          /* 霧面黃銅 */
+    --rl-brass-deep:#8c7040;
+    --rl-ink:#2b2925;
+    --rl-tint:color-mix(in srgb, var(--rl-brand) 14%, var(--surface-page));   /* 卡片底色帶一點 tint */
+  }
+  .back-link { display:inline-block; font-size:14px; color:var(--ink-secondary); text-decoration:none; margin-bottom:var(--space-2); }
+  .back-link:hover { color:var(--ink-primary); }
+  .px{ image-rendering:pixelated; image-rendering:crisp-edges; }
+
+  .rl-shell { max-width:440px; margin:0 auto; }
+  .rl-card { background:var(--rl-tint); border:1px solid var(--gridline); border-radius:18px; padding:var(--space-4) var(--space-3); }
+
+  .rl-topline { text-align:center; margin:0 0 var(--space-2); }
+  .rl-topline .k { font-size:11px; letter-spacing:4px; color:var(--rl-brass-deep); font-weight:700; }
+  .rl-topline h2 { font-family:var(--font-serif); font-size:20px; margin:4px 0 0; font-weight:700; color:var(--ink-primary); letter-spacing:.02em; }
+  .rl-topline h2 span { color:var(--rl-brass-deep); }
+  .rl-subline { text-align:center; font-size:14px; color:var(--ink-muted); margin-bottom:4px; }
+  .rl-mascot { display:block; width:112px; height:112px; margin:0 auto 4px; }
+  .rl-mascot.is-missing { display:none; }
+
+  .rl-label { display:block; font-size:13px; color:var(--ink-muted); margin:14px 0 6px; }
+  .rl-input { width:100%; padding:13px 14px; border-radius:10px; border:1px solid var(--border-strong); background:var(--surface-raised); color:var(--ink-primary); font-size:16px; outline:none; font-family:var(--font-sans); }
+  .rl-input:focus { border-color:var(--rl-brass); }
+
+  .rl-btn { width:100%; padding:14px; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; margin-top:var(--space-3); color:var(--rl-ink); background:var(--rl-brand); transition:transform .15s ease, opacity .15s ease; font-family:var(--font-sans); }
+  .rl-btn:hover { opacity:.92; transform:translateY(-1px); }
+  .rl-btn:active { transform:translateY(1px); }
+  .rl-btn:disabled { cursor:not-allowed; opacity:.45; transform:none; }
+  .rl-btn.ghost { background:transparent; color:var(--ink-primary); border:1px solid var(--border-strong); }
+  .rl-hint { font-size:12px; color:var(--ink-muted); text-align:center; margin-top:var(--space-3); line-height:1.6; }
+
+  /* ---- 輪盤舞台：conic 轉盤在最底，像素雕花框、指針、圓章疊在上面 ---- */
+  .rl-stage { position:relative; width:320px; height:320px; margin:var(--space-2) auto 4px; }
+  .rl-wheel { position:absolute; inset:24px; border-radius:50%; transition:transform 5s cubic-bezier(.17,.67,.2,1); box-shadow:0 0 0 6px var(--surface-raised), 0 0 0 8px var(--rl-brass); }
+  .rl-rim { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:3; }
+  .rl-rim.is-missing { display:none; }
+  .rl-pointer { position:absolute; top:-14px; left:50%; transform:translateX(-50%); z-index:6; width:52px; height:52px; pointer-events:none; }
+  .rl-pointer.is-missing { display:none; }
+  .rl-pointer-css { position:absolute; top:-2px; left:50%; transform:translateX(-50%); z-index:5; width:0; height:0; border-left:13px solid transparent; border-right:13px solid transparent; border-top:24px solid var(--rl-brass-deep); }
+  .rl-stage.has-pointer .rl-pointer-css { display:none; }
+  .rl-hub { position:absolute; top:50%; left:50%; width:72px; height:72px; transform:translate(-50%,-50%); z-index:4; display:flex; align-items:center; justify-content:center; }
+  .rl-hub img { width:100%; height:100%; }
+  .rl-hub img.is-missing { display:none; }
+  .rl-hub .hub-css { position:absolute; inset:8px; border-radius:50%; background:var(--rl-brass); border:3px solid var(--rl-brass-deep); color:#fff; font-weight:900; font-size:11px; text-align:center; line-height:1.3; display:flex; align-items:center; justify-content:center; }
+  .rl-hub.has-img .hub-css { display:none; }
+  .seg-label { position:absolute; left:50%; top:50%; transform-origin:0 0; font-size:12px; font-weight:700; white-space:nowrap; pointer-events:none; color:var(--rl-ink); }
+
+  .rl-stats { display:flex; gap:10px; margin:var(--space-3) 0 4px; }
+  .rl-stat { flex:1; background:var(--surface-raised); border:1px solid var(--gridline); border-radius:12px; padding:12px 8px; text-align:center; }
+  .rl-stat b { display:block; font-size:22px; color:var(--rl-brass-deep); font-family:var(--font-serif); }
+  .rl-stat span { font-size:11px; color:var(--ink-muted); }
+
+  .rl-panel { margin-top:var(--space-3); background:var(--surface-raised); border:1px dashed var(--border-strong); border-radius:12px; padding:14px; }
+  .rl-panel h3 { margin:0 0 4px; font-size:13px; color:var(--rl-brass-deep); font-family:var(--font-sans); }
+  .rl-panel p { margin:0 0 10px; font-size:11px; color:var(--ink-muted); }
+  .rl-row { display:flex; gap:8px; }
+  .rl-row .rl-input { flex:1; }
+  .rl-row .rl-btn { margin-top:0; width:auto; padding:13px 16px; white-space:nowrap; }
+
+  /* toast：中獎 = 彩帶 GIF + 招財貓；銘謝惠顧 = 票根 */
+  .toast { position:fixed; left:50%; top:20%; transform:translateX(-50%) scale(.9); opacity:0; background:var(--surface-raised); color:var(--ink-primary); font-weight:800; font-size:18px; padding:18px 26px 20px; border-radius:16px; border:2px solid var(--rl-brass); z-index:50; pointer-events:none; transition:.3s; text-align:center; min-width:240px; }
+  .toast.show { opacity:1; transform:translateX(-50%) scale(1); }
+  .toast.lose { border-color:var(--border-strong); color:var(--ink-secondary); }
+  .toast .t-art { position:relative; width:120px; height:120px; margin:0 auto 6px; display:none; }
+  .toast .t-art:has(img:not(.is-missing)) { display:block; }
+  .toast .t-art img { position:absolute; inset:0; width:100%; height:100%; }
+  .toast .t-art img.is-missing { display:none; }
+  .toast .t-msg { display:block; }
+  .hidden { display:none; }
+
+  .rl-list { margin-top:10px; display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font-size:11px; background:var(--surface-raised); border:1px solid var(--gridline); padding:5px 9px; border-radius:999px; color:var(--ink-secondary); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="../index.html">Zorya<span>FDE &amp; Data Scientist</span></a>
+    <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap" style="padding-bottom:var(--space-3);">
+    <a class="back-link" href="../index.html">← 回Demo 列表</a>
+    <div class="eyebrow" style="margin-top:var(--space-2);">互動元件 · Demo</div>
+    <h1 style="font-size:clamp(24px, 3.6vw, 34px);">推薦幸運輪盤</h1>
+    <p class="lede" style="font-size:16px;">會員登入後，每筆推薦成交可累積一次抽獎機會；推薦滿 10 位成交即可達到 100% 中獎率，機率會隨推薦數即時調整。姓名與手機號碼僅存於本機瀏覽器展示用途，不會上傳或串接真實會員系統。</p>
+  </section>
+
+  <section class="wrap" style="padding-top:0;">
+    <div class="rl-shell reveal">
+
+      <div id="loginView" class="rl-card">
+        <img class="rl-mascot px" src="img/cat.gif" alt="招財貓揮手" width="160" height="160" onerror="this.classList.add('is-missing')">
+        <div class="rl-topline"><div class="k">集 富 講 堂</div><h2>會員<span>推薦獎勵</span>輪盤</h2></div>
+        <div class="rl-subline">會員登入</div>
+        <label class="rl-label">姓名</label>
+        <input class="rl-input" id="name" placeholder="王小明" autocomplete="off">
+        <label class="rl-label">手機號碼</label>
+        <input class="rl-input" id="phone" placeholder="0912345678" inputmode="numeric" maxlength="10">
+        <button class="rl-btn" id="loginBtn">登入 · 進入推薦獎勵</button>
+        <div class="rl-hint">＊投標展示版，資料僅存本機瀏覽器，不上傳。<br>正式版將串接 OTP 簡訊驗證與會員資料庫。</div>
+      </div>
+
+      <div id="gameView" class="rl-card hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-size:14px;color:var(--ink-secondary)">Hi，<b id="uName" style="color:var(--ink-primary)"></b> 會員</div>
+          <button class="rl-btn ghost" style="width:auto;margin:0;padding:8px 12px;font-size:12px" id="logoutBtn">登出</button>
+        </div>
+        <div class="rl-stage" id="stage">
+          <div class="rl-pointer-css"></div>
+          <img class="rl-pointer px" src="img/pointer.png" alt="" width="128" height="128" onload="document.getElementById('stage').classList.add('has-pointer')" onerror="this.classList.add('is-missing')">
+          <div class="rl-wheel" id="wheel"></div>
+          <img class="rl-rim px" src="img/rim.png" alt="" width="512" height="512" onerror="this.classList.add('is-missing')">
+          <div class="rl-hub" id="hub"><div class="hub-css">集富<br>抽獎</div><img class="px" src="img/hub.png" alt="" width="128" height="128" onload="document.getElementById('hub').classList.add('has-img')" onerror="this.classList.add('is-missing')"></div>
+        </div>
+        <div class="rl-stats">
+          <div class="rl-stat"><b id="dealCount">0</b><span>推薦成交</span></div>
+          <div class="rl-stat"><b id="spinLeft">0</b><span>可抽次數</span></div>
+          <div class="rl-stat"><b id="winRate">0%</b><span>中獎機率</span></div>
+        </div>
+        <button class="rl-btn" id="spinBtn" disabled>抽獎（需要推薦成交）</button>
+        <div class="rl-list" id="slotList"></div>
+        <div class="rl-panel">
+          <h3>▶ 業主（管理端）模擬面板</h3>
+          <p>模擬「一位會員推薦朋友報名課程並成交」→ 系統把朋友代號填入一格、並 +1 抽獎次數。推薦滿 10 位成交 = 中獎率 100%。</p>
+          <div class="rl-row">
+            <input class="rl-input" id="friend" placeholder="被推薦人姓名 / 代號" autocomplete="off">
+            <button class="rl-btn" id="addBtn">＋推薦成交</button>
+          </div>
+          <button class="rl-btn ghost" id="resetBtn" style="margin-top:10px">重置活動</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="footer-disclaimer">
+    <p>此頁為前端技術與 UI 練習作品，非正式上線產品，姓名／手機資料僅供本機示範，不會上傳或串接真實會員系統。</p>
+  </div>
+  <div class="footer-meta">Zorya · FDE &amp; Data Scientist 作品集</div>
+</footer>
+
+<div class="toast" id="toast"><div class="t-art" id="toastArt"></div><span class="t-msg" id="toastMsg"></span></div>
+
+<script src="../../assets/portfolio-theme.js"></script>
+<script>
+// 文青灰調十色（填入的格子用實色，空格用淡色）
+const COLORS=['#cdb59b','#9db49a','#9fb4c7','#d3a6a6','#b4a9cb','#c9c2b2','#b89a5e','#8fa8a4','#c7a9b8','#a9b6a0'];
+const PALE=c=>`color-mix(in srgb, ${c} 38%, #f4f3ee)`;
+const N=10;
+let slots=Array(N).fill(null),spins=0,deals=0,spinning=false,rot=0;
+const $=id=>document.getElementById(id);
+$('loginBtn').onclick=()=>{
+  const name=$('name').value.trim(),phone=$('phone').value.trim();
+  if(!name){alert('請輸入姓名');return;}
+  if(!/^09\d{8}$/.test(phone)){alert('請輸入正確手機（09 開頭共 10 碼）');return;}
+  $('uName').textContent=name;$('loginView').classList.add('hidden');$('gameView').classList.remove('hidden');
+  buildWheel();render();
+};
+$('logoutBtn').onclick=()=>{$('gameView').classList.add('hidden');$('loginView').classList.remove('hidden');};
+function buildWheel(){
+  const w=$('wheel'),seg=360/N,stops=[];
+  for(let i=0;i<N;i++)stops.push(`${slots[i]?COLORS[i]:PALE(COLORS[i])} ${i*seg}deg ${(i+1)*seg}deg`);
+  w.style.background=`conic-gradient(${stops.join(',')})`;
+  w.querySelectorAll('.seg-label').forEach(e=>e.remove());
+  for(let i=0;i<N;i++){const el=document.createElement('div');el.className='seg-label';el.dataset.i=i;
+    const ang=(i+0.5)*seg-90;el.style.transform=`rotate(${ang}deg) translate(74px,-8px)`;w.appendChild(el);}
+  updateLabels();
+}
+function updateLabels(){
+  const w=$('wheel'),seg=360/N,stops=[];
+  for(let i=0;i<N;i++)stops.push(`${slots[i]?COLORS[i]:PALE(COLORS[i])} ${i*seg}deg ${(i+1)*seg}deg`);
+  w.style.background=`conic-gradient(${stops.join(',')})`;
+  w.querySelectorAll('.seg-label').forEach(el=>{const i=+el.dataset.i;
+  el.textContent=slots[i]?slots[i]:'—';el.style.color=slots[i]?'#2b2925':'rgba(43,41,37,.35)';});}
+function render(){
+  const filled=slots.filter(Boolean).length;
+  $('dealCount').textContent=deals;$('spinLeft').textContent=spins;$('winRate').textContent=Math.round(filled/N*100)+'%';
+  const btn=$('spinBtn');
+  if(spins>0){btn.disabled=false;btn.textContent=`抽獎（剩 ${spins} 次）`;}else{btn.disabled=true;btn.textContent='抽獎（需要推薦成交）';}
+  const list=$('slotList');list.innerHTML='';
+  slots.forEach((s,i)=>{if(s){const c=document.createElement('span');c.className='chip';c.textContent=`第${i+1}格 · ${s}`;list.appendChild(c);}});
+  updateLabels();
+}
+$('addBtn').onclick=()=>{
+  let name=$('friend').value.trim();
+  const empty=slots.map((s,i)=>s?null:i).filter(v=>v!==null);
+  if(empty.length===0){alert('10 格已滿，中獎機率已達 100%！');return;}
+  if(!name)name='推薦'+(slots.filter(Boolean).length+1);
+  const idx=empty[Math.floor(Math.random()*empty.length)];
+  slots[idx]=name;deals++;spins++;$('friend').value='';render();
+};
+$('spinBtn').onclick=()=>{
+  if(spinning||spins<=0)return;spinning=true;spins--;$('spinBtn').disabled=true;
+  const seg=360/N,win=Math.floor(Math.random()*N),turns=5+Math.floor(Math.random()*3);
+  const targetMod=(360-(win*seg+seg/2))%360;const curMod=((rot%360)+360)%360;let delta=targetMod-curMod;if(delta<0)delta+=360;delta+=turns*360;rot+=delta;$('wheel').style.transform=`rotate(${rot}deg)`;
+  setTimeout(()=>{spinning=false;const hit=slots[win];
+    if(hit)showToast(`中獎！停在「${hit}」`,false);else showToast('銘謝惠顧，再接再厲',true);render();},5100);
+};
+function showToast(msg,lose){
+  const t=$('toast'),art=$('toastArt');$('toastMsg').textContent=msg;
+  // 中獎：彩帶 GIF 疊招財貓；銘謝惠顧：票根。缺圖就只顯示文字。
+  art.innerHTML=lose
+    ? `<img class="px" src="img/ticket.png" alt="" onerror="this.classList.add('is-missing')">`
+    : `<img class="px" src="img/confetti.gif?${Date.now()}" alt="" onerror="this.classList.add('is-missing')"><img class="px" src="img/cat.gif?${Date.now()}" alt="" style="inset:14px" onerror="this.classList.add('is-missing')">`;
+  t.className='toast show'+(lose?' lose':'');
+  setTimeout(()=>t.className='toast'+(lose?' lose':''),lose?2200:3200);}
+$('resetBtn').onclick=()=>{if(!confirm('確定重置活動？'))return;slots=Array(N).fill(null);spins=0;deals=0;rot=0;
+  $('wheel').style.transition='none';$('wheel').style.transform='rotate(0deg)';setTimeout(()=>$('wheel').style.transition='',30);render();};
+</script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>掃碼點餐系統 — Zorya Demo</title>
+<meta name="description" content="外帶／桌號 → 主食 → 三菜 → 送出的掃碼點餐互動流程練習，訂單會即時同步到廚房看板頁。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/portfolio-theme.css">
+<style>
+  /* ---- page-scoped tokens: re-point the original bespoke palette
+         onto the shared design-system variables ---- */
+  :root{
+    --bg: var(--surface-page);
+    --card: var(--surface-card);
+    --ink: var(--ink-primary);
+    --muted: var(--ink-muted);
+    --brand: #9db49a;            /* 鼠尾草：與 AI 客服同一套文青色系 */
+    --brand-ink: #2b2925;
+    --line: var(--gridline);
+    --ok: #7fa66f;
+    --chip: color-mix(in srgb, var(--brand) 22%, var(--surface-raised));
+  }
+  .back-link{ display:inline-block; font-size:13px; color:var(--ink-muted); text-decoration:none; padding: var(--space-2) 0 0; }
+  .back-link:hover{ color:var(--accent-ink); }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:var(--font-sans);
+    background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center}
+  .app{width:100%;max-width:430px;padding:0 0 110px}
+  .app-header{position:sticky;top:0;z-index:10;background:var(--brand);
+    color:var(--brand-ink);padding:16px 20px;border-radius:0 0 22px 22px}
+  .app-header h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.02em;font-family:var(--font-serif);display:flex;align-items:center;gap:10px}
+  .app-header h1 .em{font-size:28px;width:34px;height:34px}
+  .app-header p{margin:4px 0 0;font-size:12px;opacity:.72}
+  .steps{display:flex;gap:6px;margin-top:14px}
+  .steps i{flex:1;height:4px;border-radius:4px;background:rgba(43,41,37,.18)}
+  .steps i.on{background:var(--brand-ink)}
+  .wrap-inner{padding:20px}
+  .q{font-size:17px;font-weight:800;margin:6px 0 4px}
+  .sub{font-size:12px;color:var(--muted);margin-bottom:16px}
+  .opt{display:flex;align-items:center;gap:12px;background:var(--card);border:2px solid var(--line);
+    border-radius:16px;padding:14px 16px;margin-bottom:12px;cursor:pointer;transition:.12s;font-size:16px}
+  .opt:active{transform:scale(.99)}
+  .opt.sel{border-color:var(--brand);background:var(--chip)}
+  .em{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;font-size:26px;flex:none}
+  .em img{width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
+  .grid .opt .em{width:64px;height:64px;font-size:34px}
+  .opt .ck{margin-left:auto;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none}
+  .opt.sel .ck{background:var(--brand);border-color:var(--brand);position:relative}
+  .opt.sel .ck:after{content:"✓";color:var(--brand-ink);font-size:14px;position:absolute;top:-1px;left:4px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid .opt{margin:0;flex-direction:column;text-align:center;padding:18px 10px;gap:6px}
+  .grid .opt .ck{display:none}
+  .tablepick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+  .tablepick button{padding:14px 0;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-size:16px;font-weight:700;cursor:pointer}
+  .tablepick button.sel{border-color:var(--brand);background:var(--chip);color:var(--ink)}
+  .count{font-size:12px;color:var(--ink-secondary);font-weight:700}
+  .foot{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;pointer-events:none}
+  .footin{width:100%;max-width:430px;padding:14px 20px 22px;background:var(--bg);border-top:1px solid var(--line);pointer-events:auto}
+  .btn{width:100%;padding:16px;border:none;border-radius:16px;font-size:17px;font-weight:800;color:var(--brand-ink);
+    background:var(--brand);cursor:pointer}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:none}
+  .barrow{display:flex;gap:10px}
+  .summary{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+  .summary .li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:15px}
+  .summary .li:last-child{border:none}
+  .summary .li span:first-child{color:var(--muted)}
+  .done{text-align:center;padding:50px 20px}
+  .done .big{font-size:64px}
+  .done .big .em{width:96px;height:96px}
+  .done h2{margin:10px 0 6px;font-family:var(--font-sans)}
+  .done p{color:var(--muted);margin:0}
+  .hidden{display:none}
+  .link{display:inline-block;margin-top:10px;font-size:12px;color:var(--ink-secondary);text-decoration:underline}
+  /* welcome block with the pixel chef (main screen) */
+  .welcome{display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin:4px 0 18px}
+  .welcome .chef{width:88px;height:88px;flex:none;image-rendering:pixelated;image-rendering:crisp-edges}
+  .welcome .chef.is-missing{display:none}
+  .welcome .say{font-size:14px;line-height:1.6;color:var(--ink-secondary)}
+  .welcome .say b{display:block;font-family:var(--font-serif);font-size:17px;color:var(--ink);margin-bottom:2px}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="../index.html">Zorya<span>Demo</span></a>
+    <div style="display:flex; align-items:center;">
+      <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap" style="padding-top:10px;">
+  <a class="back-link" href="../index.html">← 回Demo 列表</a>
+</div>
+
+<div class="app">
+  <div class="app-header">
+    <h1><span class="em" data-ic="bento">🍱</span>教科系實習餐廳</h1>
+    <p>掃碼點餐 Demo</p>
+    <div class="steps" id="steps"></div>
+  </div>
+  <div class="wrap-inner" id="wrap"></div>
+</div>
+
+<div class="foot"><div class="footin" id="foot"></div></div>
+
+<script src="../../assets/portfolio-theme.js"></script>
+<script>
+const MAINS = [
+  {n:"招牌雞腿",e:"🍗",ic:"chicken"},{n:"香煎鯖魚",e:"🐟",ic:"fish"},{n:"糖醋排骨",e:"🍖",ic:"pig"},
+  {n:"麻婆豆腐",e:"🌶️",ic:"chili"},{n:"蔥爆牛肉",e:"🥩",ic:"cow"},{n:"素食滷味",e:"🥬",ic:"veggie"}
+];
+// 像素圖示：img/<id>.png；載入失敗就把 emoji 放回去
+function ic(id,emoji,cls){
+  return `<span class="em ${cls||''}"><img src="img/${id}.png" alt="" width="128" height="128" onerror="this.parentNode.textContent='${emoji}'"></span>`;
+}
+document.querySelectorAll('[data-ic]').forEach(el=>{
+  const img=new Image();
+  img.onload=()=>{el.innerHTML='';img.alt='';el.appendChild(img);}; img.src='img/'+el.getAttribute('data-ic')+'.png';
+});
+const SIDES = ["炒高麗菜","燙青花菜","滷白菜","炒豆芽","三色蛋","涼拌小黃瓜","炒油菜","筍絲","玉米筍","紅蘿蔔絲"];
+
+let step=0;
+const order={type:null, table:null, rice:null, main:null, sides:[]};
+const TOTAL=5;
+const $=id=>document.getElementById(id);
+
+function renderSteps(){
+  $('steps').innerHTML=Array.from({length:TOTAL},(_,i)=>`<i class="${i<=step?'on':''}"></i>`).join('');
+}
+
+function render(){
+  renderSteps();
+  const w=$('wrap'), f=$('foot');
+  if(step===0){
+    w.innerHTML=`<div class="welcome"><img class="chef" src="img/chef.gif" alt="像素廚師揮手歡迎" width="160" height="160" onerror="this.classList.add('is-missing')"><div class="say"><b>歡迎光臨</b>今天想吃點什麼？先選用餐方式，三步就能點好。</div></div>
+      <div class="q">用餐方式</div><div class="sub">請先選擇外帶或內用</div>
+      <div class="grid">
+        <div class="opt ${order.type==='外帶'?'sel':''}" onclick="pick('type','外帶')">${ic('bag','🛍️')}<div>外帶</div></div>
+        <div class="opt ${order.type==='內用'?'sel':''}" onclick="pick('type','內用')">${ic('plate','🍽️')}<div>內用（選桌號）</div></div>
+      </div>
+      <div id="tbl" class="${order.type==='內用'?'':'hidden'}">
+        <div class="sub" style="margin:16px 0 4px">選擇桌號</div>
+        <div class="tablepick">${Array.from({length:8},(_,i)=>`<button class="${order.table==i+1?'sel':''}" onclick="pick('table',${i+1})">${i+1}桌</button>`).join('')}</div>
+      </div>`;
+    f.innerHTML=nav(canNext0());
+  }
+  else if(step===1){
+    w.innerHTML=`<div class="q">是否要飯？</div><div class="sub">主食附餐選擇</div>
+      <div class="opt ${order.rice==='要飯'?'sel':''}" onclick="pick('rice','要飯')">${ic('rice','🍚')}要飯<span class="ck"></span></div>
+      <div class="opt ${order.rice==='不要飯'?'sel':''}" onclick="pick('rice','不要飯')">${ic('norice','🚫')}不要飯<span class="ck"></span></div>`;
+    f.innerHTML=nav(!!order.rice);
+  }
+  else if(step===2){
+    w.innerHTML=`<div class="q">選擇主食</div><div class="sub">單選一項</div>`+
+      MAINS.map(m=>`<div class="opt ${order.main===m.n?'sel':''}" onclick="pick('main','${m.n}')">${ic(m.ic,m.e)}${m.n}<span class="ck"></span></div>`).join('');
+    f.innerHTML=nav(!!order.main);
+  }
+  else if(step===3){
+    w.innerHTML=`<div class="q">選擇三菜 <span class="count">(${order.sides.length}/3)</span></div><div class="sub">請選滿 3 樣配菜</div>`+
+      SIDES.map(s=>`<div class="opt ${order.sides.includes(s)?'sel':''}" onclick="toggleSide('${s}')">${s}<span class="ck"></span></div>`).join('');
+    f.innerHTML=nav(order.sides.length===3);
+  }
+  else if(step===4){
+    w.innerHTML=`<div class="q">確認訂單</div><div class="sub">請確認以下內容</div>
+      <div class="summary">
+        <div class="li"><span>用餐方式</span><b>${order.type==='內用'?('內用 · '+order.table+'桌'):'外帶'}</b></div>
+        <div class="li"><span>飯</span><b>${order.rice}</b></div>
+        <div class="li"><span>主食</span><b>${order.main}</b></div>
+        <div class="li"><span>三菜</span><b>${order.sides.join('、')}</b></div>
+      </div>`;
+    f.innerHTML=`<div class="barrow"><button class="btn ghost" style="flex:.5" onclick="go(-1)">上一步</button>
+      <button class="btn" style="flex:1" onclick="submit()">送出訂單 ✓</button></div>`;
+  }
+  else if(step===5){
+    $('steps').innerHTML='';
+    w.innerHTML=`<div class="done"><div class="big">${ic('check','✅')}</div><h2>訂單已送出！</h2>
+      <p>廚房顯示畫面已即時收到您的訂單</p>
+      <a class="link" href="display.html" target="_blank">開啟廚房顯示畫面 →</a></div>`;
+    f.innerHTML=`<button class="btn" onclick="reset()">再點一單</button>`;
+  }
+}
+
+function nav(ok){
+  const back = step>0 ? `<button class="btn ghost" style="flex:.5" onclick="go(-1)">上一步</button>`:'';
+  return `<div class="barrow">${back}<button class="btn" style="flex:1" onclick="go(1)" ${ok?'':'disabled'}>下一步</button></div>`;
+}
+function canNext0(){ return order.type==='外帶' || (order.type==='內用' && order.table); }
+
+window.pick=(k,v)=>{ order[k]=v; if(k==='type'&&v==='外帶')order.table=null; render(); };
+window.toggleSide=(s)=>{
+  const i=order.sides.indexOf(s);
+  if(i>=0) order.sides.splice(i,1);
+  else { if(order.sides.length>=3) return; order.sides.push(s); }
+  render();
+};
+window.go=(d)=>{ step=Math.max(0,Math.min(TOTAL,step+d)); render(); };
+window.reset=()=>{ step=0; order.type=order.table=order.rice=order.main=null; order.sides=[]; render(); };
+
+window.submit=()=>{
+  const now=new Date();
+  const rec={
+    id:Date.now(),
+    time:now.toTimeString().slice(0,5),
+    ts:now.getTime(),
+    place: order.type==='內用' ? (order.table+'桌') : '外帶',
+    type: order.type,
+    rice: order.rice, main: order.main, sides:[...order.sides]
+  };
+  // 存入 localStorage（顯示頁開啟時可讀歷史）
+  const list=JSON.parse(localStorage.getItem('orders')||'[]');
+  list.push(rec); localStorage.setItem('orders',JSON.stringify(list));
+  // 即時廣播給顯示頁
+  try{ new BroadcastChannel('order-demo').postMessage(rec); }catch(e){}
+  step=5; render();
+};
+
+render();
+</script>
+</body>
+</html>

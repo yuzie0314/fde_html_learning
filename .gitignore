@@ -1,0 +1,12 @@
+# local tooling / scratch
+.claude/
+.chrome-headless/
+.edge-headless/
+design/codex-run-*.log
+design/codex-last-message*.md
+Thumbs.db
+.DS_Store
+
+# raw AI-generated source PNGs (86 MB) — the site only uses the optimized WebP/PNG outputs.
+# Remove this line if you want to version the originals too.
+assets/img/src/

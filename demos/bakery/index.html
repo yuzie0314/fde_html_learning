@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>手作烘焙預購 — Zorya Demo</title>
+<meta name="description" content="天然酵母烘焙工作室品牌行銷頁Demo：菜單展示、試吃活動倒數、預購登記表單。前端技術與 UI 練習作品，非正式上線產品。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=Fredoka:wght@500;600;700&family=Nunito:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/portfolio-theme.css">
+<style>
+  /* ============================================================
+     Bakery demo — page-specific additions on top of the shared
+     design system. Colors/radii/spacing all pull from the shared
+     CSS variables in portfolio-theme.css; only layout shapes that
+     have no shared equivalent (menu cards, event banner, countdown,
+     form, hero plate visual) are bespoke here.
+     ============================================================ */
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: 999;
+    opacity: .035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px;
+  }
+
+  /* accent display font kept only on a few warm headline spots */
+  .hero h1, .section-head h2, .event-title, .form-title, .value-title, .menu-card-name {
+    font-family: 'Fredoka', var(--font-serif);
+  }
+  .philosophy-quote, .menu-card-price, .footer-brand {
+    font-family: 'Nunito', var(--font-sans);
+  }
+  .hero h1 em, .section-head h2 em, .event-title em { font-style: italic; color: var(--accent-ink); }
+
+  /* ── hero layout + visual ── */
+  .hero .bg-grid { align-items: center; }
+  .hero .eyebrow { display: flex; align-items: center; gap: 10px; }
+  .hero .eyebrow::before { content: ''; display: block; width: 32px; height: 1px; background: var(--accent); }
+  .hero-ctas { display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center; margin-top: var(--space-4); }
+
+  .btn-primary, .btn-outline, .btn-event, .form-submit {
+    font-family: var(--font-sans);
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 28px; border-radius: var(--radius-md);
+    background: var(--accent); color: #fff;
+    font-size: 14px; font-weight: 700; letter-spacing: .02em;
+    text-decoration: none; border: none; cursor: pointer;
+    box-shadow: var(--shadow-card);
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 26px; border-radius: var(--radius-md);
+    background: transparent; color: var(--ink-primary);
+    font-size: 14px; font-weight: 600;
+    text-decoration: none; border: 1px solid var(--border-strong); cursor: pointer;
+    transition: border-color .2s ease, color .2s ease;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent-ink); }
+
+  .hero-visual { position: relative; display: flex; justify-content: center; align-items: center; }
+  .hero-plate {
+    width: clamp(240px, 32vw, 420px); height: clamp(240px, 32vw, 420px);
+    border-radius: 50%;
+    background: var(--surface-card);
+    border: 1px solid var(--gridline);
+    box-shadow: var(--shadow-card);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .hero-bread-photo {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+  }
+  .hero-bread-emoji {
+    font-size: clamp(5rem, 12vw, 9rem);
+    filter: drop-shadow(0 12px 24px rgba(11,11,11,.18));
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(-3deg); }
+    50%      { transform: translateY(-14px) rotate(3deg); }
+  }
+  .hero-tag {
+    position: absolute; background: var(--surface-raised); border: 1px solid var(--gridline);
+    border-radius: 999px; padding: 8px 16px; font-size: 12px; font-weight: 600;
+    color: var(--ink-secondary); box-shadow: var(--shadow-card);
+  }
+  .hero-tag.t1 { top: 8%; right: 2%; animation: tagfloat 5s ease-in-out infinite; }
+  .hero-tag.t2 { bottom: 12%; left: 0; animation: tagfloat 4s ease-in-out infinite reverse; }
+  @keyframes tagfloat {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+
+  /* ── values ── */
+  .values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+  @media (max-width: 820px) { .values-grid { grid-template-columns: 1fr; } }
+  .value-card {
+    text-align: center; padding: var(--space-4) var(--space-3);
+    border: 1px solid var(--gridline); border-radius: var(--radius-md);
+    background: var(--surface-card);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .value-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); }
+  .value-icon { font-size: 2.2rem; margin-bottom: var(--space-2); }
+  .value-title { font-size: 1.05rem; margin-bottom: 8px; }
+  .value-desc { font-size: 13.5px; line-height: 1.8; color: var(--ink-secondary); }
+
+  /* ── menu ── */
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: var(--space-3); }
+  .menu-card {
+    background: var(--surface-card); border: 1px solid var(--gridline); border-radius: var(--radius-md);
+    overflow: hidden; position: relative;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .menu-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); }
+  .menu-card-img {
+    height: 170px; background: var(--surface-raised); border-bottom: 1px solid var(--gridline);
+    display: flex; align-items: center; justify-content: center; font-size: 3.4rem; position: relative;
+  }
+  .menu-card-img .menu-photo {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform .5s ease;
+  }
+  .menu-card:hover .menu-photo { transform: scale(1.04); }
+  .menu-card-img .menu-emoji { position: relative; z-index: 0; }
+  .menu-card-img .menu-photo + .menu-emoji { display: none; }
+  .menu-badge { z-index: 2; }
+  .menu-badge {
+    position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #fff;
+  }
+  .badge-signature { background: var(--accent); }
+  .badge-seasonal  { background: var(--warn); }
+  .menu-card-body { padding: var(--space-3); }
+  .menu-card-name { font-size: 1rem; margin-bottom: 4px; }
+  .menu-card-en { font-size: 11px; color: var(--ink-muted); letter-spacing: .06em; margin-bottom: 8px; }
+  .menu-card-desc { font-size: 13px; line-height: 1.7; color: var(--ink-secondary); }
+  .menu-card-price { margin-top: 10px; font-size: 1.05rem; color: var(--accent-ink); font-weight: 700; }
+
+  /* ── event banner ── */
+  .event-banner {
+    background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+    overflow: hidden; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-4);
+    padding: var(--space-5) var(--space-4); box-shadow: var(--shadow-card);
+  }
+  @media (max-width: 780px) { .event-banner { grid-template-columns: 1fr; text-align: center; } }
+  .event-label { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-ink); font-weight: 700; margin-bottom: var(--space-2); }
+  .event-title { font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1.3; margin-bottom: var(--space-2); }
+  .event-meta { display: flex; gap: var(--space-3); margin-bottom: var(--space-2); flex-wrap: wrap; }
+  @media (max-width: 780px) { .event-meta { justify-content: center; } }
+  .event-meta-item { display: flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--ink-secondary); }
+  .event-desc { font-size: 14px; line-height: 1.8; color: var(--ink-secondary); max-width: 480px; }
+  @media (max-width: 780px) { .event-desc { margin: 0 auto; } }
+  .event-cta-group { display: flex; flex-direction: column; gap: var(--space-2); align-items: center; flex-shrink: 0; }
+  .btn-event {
+    display: inline-flex; align-items: center; gap: 8px; padding: 14px 30px; border-radius: var(--radius-md);
+    background: var(--accent); color: #fff; font-size: 14px; font-weight: 700;
+    text-decoration: none; border: none; cursor: pointer; white-space: nowrap;
+    box-shadow: var(--shadow-card); transition: opacity .2s ease, transform .2s ease;
+  }
+  .btn-event:hover { opacity: .9; transform: translateY(-1px); }
+  .line-badge {
+    display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px;
+    background: #06C755; color: #fff; font-size: 12.5px; font-weight: 700; cursor: pointer;
+    transition: opacity .2s ease;
+  }
+  .line-badge:hover { opacity: .85; }
+  .event-countdown { margin-top: 6px; font-size: 12px; color: var(--ink-muted); text-align: center; }
+
+  /* ── philosophy ── */
+  .philosophy-block { text-align: center; }
+  .philosophy-quote {
+    font-size: clamp(1.3rem, 2.6vw, 1.9rem); font-style: italic; line-height: 1.7;
+    max-width: 680px; margin: 0 auto; color: var(--ink-primary);
+  }
+  .philosophy-quote strong { color: var(--accent-ink); font-style: normal; }
+  .philosophy-attr { margin-top: var(--space-3); font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); }
+
+  /* ── register form ── */
+  .form-wrapper {
+    max-width: 640px; margin: 0 auto; background: var(--surface-card);
+    border: 1px solid var(--gridline); border-radius: var(--radius-md);
+    padding: var(--space-5); box-shadow: var(--shadow-card);
+  }
+  .form-group { margin-bottom: var(--space-3); }
+  .form-label { display: block; font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 8px; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 12px 14px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+    background: var(--surface-page); color: var(--ink-primary); font-family: var(--font-sans); font-size: 14px;
+    outline: none; transition: border-color .2s ease;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-textarea { resize: vertical; min-height: 90px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+  @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+  .form-submit {
+    width: 100%; padding: 14px; border-radius: var(--radius-md);
+    background: var(--accent); color: #fff; font-size: 14.5px; font-weight: 700; letter-spacing: .02em;
+    border: none; cursor: pointer; transition: opacity .2s ease, transform .2s ease;
+  }
+  .form-submit:hover { opacity: .9; transform: translateY(-1px); }
+  .form-note { text-align: center; font-size: 12px; color: var(--ink-muted); margin-top: var(--space-3); }
+  .form-title { font-size: 1.4rem; margin-bottom: 6px; }
+  .form-sub { font-size: 13.5px; color: var(--ink-secondary); margin-bottom: var(--space-4); line-height: 1.7; }
+  .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 480px) { .checkbox-grid { grid-template-columns: 1fr; } }
+  .checkbox-item { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .checkbox-item input { accent-color: var(--accent); width: 14px; height: 14px; }
+  .checkbox-item label { font-size: 13.5px; color: var(--ink-secondary); cursor: pointer; }
+
+  /* ── footer (bespoke inner grid, shared footer/wrap for outer shell) ── */
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--space-5); margin-bottom: var(--space-4); }
+  @media (max-width: 780px) { .footer-grid { grid-template-columns: 1fr; gap: var(--space-3); } }
+  .footer-brand { font-size: 1.3rem; color: var(--ink-primary); margin-bottom: 8px; font-weight: 700; }
+  .footer-brand span { color: var(--accent-ink); }
+  .footer-tagline { font-size: 13px; line-height: 1.8; color: var(--ink-secondary); }
+  .footer-heading { font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: var(--space-2); font-weight: 700; }
+  .footer-links { list-style: none; margin: 0; padding: 0; }
+  .footer-links li { margin-bottom: 8px; }
+  .footer-links a { font-size: 13px; color: var(--ink-secondary); text-decoration: none; transition: color .2s ease; }
+  .footer-links a:hover { color: var(--ink-primary); }
+  .footer-divider { border: none; border-top: 1px solid var(--gridline); margin-bottom: var(--space-3); }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .footer-bottom { flex-direction: column; gap: 8px; text-align: center; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="../index.html">Zorya<span>叁燊有幸 Sunshine Bakery · Demo</span></a>
+    <nav class="main-nav links" id="mainNav">
+      <a href="#menu">菜單</a>
+      <a href="#event">試吃活動</a>
+      <a href="#register">預購登記</a>
+    </nav>
+    <div style="display:flex; align-items:center;">
+      <button class="nav-toggle" id="navToggle" aria-label="開啟選單" aria-expanded="false">☰</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="切換深色／淺色模式">◐</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero wrap">
+    <div class="bg-grid hero-grid">
+      <div class="reveal">
+        <p class="eyebrow">Taichung Wufeng · 天然酵母烘焙</p>
+        <h1>慢一點，<br><em>反而更有</em><br>味道。</h1>
+        <p class="lede">
+          我們相信，一塊真正的麵包，需要時間，也需要耐心。<br>
+          天然酵母慢慢發酵，就像生活一樣——慢一點，反而更有味道。
+        </p>
+        <div class="hero-ctas">
+          <a href="#register" class="btn-primary">預購登記</a>
+          <a href="#event" class="btn-outline">🎁 免費試吃 7/1</a>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal">
+        <div class="hero-plate">
+          <div class="hero-bread-emoji" aria-hidden="true">🍞</div>
+          <img class="hero-bread-photo" src="img/hero.webp" alt="天然酵母鄉村麵包" width="800" height="800" decoding="async" onerror="this.remove()">
+        </div>
+        <div class="hero-tag t1">✦ 100% 天然酵母</div>
+        <div class="hero-tag t2">低溫長時發酵</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT / VALUES -->
+  <section class="wrap" id="about">
+    <div class="section-head reveal">
+      <div class="section-kicker">Our Philosophy</div>
+      <h2>為什麼選擇<em>叁燊有幸</em>？</h2>
+      <p>每一個選擇，都有它存在的理由。</p>
+    </div>
+    <div class="values-grid">
+      <div class="value-card reveal">
+        <div class="value-icon">🌾</div>
+        <h3 class="value-title">100% 天然酵母</h3>
+        <p class="value-desc">不添加人工酵母、改良劑，<br>麵包的風味來自時間本身。</p>
+      </div>
+      <div class="value-card reveal" style="transition-delay:.12s">
+        <div class="value-icon">🌡️</div>
+        <h3 class="value-title">低溫長時發酵</h3>
+        <p class="value-desc">最少18小時低溫冷藏發酵，<br>讓小麥風味層次完整展現。</p>
+      </div>
+      <div class="value-card reveal" style="transition-delay:.24s">
+        <div class="value-icon">🌿</div>
+        <h3 class="value-title">在地優質食材</h3>
+        <p class="value-desc">台灣桂圓、季節水果、<br>天然蜂蜜——每一口都有產地溫度。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section class="wrap" id="menu">
+    <div class="section-head reveal">
+      <div class="section-kicker">Signature Menu</div>
+      <h2><em>精選</em>品項</h2>
+      <p>每一款麵包都是手作誠意，值得你慢慢品嚐。</p>
+    </div>
+
+    <div class="menu-grid">
+      <!-- 1 -->
+      <div class="menu-card reveal">
+        <div class="menu-card-img">
+          <img class="menu-photo" src="img/country.webp" alt="原味鄉村麵包" width="900" height="600" loading="lazy" decoding="async" onerror="this.remove()"><span class="menu-emoji" aria-hidden="true">🍞</span>
+          <span class="menu-badge badge-signature">招牌</span>
+        </div>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">原味鄉村麵包</h3>
+          <p class="menu-card-en">Country Sourdough</p>
+          <p class="menu-card-desc">100% 天然酵母、長時間低溫發酵，越嚼越香，麵包本質的極致呈現。</p>
+          <div class="menu-card-price">NT$ 180</div>
+        </div>
+      </div>
+      <!-- 2 -->
+      <div class="menu-card reveal" style="transition-delay:.08s">
+        <div class="menu-card-img">
+          <img class="menu-photo" src="img/longan-walnut.webp" alt="桂圓核桃酸種" width="900" height="600" loading="lazy" decoding="async" onerror="this.remove()"><span class="menu-emoji" aria-hidden="true">🫐</span>
+          <span class="menu-badge badge-seasonal">季節限定</span>
+        </div>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">桂圓核桃酸種</h3>
+          <p class="menu-card-en">Longan Walnut Sourdough</p>
+          <p class="menu-card-desc">台灣桂圓搭配烘烤核桃，散發天然甜香與堅果風味。</p>
+          <div class="menu-card-price">NT$ 200</div>
+        </div>
+      </div>
+      <!-- 3 -->
+      <div class="menu-card reveal" style="transition-delay:.16s">
+        <div class="menu-card-img"><img class="menu-photo" src="img/fig-cheese.webp" alt="無花果乳酪酸種" width="900" height="600" loading="lazy" decoding="async" onerror="this.remove()"><span class="menu-emoji" aria-hidden="true">🧀</span></div>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">無花果乳酪酸種</h3>
+          <p class="menu-card-en">Fig & Cheese Sourdough</p>
+          <p class="menu-card-desc">無花果果香結合濃郁乳酪，酸甜平衡、口感豐富。</p>
+          <div class="menu-card-price">NT$ 250</div>
+        </div>
+      </div>
+      <!-- 4 -->
+      <div class="menu-card reveal" style="transition-delay:.24s">
+        <div class="menu-card-img">
+          <img class="menu-photo" src="img/sesame-honey.webp" alt="黑芝麻蜂蜜吐司" width="900" height="600" loading="lazy" decoding="async" onerror="this.remove()"><span class="menu-emoji" aria-hidden="true">🍯</span>
+          <span class="menu-badge badge-signature">招牌</span>
+        </div>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">黑芝麻蜂蜜吐司</h3>
+          <p class="menu-card-en">Black Sesame Honey Toast</p>
+          <p class="menu-card-desc">濃郁芝麻香與天然蜂蜜甜味，是每日早餐的首選。</p>
+          <div class="menu-card-price">NT$ 180</div>
+        </div>
+      </div>
+      <!-- 5 -->
+      <div class="menu-card reveal" style="transition-delay:.32s">
+        <div class="menu-card-img">
+          <img class="menu-photo" src="img/earl-grey-orange.webp" alt="伯爵柑橘吐司" width="900" height="600" loading="lazy" decoding="async" onerror="this.remove()"><span class="menu-emoji" aria-hidden="true">🍊</span>
+          <span class="menu-badge badge-seasonal">季節限定</span>
+        </div>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">伯爵柑橘吐司</h3>
+          <p class="menu-card-en">Earl Grey Orange Toast</p>
+          <p class="menu-card-desc">佛手柑茶香融合糖漬橙皮，清新優雅、層次細膩。</p>
+          <div class="menu-card-price">NT$ 180</div>
+        </div>
+      </div>
+      <!-- 6 -->
+      <div class="menu-card reveal" style="transition-delay:.40s">
+        <div class="menu-card-img"><img class="menu-photo" src="img/matcha-redbean.webp" alt="抹茶紅豆圓麵包" width="900" height="600" loading="lazy" decoding="async" onerror="this.remove()"><span class="menu-emoji" aria-hidden="true">🍵</span></div>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">抹茶紅豆圓麵包</h3>
+          <p class="menu-card-en">Matcha Red Bean Roll</p>
+          <p class="menu-card-desc">日本抹茶搭配低糖蜜紅豆，微苦回甘、經典不膩。</p>
+          <div class="menu-card-price">NT$ 250</div>
+        </div>
+      </div>
+      <!-- 7 -->
+      <div class="menu-card reveal" style="transition-delay:.48s">
+        <div class="menu-card-img"><img class="menu-photo" src="img/cacao-hazelnut.webp" alt="可可榛果鄉村" width="900" height="600" loading="lazy" decoding="async" onerror="this.remove()"><span class="menu-emoji" aria-hidden="true">🍫</span></div>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">可可榛果鄉村</h3>
+          <p class="menu-card-en">Cacao Hazelnut Country</p>
+          <p class="menu-card-desc">濃郁可可與香脆榛果交織，帶來成熟大人系風味。</p>
+          <div class="menu-card-price">NT$ 200</div>
+        </div>
+      </div>
+      <!-- 8 -->
+      <div class="menu-card reveal" style="transition-delay:.56s">
+        <div class="menu-card-img"><img class="menu-photo" src="img/potato-focaccia.webp" alt="馬鈴薯佛卡夏" width="900" height="600" loading="lazy" decoding="async" onerror="this.remove()"><span class="menu-emoji" aria-hidden="true">🥔</span></div>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">馬鈴薯佛卡夏</h3>
+          <p class="menu-card-en">Potato Focaccia</p>
+          <p class="menu-card-desc">加入馬鈴薯提升濕潤 Q 彈口感，外酥內軟、百搭耐吃。</p>
+          <div class="menu-card-price">NT$ 350</div>
+        </div>
+      </div>
+      <!-- 9 -->
+      <div class="menu-card reveal" style="transition-delay:.64s">
+        <div class="menu-card-img"><img class="menu-photo" src="img/rosemary-olive.webp" alt="迷迭香橄欖佛卡夏" width="900" height="600" loading="lazy" decoding="async" onerror="this.remove()"><span class="menu-emoji" aria-hidden="true">🌿</span></div>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">迷迭香橄欖佛卡夏</h3>
+          <p class="menu-card-en">Rosemary Olive Focaccia</p>
+          <p class="menu-card-desc">迷迭香與橄欖香氣交融，充滿地中海風情。</p>
+          <div class="menu-card-price">NT$ 300</div>
+        </div>
+      </div>
+      <!-- 10 -->
+      <div class="menu-card reveal" style="transition-delay:.72s">
+        <div class="menu-card-img">
+          <img class="menu-photo" src="img/fruit-danish.webp" alt="季節水果天然酵母丹麥" width="900" height="600" loading="lazy" decoding="async" onerror="this.remove()"><span class="menu-emoji" aria-hidden="true">🍑</span>
+          <span class="menu-badge badge-seasonal">季節限定</span>
+        </div>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">季節水果天然酵母丹麥</h3>
+          <p class="menu-card-en">Seasonal Fruit Danish</p>
+          <p class="menu-card-desc">選用當季新鮮水果，每一季都有不同的驚喜風味。</p>
+          <div class="menu-card-price">NT$ 350</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVENT BANNER -->
+  <section class="wrap" id="event">
+    <div class="event-banner reveal">
+      <div>
+        <p class="event-label">Limited Event</p>
+        <h2 class="event-title">免費<em>試吃活動</em><br>等你來嚐鮮</h2>
+        <div class="event-meta">
+          <div class="event-meta-item"><span class="icon">📅</span> 2026 年 7 月 1 日（週三）</div>
+          <div class="event-meta-item"><span class="icon">🕐</span> 13:00 開始</div>
+          <div class="event-meta-item"><span class="icon">📍</span> 台中霧峰·叁燊有幸 Sunshine Bakery</div>
+        </div>
+        <p class="event-desc">親臨現場免費試吃招牌麵包，感受天然酵母的發酵魅力。名額有限，預約優先入場。</p>
+      </div>
+      <div class="event-cta-group">
+        <a href="#register" class="btn-event">🎟 預約試吃</a>
+        <div class="line-badge">
+          <span class="line-logo">💬</span> LINE 好友優先通知
+        </div>
+        <p class="event-countdown" id="countdown">計算倒數中…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHILOSOPHY -->
+  <section class="wrap philosophy-block reveal">
+    <blockquote class="philosophy-quote">
+      天然酵母慢慢發酵，<br>
+      就像生活一樣——<br>
+      <strong>慢一點，反而更有味道。</strong>
+    </blockquote>
+    <p class="philosophy-attr">— 叁燊有幸 Sunshine Bakery · 台中霧峰</p>
+  </section>
+
+  <!-- REGISTER FORM -->
+  <section class="wrap" id="register">
+    <div class="section-head reveal">
+      <div class="section-kicker">Pre-Order</div>
+      <h2><em>預購</em>登記</h2>
+      <p>填寫登記，我們會優先為你備料，確保你拿到最新鮮的麵包。</p>
+    </div>
+
+    <div class="form-wrapper reveal">
+      <h3 class="form-title">預購 / 試吃登記</h3>
+      <p class="form-sub">填寫完成後，我們將以 LINE 或簡訊確認您的預約，感謝您的支持 🙏</p>
+
+      <div class="form-group">
+        <label class="form-label">姓名</label>
+        <input class="form-input" type="text" placeholder="請輸入您的姓名">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">電話</label>
+          <input class="form-input" type="tel" placeholder="0912-345-678">
+        </div>
+        <div class="form-group">
+          <label class="form-label">LINE ID（選填）</label>
+          <input class="form-input" type="text" placeholder="@your_line_id">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">登記項目</label>
+        <select class="form-select">
+          <option value="">請選擇</option>
+          <option>✦ 免費試吃（7/1 13:00）</option>
+          <option>預購麵包</option>
+          <option>試吃 + 預購</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">有興趣的品項（可複選）</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item"><input type="checkbox"> <label>原味鄉村麵包</label></label>
+          <label class="checkbox-item"><input type="checkbox"> <label>黑芝麻蜂蜜吐司</label></label>
+          <label class="checkbox-item"><input type="checkbox"> <label>桂圓核桃酸種</label></label>
+          <label class="checkbox-item"><input type="checkbox"> <label>伯爵柑橘吐司</label></label>
+          <label class="checkbox-item"><input type="checkbox"> <label>無花果乳酪酸種</label></label>
+          <label class="checkbox-item"><input type="checkbox"> <label>季節水果丹麥</label></label>
+          <label class="checkbox-item"><input type="checkbox"> <label>馬鈴薯佛卡夏</label></label>
+          <label class="checkbox-item"><input type="checkbox"> <label>迷迭香橄欖佛卡夏</label></label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">備註</label>
+        <textarea class="form-textarea" placeholder="飲食需求、過敏資訊、或任何想說的話…"></textarea>
+      </div>
+
+      <button class="form-submit" onclick="handleSubmit()">送出登記 →</button>
+      <p class="form-note">✦ 我們尊重您的個人資料，僅用於活動聯絡</p>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">叁燊有幸 <span>Sunshine Bakery</span></div>
+      <p class="footer-tagline">
+        天然酵母 · 慢時光 · 台中霧峰<br>
+        一塊真正的麵包，需要時間，也需要耐心。
+      </p>
+    </div>
+    <div>
+      <p class="footer-heading">關於我們</p>
+      <ul class="footer-links">
+        <li><a href="#about">品牌理念</a></li>
+        <li><a href="#menu">精選菜單</a></li>
+        <li><a href="#event">試吃活動</a></li>
+        <li><a href="#register">預購登記</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-heading">聯絡我們</p>
+      <ul class="footer-links">
+        <li><a href="#">📍 台中市霧峰區</a></li>
+        <li><a href="#">💬 LINE @sanshen</a></li>
+        <li><a href="#">📷 Instagram</a></li>
+        <li><a href="#">📘 Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-divider">
+  <div class="footer-bottom">
+    <span>© 2026 叁燊有幸 Sunshine Bakery · All rights reserved.</span>
+    <span>Made with ♥ in Wufeng, Taichung</span>
+  </div>
+  <div class="footer-meta">此頁為 Zorya 作品集之前端技術Demo，非真實上線產品。<a href="../index.html">← 回Demo 列表</a></div>
+</footer>
+
+<script src="../../assets/portfolio-theme.js"></script>
+<script>
+  // ── COUNTDOWN (bakery-specific, kept inline) ──
+  function updateCountdown() {
+    const target = new Date('2026-07-01T13:00:00+08:00');
+    const now    = new Date();
+    const diff   = target - now;
+    if (diff <= 0) { document.getElementById('countdown').textContent = '🎉 試吃活動進行中！'; return; }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000)  / 60000);
+    document.getElementById('countdown').textContent = `距活動還有 ${d} 天 ${h} 時 ${m} 分`;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 60000);
+
+  // ── FORM SUBMIT (bakery-specific, kept inline) ──
+  function handleSubmit() {
+    alert('感謝您的登記！\n我們將於 24 小時內以 LINE 或電話與您確認。\n\n期待與您在叁燊有幸 Sunshine Bakery 見面 🍞');
+  }
+</script>
+</body>
+</html>
