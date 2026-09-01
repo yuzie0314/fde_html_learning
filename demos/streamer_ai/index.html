@@ -12,57 +12,106 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/portfolio-theme.css">
 <style>
-  /* ---- page-scoped: bespoke neon chat-widget aesthetic (kept distinctive on purpose) ---- */
-  :root{--cyan:#25e0e6;--mag:#b14dff;--line2:#232c50;}
-
-  .demo-stage{
-    display:flex;align-items:center;justify-content:center;
-    padding: var(--space-5) var(--space-3) var(--space-7);
-    min-height: 72vh;
-    background-image:
-      radial-gradient(600px 400px at 15% 0%, rgba(37,224,230,.14), transparent 60%),
-      radial-gradient(600px 400px at 100% 100%, rgba(177,77,255,.16), transparent 55%);
+  /* ---- 靜音直播桌（The Quiet Broadcast Desk）----
+     依 design/DESIGN_CONCEPT_ESG_STREAMER.md §2 實作：
+     無漸層、無 glow、無霓虹；深淺主題由共用 token 接管。 ---- */
+  :root{
+    --mist:#9fb4c7;            /* 霧藍：使用者訊息、語音鈕 */
+    --rose:#d3a6a6;            /* 灰粉：LIVE 章 */
+    --stage-ink:#2b2925;
   }
-  .phone{width:100%;max-width:410px;height:min(780px,86vh);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;
-    background:linear-gradient(180deg,#0d1226,#0a0e1c);
-    border:1px solid #23305c;box-shadow:0 0 0 1px rgba(37,224,230,.08),0 30px 80px rgba(0,0,0,.6),inset 0 0 60px rgba(37,224,230,.03)}
-  .phone *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  .top{padding:16px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line2);
-    background:linear-gradient(90deg,rgba(37,224,230,.10),rgba(177,77,255,.10))}
-  .av{width:44px;height:44px;border-radius:13px;flex:none;position:relative;
-    background:linear-gradient(135deg,var(--cyan),var(--mag));display:flex;align-items:center;justify-content:center;
-    font-weight:900;color:#06121a;font-size:15px;box-shadow:0 0 18px rgba(37,224,230,.5)}
-  .av .live{position:absolute;right:-4px;top:-6px;background:#ff3b5c;color:#fff;font-size:8px;font-weight:800;
-    padding:2px 5px;border-radius:6px;letter-spacing:.5px;box-shadow:0 0 10px rgba(255,59,92,.7)}
-  .nm{font-weight:800;font-size:16px;letter-spacing:.3px;color:#eaf0ff}
-  .st{font-size:11px;color:var(--cyan)}
-  .voice{margin-left:auto;background:rgba(37,224,230,.12);border:1px solid rgba(37,224,230,.4);color:var(--cyan);
-    font-size:12px;font-weight:700;padding:7px 11px;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:5px;
-    flex:none;white-space:nowrap}
-  .voice.off{opacity:.5;border-color:var(--line2);color:#8891b4}
-  .chat{flex:1;overflow-y:auto;padding:18px 15px;display:flex;flex-direction:column;gap:11px}
-  .chat::-webkit-scrollbar{width:0}
-  .msg{max-width:82%;padding:12px 15px;font-size:14.5px;line-height:1.6;white-space:pre-wrap;border-radius:15px;animation:msgIn .25s ease;color:#eaf0ff}
-  @keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  .bot{align-self:flex-start;background:rgba(28,36,66,.85);border:1px solid var(--line2);border-bottom-left-radius:4px}
-  .me{align-self:flex-end;color:#06121a;font-weight:600;border-bottom-right-radius:4px;
-    background:linear-gradient(135deg,var(--cyan),#54ecf0);box-shadow:0 4px 18px rgba(37,224,230,.35)}
-  .time{font-size:10px;color:#8891b4;margin:1px 4px}
-  .me+.time{align-self:flex-end}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:94%}
-  .chip{background:rgba(177,77,255,.10);border:1px solid rgba(177,77,255,.45);color:#d9b6ff;font-size:12.5px;font-weight:600;
-    padding:8px 13px;border-radius:20px;cursor:pointer;transition:.12s}
-  .chip:active{transform:scale(.96);background:rgba(177,77,255,.2)}
-  .typing{align-self:flex-start;background:rgba(28,36,66,.85);border:1px solid var(--line2);padding:13px 16px;border-radius:15px;display:flex;gap:4px}
-  .typing i{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:blink 1s infinite}
-  .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
-  @keyframes blink{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
-  .foot{border-top:1px solid var(--line2);padding:11px 12px;display:flex;gap:8px;align-items:center;background:rgba(8,11,22,.6)}
-  .foot input{flex:1;border:1px solid var(--line2);border-radius:22px;padding:12px 15px;font-size:15px;outline:none;background:#0b1024;color:#eaf0ff}
-  .foot input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(37,224,230,.12)}
-  .send{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;flex:none;color:#06121a;font-size:16px;
-    background:linear-gradient(135deg,var(--cyan),var(--mag));box-shadow:0 0 16px rgba(37,224,230,.45)}
-  .badge{font-size:9px;text-align:center;color:#8891b4;padding:4px}
+  .px{ image-rendering:pixelated; image-rendering:crisp-edges; }
+
+  .stage{ display:grid; grid-template-columns:minmax(0,4fr) minmax(0,8fr); gap:var(--space-6);
+    align-items:center; padding:var(--space-6) 0; }
+  @media (max-width:900px){ .stage{ grid-template-columns:1fr; gap:var(--space-4); padding:var(--space-4) 0 var(--space-5); } }
+
+  /* ---- 左側敘事 ---- */
+  .intro h1{ font-size:clamp(30px,3.6vw,40px); line-height:1.25; margin-top:8px; }
+  .intro .lede{ margin-top:var(--space-2); font-size:16px; color:var(--ink-secondary); max-width:38ch; }
+  .caps{ display:flex; flex-direction:column; gap:10px; margin-top:var(--space-4); }
+  .cap{ border:1px solid var(--gridline); border-radius:var(--radius-md); padding:12px var(--space-2) 12px 14px;
+    position:relative; background:var(--surface-card); }
+  .cap::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
+    border-radius:var(--radius-md) 0 0 var(--radius-md); }
+  .cap.c1::before{ background:#9db49a; } .cap.c2::before{ background:#cdb59b; } .cap.c3::before{ background:var(--mist); }
+  .cap b{ display:block; font-size:15px; }
+  .cap span{ font-size:13px; color:var(--ink-muted); }
+  .desk-fig{ margin:var(--space-4) 0 0; max-width:420px; }
+  .desk-fig img{ display:block; width:100%; height:auto; border:1px solid var(--gridline); border-radius:var(--radius-md); background:#f4f3ee; }
+  .desk-fig.is-missing{ display:none; }
+  @media (max-width:900px){ .desk-fig{ display:none; } }
+
+  /* ---- 產品 mockup 展示框 ---- */
+  .mock{ background:var(--surface-card); border:1px solid var(--border-strong); border-radius:12px;
+    box-shadow:var(--shadow-card); padding:8px; width:100%; max-width:700px; justify-self:end; }
+  @media (max-width:900px){ .mock{ justify-self:stretch; max-width:none; } }
+  .rail{ height:40px; display:flex; align-items:center; gap:8px; padding:0 10px; }
+  .rail i{ width:8px; height:8px; border-radius:50%; }
+  .rail i:nth-child(1){ background:#c9c2b2; } .rail i:nth-child(2){ background:#cdb59b; } .rail i:nth-child(3){ background:#9db49a; }
+  .rail .meta{ flex:1; text-align:center; font-size:12px; color:var(--ink-muted); }
+  .rail .on{ font-size:12px; color:var(--ink-muted); display:flex; align-items:center; gap:5px; }
+  .rail .on::before{ content:""; width:8px; height:8px; border-radius:50%; background:var(--good); }
+
+  .shell{ border:1px solid var(--gridline); border-radius:8px; overflow:hidden; display:flex; flex-direction:column;
+    height:clamp(560px,66vh,620px); background:color-mix(in srgb,#9db49a 12%,var(--surface-page)); }
+  @media (max-width:900px){ .shell{ height:clamp(500px,68svh,600px); } }
+
+  .top{ display:flex; align-items:center; gap:12px; padding:var(--space-2); background:var(--surface-raised);
+    border-bottom:1px solid var(--gridline); }
+  .av{ position:relative; width:48px; height:48px; flex:none; border-radius:4px; overflow:visible;
+    background:#f4f3ee; border:1px solid var(--gridline); }
+  .av img{ position:absolute; inset:0; width:100%; height:100%; border-radius:4px; }
+  .av .fb{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:15px; color:var(--stage-ink); }
+  .av img + .fb{ display:none; }
+  .live{ position:absolute; right:-6px; top:-7px; background:var(--rose); color:var(--stage-ink);
+    font-size:10px; font-weight:700; padding:1px 5px; border-radius:4px; letter-spacing:.4px; }
+  .nm{ font-family:var(--font-serif); font-weight:700; font-size:17px; color:var(--ink-primary); }
+  .st{ font-size:12px; color:var(--ink-muted); }
+  .voice{ margin-left:auto; min-width:44px; min-height:44px; padding:0 12px; flex:none; white-space:nowrap;
+    background:color-mix(in srgb,var(--mist) 18%,var(--surface-card)); border:1px solid var(--border-strong);
+    color:var(--ink-primary); font-size:13px; font-weight:600; border-radius:var(--radius-sm); cursor:pointer;
+    display:flex; align-items:center; gap:5px; }
+  .voice.off{ opacity:.5; }
+  .voice:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .chat{ flex:1; overflow-y:auto; overscroll-behavior:contain; padding:var(--space-2); display:flex; flex-direction:column; gap:11px; }
+  @media (min-width:901px){ .chat{ padding:var(--space-3); } }
+  .msg{ max-width:72%; padding:11px 14px; font-size:15px; line-height:1.65; white-space:pre-wrap;
+    border-radius:4px; animation:msgIn .18s ease; }
+  @media (max-width:900px){ .msg{ max-width:88%; padding:10px 12px; } }
+  @keyframes msgIn{ from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none} }
+  @media (prefers-reduced-motion:reduce){ .msg{ animation:none; } }
+  .bot{ align-self:flex-start; background:var(--surface-raised); border:1px solid var(--gridline); color:var(--ink-primary); }
+  .me{ align-self:flex-end; background:color-mix(in srgb,var(--mist) 24%,var(--surface-raised));
+    border:1px solid color-mix(in srgb,var(--mist) 60%,var(--gridline)); color:var(--ink-primary); }
+  .time{ font-size:11px; color:var(--ink-muted); margin:0 4px; }
+  .me+.time{ align-self:flex-end; }
+  .chips{ display:grid; grid-template-columns:1fr 1fr; gap:8px; align-self:flex-start; width:min(94%,420px); }
+  @media (max-width:360px){ .chips{ grid-template-columns:1fr; } }
+  .chip{ background:var(--surface-card); border:1px solid var(--border-strong); color:var(--ink-primary);
+    font-size:13px; font-weight:600; min-height:44px; padding:8px 12px; border-radius:var(--radius-sm);
+    cursor:pointer; transition:background .15s ease,border-color .15s ease; text-align:left; }
+  .chip:hover{ border-color:var(--accent); background:var(--accent-soft); }
+  .chip:active{ background:color-mix(in srgb,var(--accent-soft) 70%,var(--surface-card)); }
+  .chip:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .typing{ align-self:flex-start; background:var(--surface-raised); border:1px solid var(--gridline);
+    padding:13px 16px; border-radius:4px; display:flex; gap:4px; }
+  .typing i{ width:7px; height:7px; border-radius:50%; background:var(--ink-muted); animation:blink 1s infinite; }
+  .typing i:nth-child(2){ animation-delay:.15s } .typing i:nth-child(3){ animation-delay:.3s }
+  @keyframes blink{ 0%,60%,100%{opacity:.3; transform:translateY(0)} 30%{opacity:1; transform:translateY(-4px)} }
+
+  .foot{ border-top:1px solid var(--gridline); padding:12px var(--space-2) calc(12px + env(safe-area-inset-bottom));
+    display:flex; gap:8px; align-items:center; background:var(--surface-raised); }
+  .foot input{ flex:1; min-width:0; height:48px; border:1px solid var(--border-strong); border-radius:var(--radius-sm);
+    padding:0 14px; font-size:15px; outline:none; background:var(--surface-card); color:var(--ink-primary); font-family:var(--font-sans); }
+  .foot input:focus{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
+  .foot input::placeholder{ color:var(--ink-muted); }
+  .send{ width:48px; height:48px; border-radius:var(--radius-sm); border:none; cursor:pointer; flex:none;
+    color:#fff; font-size:16px; background:var(--accent); }
+  .send:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .note{ font-size:11px; text-align:center; color:var(--ink-muted); padding:6px 4px 2px; }
 </style>
 </head>
 <body>
@@ -76,25 +125,37 @@
   </div>
 </header>
 
-<main>
-  <div class="wrap reveal" style="padding-top: var(--space-4);">
-    <div class="eyebrow">Demo · 對話介面</div>
-    <p style="color:var(--ink-secondary); font-size:15px; max-width:60ch; margin-top:8px;">模擬直播主官方帳號的 AI 聊天助手：意圖比對回覆、語音朗讀開關與快速選項按鈕，功能與內容維持原樣，僅統一頁面外觀以符合作品集風格。</p>
-  </div>
+<main class="wrap">
+  <div class="stage reveal">
+    <div class="intro">
+      <div class="eyebrow">DEMO · 對話介面</div>
+      <h1>直播主官方<br>AI 小助手</h1>
+      <p class="lede">替直播主的官方帳號回答最常見的三件事：幾點開台、去哪裡看、怎麼談合作。</p>
+      <div class="caps">
+        <div class="cap c1"><b>意圖比對回覆</b><span>關鍵字比對常見問題，即時回覆固定資訊。</span></div>
+        <div class="cap c2"><b>語音朗讀開關</b><span>回覆可用 Web Speech API 朗讀，一鍵靜音。</span></div>
+        <div class="cap c3"><b>快速選項按鈕</b><span>常見問題一鍵送出，不必打字。</span></div>
+      </div>
+      <figure class="desk-fig" aria-hidden="true">
+        <img src="../../assets/img/demos/streamer-desk.webp" alt="" width="1200" height="800" loading="lazy" onerror="this.parentNode.classList.add('is-missing')">
+      </figure>
+    </div>
 
-  <div class="demo-stage">
-    <div class="phone">
-      <div class="top">
-        <div class="av">DC<span class="live">LIVE</span></div>
-        <div><div class="nm">Dr.Chen · AI 小助手</div><div class="st">◉ 24H 線上　·　實況・社群・合作</div></div>
-        <button class="voice" id="voice">🔊 語音</button>
+    <div class="mock">
+      <div class="rail" aria-hidden="true"><i></i><i></i><i></i><span class="meta">AI Assistant Demo</span><span class="on">線上</span></div>
+      <div class="shell">
+        <div class="top">
+          <span class="av"><img class="px" src="img/avatar.png" alt="Dr.Chen 像素頭像" width="64" height="64" onerror="this.remove()"><span class="fb">DC</span><span class="live">LIVE</span></span>
+          <div><div class="nm">Dr.Chen · AI 小助手</div><div class="st">24H 線上 · 實況・社群・合作</div></div>
+          <button class="voice" id="voice" aria-pressed="true">🔊 語音</button>
+        </div>
+        <div class="chat" id="chat"></div>
+        <div class="foot">
+          <input id="inp" placeholder="輸入問題，或點上方按鈕…" autocomplete="off" aria-label="輸入訊息">
+          <button class="send" id="send" aria-label="送出訊息">➤</button>
+        </div>
+        <div class="note">AI 小助手 Demo · 示範用（可依 Dr.Chen 需求持續調整）</div>
       </div>
-      <div class="chat" id="chat"></div>
-      <div class="foot">
-        <input id="inp" placeholder="輸入問題，或點下方按鈕…" autocomplete="off">
-        <button class="send" id="send">➤</button>
-      </div>
-      <div class="badge">AI 小助手 Demo · 示範用（可依 Dr.Chen 需求持續調整）</div>
     </div>
   </div>
 </main>
@@ -159,6 +220,7 @@ function submit(){const v=document.getElementById('inp').value.trim();if(!v)retu
 document.getElementById('send').onclick=submit;
 document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
 document.getElementById('voice').onclick=function(){voiceOn=!voiceOn;this.classList.toggle('off',!voiceOn);
+  this.setAttribute('aria-pressed',voiceOn?'true':'false');
   this.textContent=voiceOn?'🔊 語音':'🔇 語音';if(!voiceOn&&window.speechSynthesis)speechSynthesis.cancel();};
 setTimeout(()=>addBot("哈囉！我是 Dr.Chen 的官方 AI 小助手 🤖\n想知道直播時間、去哪追蹤，還是談合作呢？點下面或直接打字問我！",
   ["直播時間","在哪裡看直播","合作邀約","抖內支持"]),400);
