@@ -112,7 +112,8 @@
   box-shadow:0 1px 2px rgba(11,11,11,.04), 0 10px 30px rgba(11,11,11,.055);
   transition:transform .3s var(--ease-out), border-color .3s, box-shadow .3s; }
 .feat:hover, .feat:focus-visible{ transform:translateY(-6px); border-color:var(--accent);
-  box-shadow:0 2px 6px rgba(11,11,11,.06), 0 18px 42px rgba(11,11,11,.11); outline:none; }
+  box-shadow:0 2px 6px rgba(11,11,11,.06), 0 18px 42px rgba(11,11,11,.11); }
+.feat:focus-visible{ outline:2px solid var(--accent); outline-offset:4px; }
 .feat.main{ grid-column:span 7; grid-row:span 2; }
 .feat .cover{ background:#f4f3ee; border-bottom:1px solid var(--gridline); overflow:hidden; }
 .feat .cover img{ display:block; width:100%; height:100%; object-fit:cover; transition:transform .5s var(--ease-out); }
@@ -175,7 +176,8 @@
 .demo3{ display:grid; grid-template-columns:5fr 6fr; text-decoration:none; color:inherit; overflow:hidden;
   background:var(--surface-card); border:1px solid var(--gridline); border-radius:var(--radius-card);
   transition:transform .3s var(--ease-out), border-color .3s; }
-.demo3:hover, .demo3:focus-visible{ transform:translateY(-6px); border-color:var(--accent); outline:none; }
+.demo3:hover, .demo3:focus-visible{ transform:translateY(-6px); border-color:var(--accent); }
+.demo3:focus-visible{ outline:2px solid var(--accent); outline-offset:4px; }
 .demo3 .cover{ background:#f4f3ee; border-right:1px solid var(--gridline); overflow:hidden; }
 .demo3 .cover img{ display:block; width:100%; height:100%; object-fit:cover; transition:transform .5s var(--ease-out); }
 .demo3:hover .cover img{ transform:scale(1.025); }

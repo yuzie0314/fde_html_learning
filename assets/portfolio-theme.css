@@ -38,7 +38,7 @@
   --space-7: 96px;
   --radius-sm: 4px;
   --radius-md: 8px;
-  --container: 1080px;
+  --container: 1200px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -115,9 +115,10 @@ p { margin: 0; text-wrap: pretty; }
 .disclaimer-strip {
   background: var(--surface-raised);
   border-bottom: 1px solid var(--gridline);
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.5;
   color: var(--ink-muted);
-  padding: 8px var(--space-3);
+  padding: 7px var(--space-3);
   text-align: center;
 }
 
@@ -143,12 +144,12 @@ nav.main-nav a {
 nav.main-nav a:hover { color: var(--ink-primary); border-bottom-color: var(--accent); }
 .theme-toggle {
   border: 1px solid var(--border-strong); background: var(--surface-card); color: var(--ink-primary);
-  border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer;
+  border-radius: 8px; width: 44px; height: 44px; cursor: pointer;
   display: flex; align-items: center; justify-content: center; font-size: 15px;
   margin-left: var(--space-2);
 }
 .theme-toggle:hover { border-color: var(--accent); }
-.nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer; }
+.nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: 8px; width: 44px; height: 44px; cursor: pointer; }
 @media (max-width: 780px) {
   nav.main-nav.links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-raised); border-bottom: 1px solid var(--gridline); flex-direction: column; align-items: flex-start; padding: var(--space-2) var(--space-3); gap: var(--space-2); }
   nav.main-nav.links.open { display: flex; }
@@ -391,7 +392,7 @@ section.tight { padding: var(--space-5) 0; }
 @media (max-width: 640px) { .works-grid { grid-template-columns: 1fr; gap: var(--space-2); } }
 .work-card {
   display: flex; flex-direction: column; text-decoration: none; color: inherit; overflow: hidden;
-  background: var(--surface-card); border: 1px solid var(--gridline); border-radius: 14px; box-shadow: var(--shadow-card);
+  background: var(--surface-card); border: 1px solid var(--gridline); border-radius: 16px; box-shadow: var(--shadow-card);
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .work-card:hover, .work-card:focus-visible { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 4px 8px rgba(11,11,11,0.06), 0 16px 32px rgba(11,11,11,0.12); outline: none; }
