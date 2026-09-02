@@ -194,12 +194,12 @@
   nav.main-nav a:hover { color: var(--ink-primary); border-bottom-color: var(--accent); }
   .theme-toggle {
     border: 1px solid var(--border-strong); background: var(--surface-card); color: var(--ink-primary);
-    border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer;
+    border-radius: var(--radius-sm); width: 44px; height: 44px; cursor: pointer;
     display: flex; align-items: center; justify-content: center; font-size: 15px;
     margin-left: var(--space-2);
   }
   .theme-toggle:hover { border-color: var(--accent); }
-  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer; }
+  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 44px; height: 44px; cursor: pointer; }
   @media (max-width: 780px) {
     nav.main-nav.links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-raised); border-bottom: 1px solid var(--gridline); flex-direction: column; align-items: flex-start; padding: var(--space-2) var(--space-3); gap: var(--space-2); }
     nav.main-nav.links.open { display: flex; }
@@ -211,7 +211,7 @@
   .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
   /* ---------- hero ---------- */
-  .hero { padding: var(--space-7) 0 var(--space-6); }
+  .hero { padding-top: var(--space-7); padding-bottom: var(--space-6); }
   .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent-ink); text-transform: uppercase; margin-bottom: var(--space-2); }
   .hero h1 { font-size: clamp(28px, 4.4vw, 44px); line-height: 1.28; max-width: 18ch; }
   .hero .lede { margin-top: var(--space-3); font-size: 18px; color: var(--ink-secondary); max-width: 60ch; }
@@ -415,14 +415,15 @@
   .footer-disclaimer p + p { margin-top: 8px; }
   .footer-meta { margin-top: var(--space-4); font-size: 12.5px; color: var(--ink-muted); border-top: 1px solid var(--gridline); padding-top: var(--space-2); }
 </style>
+<link rel="stylesheet" href="../../assets/case-extras.css">
 </head>
-<body>
+<body data-case="video-production">
 
 <div class="disclaimer-strip">本案例情境改編自公開刊登之外包需求，所有公司名、人名、金額、資料均為虛構合成，如有雷同純屬巧合。</div>
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="../index.html">多門市活動影片產能規模化<span>案例研究</span></a>
+    <a class="brand" href="../../index.html">Zorya<span>FDE &amp; Data Scientist</span></a>
     <nav class="main-nav links" id="mainNav">
       <a href="#background">案件背景</a>
       <a href="#scale">產能論證</a>
@@ -445,7 +446,7 @@
   <section class="hero wrap">
     <div class="eyebrow">案例研究 · 產能規劃與流程設計</div>
     <h1>他要的不是剪輯師，<br>是一條產線</h1>
-    <p class="lede">七門市兒童禮俗活動紀錄公司在外包平台上重複刊登同一個「剪輯師」職缺三次，開價一組 150–300 元。問題不是找不到人——七門市每天超過 10 場的量級，從來沒有一位個人接案者能承接得住。</p>
+    <p class="lede">七門市兒童禮俗活動紀錄公司，同一個「剪輯師」職缺刊登三次、一組 150–300 元。問題不是找不到人——每天 10+ 場的量，沒有一位個人接案者接得住。</p>
     <p class="context-line">「一支影片剪輯費就 150 到 300 塊，我開這個價都找不到人，是現在剪輯師都這麼難請嗎？」——阿德（營運總監），客戶初談逐字稿節錄</p>
 
     <div class="stat-row">
@@ -470,8 +471,8 @@
   <section id="background" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">案件背景</div>
-      <h2>客戶把「找剪輯師」講成需求，實際是產能規劃問題</h2>
-      <p>傳家囍事有限公司經營嬰兒抓周、滿月剃頭、收涎、慶生派對等兒童禮俗活動紀錄，七個門市另提供到府服務。現況做法：門市人員用手機拍攝、上傳共用雲端硬碟，外包剪輯師接單剪輯後交付家長成品版，同時剪出短影音供門市行銷推廣。</p>
+      <h2>要的不是剪輯師，是產線</h2>
+      <p>抓周、滿月、收涎、慶生等活動紀錄，七門市另有到府服務。門市手機拍、上傳雲端，外包剪輯師剪成家長成品版與行銷短影音。</p>
     </div>
 
     <div class="bg-grid">
@@ -509,8 +510,8 @@
   <section id="scale" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">產能規模化論證</div>
-      <h2>這個數字組合本身就是答案</h2>
-      <p>客戶重複刊登同一職缺三次，不是運氣不好找不到人，而是他要的從來不是一位剪輯師，是一條產線。沒有任何個人接案剪輯師接得住這個量。</p>
+      <h2>數字本身就是答案</h2>
+      <p>重複刊登三次不是運氣差——他要的從來不是一位剪輯師，是一條產線。</p>
     </div>
 
     <div class="equation-block reveal">
@@ -533,8 +534,8 @@
   <section id="sources" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">三來源資料挑戰</div>
-      <h2>三份資料，沒有一組能對得上</h2>
-      <p>這不是「資料不乾淨」的問題，而是三份資料從設計時就沒有共同鍵，只能靠「門市＋日期」推測配對——且素材上傳日與活動日期本身就有落差，到府場次尤其明顯。</p>
+      <h2>三份資料對不上</h2>
+      <p>三份資料沒有共同鍵，只能靠「門市＋日期」推測配對；素材上傳日與活動日還有落差。</p>
     </div>
 
     <div class="source-grid reveal">
@@ -571,13 +572,13 @@
   <section id="metrics" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">核心指標</div>
-      <h2>準時交付率與單支有效產出成本</h2>
-      <p>第二個指標是本案重點：客戶只看得到 150–300 元的剪輯費，看不到行政協調與重工造成的真實單支成本。</p>
+      <h2>準時率與單支真實成本</h2>
+      <p>客戶只看得到 150–300 元的剪輯費，看不到行政協調與重工造成的真實單支成本。</p>
     </div>
 
     <div class="chart-block reveal" id="chart-ontime" style="margin-bottom: var(--space-3);">
       <div class="chart-title">準時交付率依門市</div>
-      <div class="chart-caption">樣本 638 筆交件紀錄；全體 44.7%（家長成品版 51.2%／短影音 35.2%）。西屯店（ST04）標示為「非管理問題」——見下方說明。</div>
+      <div class="chart-caption">樣本 638 筆；全體準時率 44.7%（家長版 51.2%／短影音 35.2%）。西屯店為「非管理問題」，見說明。</div>
       <div class="cbar-list" id="cbarOntime" role="img" aria-label="準時交付率依門市長條圖"></div>
       <div class="legend-row">
         <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>一般門市</span>
@@ -597,7 +598,7 @@
 
     <div class="chart-block reveal" id="chart-cost">
       <div class="chart-title">單支有效產出成本：真實 NT$555 vs 客戶認知 NT$150–300</div>
-      <div class="chart-caption">樣本期間 92 天，交付 638 支（短影音 261／家長成品版 377）。單支有效產出成本 ＝（剪輯費＋行政協調工時成本＋重工成本）÷ 實際交付支數。</div>
+      <div class="chart-caption">92 天交付 638 支。單支有效成本 ＝（剪輯費＋行政工時＋重工）÷ 交付支數。</div>
       <svg class="chart-svg" id="svgCost" viewBox="0 0 480 190" role="img" aria-label="單支有效產出成本組成與客戶認知落差圖"></svg>
       <div class="legend-row">
         <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>剪輯費</span>
@@ -618,8 +619,8 @@
   <section id="losses" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">兩筆年損失金額</div>
-      <h2>客戶完全沒算進報價的兩筆錢</h2>
-      <p>以下金額皆以「產能規模化論證」章節之年化場次數（約 21,910 場／年）為基礎，套用樣本觀察到的比例推算，而非直接沿用 3 個月樣本筆數。</p>
+      <h2>沒算進報價的兩筆錢</h2>
+      <p>以年化場次（約 21,910 場／年）套用樣本比例推算，不是直接沿用 3 個月筆數。</p>
     </div>
 
     <div class="case-grid reveal">
@@ -651,8 +652,8 @@
   <section id="sla" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">交件時效的建議答案 · W2 主戰場</div>
-      <h2>「多久交件比較好？」不能只給一個數字</h2>
-      <p>阿德在逐字稿中直接把決定權丟回顧問方：「這個喔……老實說我們沒有訂欸。這個你們比較懂，你覺得應該抓多久？家長版跟那個要發社群的短片，是不是都用一樣的天數就好？」——單一天數的答案，因忽略兩種交付物的用途與容錯度本質不同，屬於不完整的回答。</p>
+      <h2>交件天數不能只給一個數</h2>
+      <p>阿德把決定權丟回來：「你覺得應該抓多久？」——單一天數是不完整的回答，兩種交付物用途不同。</p>
     </div>
 
     <div class="sla-grid reveal">
@@ -685,7 +686,7 @@
     <div class="section-head reveal">
       <div class="section-kicker">AI 的界線</div>
       <h2>批次化不等於全面自動化</h2>
-      <p>把阿德口中「影片要有感覺」「品質要一致」這類主觀期待，轉換成可以明確劃分自動化與人工的具體規格，而不是靠每位剪輯師各自的美感判斷。</p>
+      <p>把「影片要有感覺」「品質要一致」換成能劃分自動化與人工的具體規格。</p>
     </div>
 
     <div class="chart-block reveal">
@@ -726,7 +727,7 @@
       <div class="contact-info">
         <div class="contact-name">Zorya</div>
         <div class="contact-role">FDE &amp; Data Scientist</div>
-        <p class="contact-lede">如果你手上也有一份「客戶把需求講錯了、但自己不知道」的案子——不管是產能規劃、資料整併還是流程設計，都歡迎聊聊。</p>
+        <p class="contact-lede">手上也有「客戶把需求講錯了、但自己不知道」的案子？歡迎聊聊。</p>
       </div>
       <a class="contact-cta" href="mailto:uzang199431465@gmail.com">
         寄信聊聊這個案例
@@ -1032,5 +1033,7 @@
   });
 })();
 </script>
+<script src="../../assets/works-data.js"></script>
+<script src="../../assets/case-extras.js"></script>
 </body>
 </html>

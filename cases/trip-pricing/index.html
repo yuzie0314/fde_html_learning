@@ -194,12 +194,12 @@
   nav.main-nav a:hover { color: var(--ink-primary); border-bottom-color: var(--accent); }
   .theme-toggle {
     border: 1px solid var(--border-strong); background: var(--surface-card); color: var(--ink-primary);
-    border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer;
+    border-radius: var(--radius-sm); width: 44px; height: 44px; cursor: pointer;
     display: flex; align-items: center; justify-content: center; font-size: 15px;
     margin-left: var(--space-2);
   }
   .theme-toggle:hover { border-color: var(--accent); }
-  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer; }
+  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 44px; height: 44px; cursor: pointer; }
   @media (max-width: 780px) {
     nav.main-nav.links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-raised); border-bottom: 1px solid var(--gridline); flex-direction: column; align-items: flex-start; padding: var(--space-2) var(--space-3); gap: var(--space-2); }
     nav.main-nav.links.open { display: flex; }
@@ -211,7 +211,7 @@
   .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
   /* ---------- hero ---------- */
-  .hero { padding: var(--space-7) 0 var(--space-6); }
+  .hero { padding-top: var(--space-7); padding-bottom: var(--space-6); }
   .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent-ink); text-transform: uppercase; margin-bottom: var(--space-2); }
   .hero h1 { font-size: clamp(28px, 4.4vw, 44px); line-height: 1.28; max-width: 20ch; }
   .hero .lede { margin-top: var(--space-3); font-size: 18px; color: var(--ink-secondary); max-width: 62ch; }
@@ -411,14 +411,15 @@
   .footer-disclaimer p + p { margin-top: 8px; }
   .footer-meta { margin-top: var(--space-4); font-size: 12.5px; color: var(--ink-muted); border-top: 1px solid var(--gridline); padding-top: var(--space-2); }
 </style>
+<link rel="stylesheet" href="../../assets/case-extras.css">
 </head>
-<body>
+<body data-case="trip-pricing">
 
 <div class="disclaimer-strip">本案例情境改編自公開刊登之外包需求，所有公司名、人名、金額、資料均為虛構合成，不對應任何真實公司或個人。</div>
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="../index.html">旅遊行程估價系統原型<span>案例研究</span></a>
+    <a class="brand" href="../../index.html">Zorya<span>FDE &amp; Data Scientist</span></a>
     <nav class="main-nav links" id="mainNav">
       <a href="#background">案件背景</a>
       <a href="#gaps">隱藏缺口</a>
@@ -439,7 +440,7 @@
   <section class="hero wrap">
     <div class="eyebrow">案例研究 · 規則引擎原型與驗收標準</div>
     <h1>旅遊行程估價系統<br>原型與驗收收斂</h1>
-    <p class="lede">晴嶼旅行社，員工 26 人、業務 11 人，目前由業務各自用 Excel 手動組裝行程、逐格加總算報價，價格算錯與成本欄誤傳客戶時有所聞。案主已自行撰寫 15 章功能規格，會議中多次強調「你們專業，照這個做就好」。</p>
+    <p class="lede">26 人旅行社，11 位業務各自用 Excel 算報價，算錯價、成本外流時有所聞。案主自己寫了 15 章規格：「照這個做就好」。</p>
     <p class="context-line">問題不是規格寫得不夠多——15 章、逐項條列，看起來相當完整。問題是規格裡沒有一句話回答任何一個真正決定計價成敗的問題：分房怎麼算、跨生日小孩怎麼算、淡旺季怎麼算。練習者的價值不在照做，而在指出缺口。</p>
 
     <div class="stat-row">
@@ -464,8 +465,8 @@
   <section id="background" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">案件背景</div>
-      <h2>客戶認為規格已經寫完，開發只剩下「照做」</h2>
-      <p>案主郭經理（業務主管）自行撰寫《晴嶼旅行社旅遊行程估價系統 功能規格書 v1.3》，共 15 章，逐項描述天數展開、住宿餐廳活動篩選、成本加總、售價換算。他對這份規格很有信心，也希望盡快進入開發。</p>
+      <h2>客戶說：照做就好</h2>
+      <p>郭經理自行撰寫 15 章功能規格書，對它很有信心，希望盡快開發。</p>
     </div>
 
     <div class="bg-grid">
@@ -501,8 +502,8 @@
   <section id="gaps" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">「規格已經寫完」的七個隱藏缺口</div>
-      <h2>規格本身完全沒提到這些是缺口——直到要真的寫成程式才會炸開</h2>
-      <p>每一項缺口都不是憑空猜測，而是在 mock data 或逐字稿中留下了可指認的實證。這是本案訓練的核心：客戶把功能講死了，但「講死」不等於「講完」。</p>
+      <h2>七個隱藏缺口</h2>
+      <p>每個缺口都在 mock data 或逐字稿裡留下實證——「講死」不等於「講完」。</p>
     </div>
 
     <div class="gap-grid reveal">
@@ -555,7 +556,7 @@
     <div class="section-head reveal">
       <div class="section-kicker">AI 立場</div>
       <h2>這是規則引擎，不是 AI 題</h2>
-      <p>本作品集共三案，刻意採取三種不同的 AI 立場，用來說明同一件事：知道哪裡不該用 AI，比到處用 AI 更專業。</p>
+      <p>知道哪裡不該用 AI，比到處用 AI 更專業。</p>
     </div>
 
     <div class="chart-block reveal">
@@ -578,8 +579,8 @@
   <section id="anomalies" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">兩個算得出金額的異常，一個容易誤判的陷阱</div>
-      <h2>不是「感覺不太對」，是可以指到金額、指到列的異常</h2>
-      <p>兩筆真異常均由 <code>scripts/gen_data.py</code> 於資料產生時同步計算，可重新執行腳本驗證數字一致性。</p>
+      <h2>指得到金額的異常</h2>
+      <p>兩筆真異常由資料產生腳本同步計算，可重跑驗證。</p>
     </div>
 
     <div class="case-grid reveal">
@@ -622,8 +623,8 @@
   <section id="acceptance" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">驗收標準改寫（W3 主戰場）</div>
-      <h2>把「操作要順」換成任何人測都會得到同一個結論的條件</h2>
-      <p>案主自寫十條驗收標準中，7 條可判定、3 條不可判定——「順暢」「快速」「正確」都沒有定義比對基準，無法用通過／不通過來判斷。以下為其中兩條的改寫示範，完整十條評估詳見驗收標準文件。</p>
+      <h2>把「操作要順」改成可驗收</h2>
+      <p>案主十條驗收標準中 3 條不可判定——「順暢」「快速」「正確」沒有比對基準。以下示範兩條改寫。</p>
     </div>
 
     <div class="chart-block reveal">
@@ -651,8 +652,8 @@
   <section id="scope" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">交付範疇／原型範圍</div>
-      <h2>核心計價邏輯未驗證前，周邊功能都是浪費</h2>
-      <p>技術選型由練習者決定，但原型必須用真實 mock data 跑通，不得用寫死的假資料——住宿、餐廳、活動清單全部來自 <code>data/A_供應商資料.csv</code>、<code>data/B_活動門票.csv</code> 實際筆數，修改 CSV 後重新整理頁面即同步更新。</p>
+      <h2>先驗證核心，再做周邊</h2>
+      <p>原型必須用真實 mock data 跑通；改 CSV、重新整理頁面即同步更新。</p>
     </div>
 
     <div class="fork-row reveal">
@@ -677,8 +678,8 @@
 
     <div class="chart-block reveal" style="margin-top: var(--space-3);">
       <div class="chart-title">原型驗收條件（AC01–AC13）</div>
-      <div class="chart-caption">每一條均含「誰、在什麼情況下、做什麼動作、系統應出現什麼結果」四要素，缺一則不列入驗收範圍；已於瀏覽器中逐條操作驗證，13 條全數通過。</div>
-      <details class="table-toggle" open>
+      <div class="chart-caption">每條含「誰、情況、動作、結果」四要素；13 條全數通過。</div>
+      <details class="table-toggle">
         <summary>顯示全部 13 條驗收條件</summary>
         <div class="ac-list" style="margin-top: var(--space-2);">
           <div class="ac-row"><span class="ac-code">AC01</span><span class="ac-pass">✓ 通過</span><span class="ac-desc">輸入天數「3」→ 動態產生 3 個標示「第一天～第三天」的每日區塊</span></div>
@@ -704,7 +705,7 @@
       <div class="contact-info">
         <div class="contact-name">Zorya</div>
         <div class="contact-role">FDE &amp; Data Scientist</div>
-        <p class="contact-lede">如果你手上也有一份「客戶覺得規格寫完了，但其實還有缺口」的案子——不管是報價系統、內部工具還是資料整併，都歡迎聊聊。</p>
+        <p class="contact-lede">手上也有「客戶覺得規格寫完了，其實還有缺口」的案子？歡迎聊聊。</p>
       </div>
       <a class="contact-cta" href="mailto:uzang199431465@gmail.com">
         寄信聊聊這個案例
@@ -789,5 +790,7 @@
   });
 })();
 </script>
+<script src="../../assets/works-data.js"></script>
+<script src="../../assets/case-extras.js"></script>
 </body>
 </html>

@@ -200,12 +200,12 @@
   nav.main-nav a:hover { color: var(--ink-primary); border-bottom-color: var(--accent); }
   .theme-toggle {
     border: 1px solid var(--border-strong); background: var(--surface-card); color: var(--ink-primary);
-    border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer;
+    border-radius: var(--radius-sm); width: 44px; height: 44px; cursor: pointer;
     display: flex; align-items: center; justify-content: center; font-size: 15px;
     margin-left: var(--space-2);
   }
   .theme-toggle:hover { border-color: var(--accent); }
-  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer; }
+  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 44px; height: 44px; cursor: pointer; }
   @media (max-width: 780px) {
     nav.main-nav.links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-raised); border-bottom: 1px solid var(--gridline); flex-direction: column; align-items: flex-start; padding: var(--space-2) var(--space-3); gap: var(--space-2); }
     nav.main-nav.links.open { display: flex; }
@@ -217,7 +217,7 @@
   .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
   /* ---------- hero ---------- */
-  .hero { padding: var(--space-7) 0 var(--space-6); }
+  .hero { padding-top: var(--space-7); padding-bottom: var(--space-6); }
   .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent-ink); text-transform: uppercase; margin-bottom: var(--space-2); }
   .hero h1 { font-size: clamp(28px, 4.4vw, 44px); line-height: 1.28; max-width: 20ch; }
   .hero .lede { margin-top: var(--space-3); font-size: 18px; color: var(--ink-secondary); max-width: 62ch; }
@@ -412,14 +412,15 @@
   .footer-disclaimer p + p { margin-top: 8px; }
   .footer-meta { margin-top: var(--space-4); font-size: 12.5px; color: var(--ink-muted); border-top: 1px solid var(--gridline); padding-top: var(--space-2); }
 </style>
+<link rel="stylesheet" href="../../assets/case-extras.css">
 </head>
-<body>
+<body data-case="nutrition-liff">
 
 <div class="disclaimer-strip">本案例情境改編自公開刊登之外包需求，所有資料為合成生成，不對應任何真實個人、診所或案件。所有產出均為系統設計與資料分析方法說明，不構成醫療或營養專業意見。</div>
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="../index.html">營養諮詢飲食紀錄 LIFF<span>案例研究</span></a>
+    <a class="brand" href="../../index.html">Zorya<span>FDE &amp; Data Scientist</span></a>
     <nav class="main-nav links" id="mainNav">
       <a href="#background">案件背景</a>
       <a href="#ambiguities">五個分歧</a>
@@ -441,7 +442,7 @@
   <section class="hero wrap">
     <div class="eyebrow">案例研究 · 從零建立需求</div>
     <h1>營養諮詢飲食紀錄<br>LIFF 應用</h1>
-    <p class="lede">Tasker 刊登內容只有一句話：「程式開發｜app/liff 開發，用於營養師，飲食紀錄系統」。沒有規格書、沒有功能清單、沒有驗收標準——本案要練的不是解決一份已經寫好的規格，而是從一句話問出整份需求。</p>
+    <p class="lede">刊登內容只有一句話：「app/liff 開發，用於營養師，飲食紀錄系統」。沒有規格、沒有驗收——本案要從一句話問出整份需求。</p>
     <p class="context-line">案主陳品瑄營養師自己也還沒想清楚系統該長什麼樣子：系統給誰用、紀錄是為了算熱量還是看有沒有持續記錄、要不要即時回覆、資料保存多久——這幾個關鍵分歧，她在 kickoff 會議中直接丟回來：「這個你們決定就好」。</p>
 
     <div class="stat-row">
@@ -466,8 +467,8 @@
   <section id="background" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">案件背景</div>
-      <h2>一句話貼文背後，是一個回不完訊息的工作室</h2>
-      <p>陳品瑄營養師自營工作室，收三個月為主的諮詢方案。個案用 LINE 傳食物照片，營養師人工看、人工回覆、再手動記在 Excel 裡。個案數一多，訊息回不完，官方帳號裡所有個案訊息混在一起，沒有分流機制。</p>
+      <h2>回不完訊息的工作室</h2>
+      <p>營養師自營工作室；個案用 LINE 傳食物照片，營養師人工看、人工回、手動記 Excel。個案一多，訊息就回不完。</p>
     </div>
 
     <div class="bg-grid">
@@ -504,7 +505,7 @@
     <div class="section-head reveal">
       <div class="section-kicker">從一句話問出來的五個分歧</div>
       <h2>客戶自己也沒想過的五件事</h2>
-      <p>原始貼文只有「飲食紀錄系統」五個字。kickoff 訪談中，以下五個決定系統長相的核心分歧，客戶本人都尚未想清楚，甚至主動把問題丟回來：「這個你們比較懂技術面的東西」「看你們建議」。</p>
+      <p>五個決定系統長相的分歧，客戶都還沒想清楚，直接丟回來：「看你們建議」。</p>
     </div>
 
     <div class="case-grid reveal">
@@ -573,8 +574,8 @@
   <section id="sources" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">三種輸入通道的資料挑戰</div>
-      <h2>三份資料，沒有一份能直接拿來算熱量</h2>
-      <p>本案非對帳型任務，資料挑戰不是三來源金額對不上，而是三種輸入通道本身的格式與品質不一致，個案識別方式也不一致——這正是 Q2 選擇依從性追蹤而非熱量計算的資料面證據。</p>
+      <h2>三份資料都算不出熱量</h2>
+      <p>挑戰不是金額對不上，而是三種輸入通道的格式與品質不一致——這也是選依從性、不選熱量的證據。</p>
     </div>
 
     <div class="source-grid reveal">
@@ -611,13 +612,13 @@
   <section id="metric" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">核心指標</div>
-      <h2>有效紀錄天數比率：為什麼依從性追蹤比熱量計算更值得做</h2>
-      <p>客戶一開始會說要「準確算熱量」，但三個月方案真正要驗證的商業問題是「個案有沒有持續配合」，而不是每一餐的精準熱量。這個指標同時解釋了陳營養師與小庭兩人互相矛盾的說法。</p>
+      <h2>核心指標：有效紀錄天數比率</h2>
+      <p>三個月方案真正要驗證的是「個案有沒有持續配合」，不是每餐的精準熱量。這個指標也解釋了兩人矛盾的說法。</p>
     </div>
 
     <div class="chart-block reveal" id="chart-persist">
       <div class="chart-title">有效紀錄天數比率：持續型 vs. 衰退型個案</div>
-      <div class="chart-caption">全體 30 位個案依配合模式分為兩型；持續型（10 位）前兩週後仍穩定配合，衰退型（20 位）第二週後大幅減少上傳。</div>
+      <div class="chart-caption">持續型（10 位）穩定配合；衰退型（20 位）第二週後大幅減少上傳。</div>
       <div class="cbar-list" id="cbarPersist" role="img" aria-label="持續型與衰退型個案有效紀錄天數比率長條圖"></div>
       <details class="table-toggle">
         <summary>顯示完整數字表格</summary>
@@ -646,8 +647,8 @@
   <section id="boundary" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">本工具不做什麼</div>
-      <h2>知道哪裡不能自動化，比到處用自動化更專業</h2>
-      <p>本系統定位為<b>營養師執業輔助工具</b>，不是面向消費者的健康管理 App。陳營養師本人在訪談中主動提出「所有要給個案看的東西都要經過營養師確認」的原則——當她自己提出「拍照自動算熱量」這個解法時，也被自己剛設下的原則糾正，最終讓步。</p>
+      <h2>刻意不做的五件事</h2>
+      <p>本系統是<b>營養師的執業輔助工具</b>，不是消費者健康 App。「給個案看的都要經過營養師確認」——這條原則是營養師自己設的。</p>
     </div>
 
     <div class="boundary-block reveal">
@@ -695,8 +696,8 @@
   <section id="acceptance" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">驗收標準亮點</div>
-      <h2>把形容詞式的期待，換成可觀測、可判定的行為描述</h2>
-      <p>陳營養師在訪談中提出的期待本身無法直接判定通過與否——「持續記錄」多久算持續？「負擔減輕」減少多少才算？以下為兩條不可驗收期待的改寫示範。</p>
+      <h2>把期待改成可驗收條件</h2>
+      <p>「持續記錄」多久算持續？「負擔減輕」減多少才算？以下示範兩條改寫。</p>
     </div>
 
     <div class="ac-block reveal">
@@ -909,5 +910,7 @@
   });
 })();
 </script>
+<script src="../../assets/works-data.js"></script>
+<script src="../../assets/case-extras.js"></script>
 </body>
 </html>

@@ -201,12 +201,12 @@
   nav.main-nav a:hover { color: var(--ink-primary); border-bottom-color: var(--accent); }
   .theme-toggle {
     border: 1px solid var(--border-strong); background: var(--surface-card); color: var(--ink-primary);
-    border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer;
+    border-radius: var(--radius-sm); width: 44px; height: 44px; cursor: pointer;
     display: flex; align-items: center; justify-content: center; font-size: 15px;
     margin-left: var(--space-2);
   }
   .theme-toggle:hover { border-color: var(--accent); }
-  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer; }
+  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 44px; height: 44px; cursor: pointer; }
   @media (max-width: 860px) {
     nav.main-nav.links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-raised); border-bottom: 1px solid var(--gridline); flex-direction: column; align-items: flex-start; padding: var(--space-2) var(--space-3); gap: var(--space-2); }
     nav.main-nav.links.open { display: flex; }
@@ -218,7 +218,7 @@
   .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
   /* ---------- hero ---------- */
-  .hero { padding: var(--space-7) 0 var(--space-6); }
+  .hero { padding-top: var(--space-7); padding-bottom: var(--space-6); }
   .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent-ink); text-transform: uppercase; margin-bottom: var(--space-2); }
   .hero h1 { font-size: clamp(26px, 4.2vw, 42px); line-height: 1.32; max-width: 20ch; }
   .hero .lede { margin-top: var(--space-3); font-size: 18px; color: var(--ink-secondary); max-width: 62ch; }
@@ -420,14 +420,15 @@
   .footer-disclaimer p + p { margin-top: 8px; }
   .footer-meta { margin-top: var(--space-4); font-size: 12.5px; color: var(--ink-muted); border-top: 1px solid var(--gridline); padding-top: var(--space-2); }
 </style>
+<link rel="stylesheet" href="../../assets/case-extras.css">
 </head>
-<body>
+<body data-case="label-compliance">
 
 <div class="disclaimer-strip">本頁面與相關查核工具為<strong>標示合規查核輔助</strong>，非法規意見或法律意見。標示是否符合台灣食品／保健食品標示現行法規，應以衛生福利部食品藥物管理署等主管機關規定、正式函釋、或法規顧問之確認為準。本案例情境為虛構合成。</div>
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="../index.html">配方變更標示合規查核與改版<span>案例研究</span></a>
+    <a class="brand" href="../../index.html">Zorya<span>FDE &amp; Data Scientist</span></a>
     <nav class="main-nav links" id="mainNav">
       <a href="#background">案件背景</a>
       <a href="#sources">資料挑戰</a>
@@ -449,7 +450,7 @@
   <section class="hero wrap">
     <div class="eyebrow">案例研究 · 食品標示合規查核</div>
     <h1>客戶以為要花 4,000 元改版面，其實是合規風險</h1>
-    <p class="lede">日禾生技食品有限公司兩支產品因原料供應商更換而調整配方，客戶開價 NT$4,000 只想找美編把包裝文字改一改。逐字稿裡一句「降低打樣與退件風險」揭露了真正的痛：上一次配方變更改版，就是因為標示沒跟上配方而被通路要求整批下架重印。</p>
+    <p class="lede">兩支產品因換原料而調整配方，客戶開價 NT$4,000 找美編改字。但一句「降低打樣與退件風險」說出真正的痛：上次就是標示沒跟上配方，整批下架重印。</p>
     <p class="context-line">「其實案子不大，就是排版而已……照舊版的排版，字改一改就好，不要動版面，這樣比較快，也比較不會有風險，畢竟舊版都用這麼久了。」——但這正是上一次退件的原因。</p>
 
     <div class="stat-row">
@@ -474,8 +475,8 @@
   <section id="background" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">案件背景</div>
-      <h2>案主開價找美編，貼文裡的一句話說出了真正的問題</h2>
-      <p>客戶自己在刊登留言裡寫下「降低打樣與退件風險」——這句話不是隨口一提，是上一次真實發生過、而且已經算得出金額的失敗經驗。</p>
+      <h2>一句話說出真正的問題</h2>
+      <p>「降低打樣與退件風險」不是隨口一提——是上次真實發生、算得出金額的失敗。</p>
     </div>
 
     <div class="bg-grid">
@@ -517,8 +518,8 @@
   <section id="sources" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">三來源資料挑戰</div>
-      <h2>三份資料，沒有一份可以直接拿來當標準答案</h2>
-      <p>現行標示是業務憑舊版包裝照片手動謄打的，原料規格書單位跟包裝習慣不一致，法規查核清單裡有近四成項目連顧問方自己都還沒查證。</p>
+      <h2>三份資料都不是標準答案</h2>
+      <p>現行標示是憑舊包裝照片謄打的；原料規格單位不一致；法規清單近四成未查證。</p>
     </div>
 
     <div class="source-grid reveal">
@@ -555,8 +556,8 @@
   <section id="method" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">法規查核方式（本案最重要的一節）</div>
-      <h2>三態判定，不是「符合／不符合」二選一</h2>
-      <p>我們不斷言台灣食品／保健食品標示之現行法規細節（含應標示項目、字體大小規定、營養宣稱條件、警語要求等）為最終結論。查核過程中無法以現有資料直接判定之項目，一律誠實標註「待查證」，並列出應查證之官方來源。</p>
+      <h2>三態判定</h2>
+      <p>無法以現有資料判定的項目，一律誠實標「待查證」，並列出應查證的官方來源。</p>
     </div>
 
     <div class="tri-state-row reveal">
@@ -579,7 +580,7 @@
 
     <div class="chart-block reveal" style="margin-top: var(--space-3);">
       <div class="chart-title">《標示合規查核表》逐項查核結果分布</div>
-      <div class="chart-caption">兩支內銷產品（P01-D／P02-D）共 51 列查核結果，逐項判定依據見查核表「逐項查核表」工作表。</div>
+      <div class="chart-caption">兩支內銷產品共 51 列查核結果；逐項依據見查核表。</div>
       <div class="cbar-list" id="cbarTriState"></div>
       <details class="table-toggle">
         <summary>顯示完整數字表格</summary>
@@ -592,15 +593,15 @@
 
     <div class="honesty-callout reveal">
       <div class="honesty-kicker">為什麼「待查證」比「寫錯」更有價值</div>
-      <p><b>本案 29 條法規查核項目中，僅 4 條（約 14%）是本案可依內部資料直接核對之項目，其餘 25 條（約 86%）之法規細節本身尚未查證。</b>這不是查核工作沒做完，而是刻意誠實揭露：不懂裝懂寫出錯誤的法規結論，比誠實標註「待查證」嚴重得多——前者會讓客戶帶著一份看似完整、實則有錯誤依據的文件去印刷上市，後者則讓客戶清楚知道哪些項目需要再找法規顧問或衛福部食藥署確認。</p>
-      <p>《標示合規查核表》首頁明確聲明：本表為查核工具，最終應以主管機關規定與正式函釋為準，必要時應諮詢法規顧問。</p>
+      <p><b>29 條法規項目中，只有 4 條（14%）能靠內部資料核對；其餘 25 條的法規細節未查證。</b>不懂裝懂寫錯結論，比誠實標「待查證」嚴重得多。</p>
+      <p>查核表首頁聲明：最終以主管機關規定與正式函釋為準。</p>
     </div>
   </section>
 
   <section id="pricing" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">兩筆可算出金額的損失 → 服務重新定價論證</div>
-      <h2>上次「排版式」改版的真實代價是 NT$492,025，不是 NT$4,000</h2>
+      <h2>上次的真實代價：NT$492,025</h2>
       <p>客戶自己說不準上次損失多少。我們用可重現的算法，把兩筆損失拆解到每一個成本項目。</p>
     </div>
 
@@ -631,7 +632,7 @@
 
     <div class="chart-block reveal" style="margin-top: var(--space-3);">
       <div class="chart-title">從 NT$4,000 到 NT$28,000–45,000：定價論證的三步</div>
-      <div class="chart-caption">重新定價的錨點不是「拍腦袋喊價」，而是把上一次已發生的損失金額，換算成合理的服務定價區間。</div>
+      <div class="chart-caption">定價錨點：把上次已發生的損失，換算成合理的服務定價區間。</div>
       <div class="pipeline">
         <div class="pipe-node"><strong>案主原提案</strong><span class="pipe-value num">NT$4,000</span>任務被定義為「排版」，只換文字、不動版面</div>
         <div class="pipe-arrow">→</div>
@@ -646,7 +647,7 @@
   <section id="trap" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">假異常 · 誤判陷阱</div>
-      <h2>看起來不合規，其實是合法的例外</h2>
+      <h2>看似不合規的合法例外</h2>
       <p>不是每一項「看起來不一樣」的標示都是錯誤——分清「真的錯了」與「本來就該不一樣」，本身就是查核工作的一部分。</p>
     </div>
 
@@ -679,8 +680,8 @@
   <section id="acceptance" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">驗收標準改寫（W3）</div>
-      <h2>「印出來要好看」不是驗收標準，是無法達成共識的期待</h2>
-      <p>黃經理自己也說「你們弄出來我看得順眼……就是好看」——這種期待任何兩個人都可能得出不同結論，無法驗收。改寫的共同原則：把形容詞式的期待，換成可觀測、可歸屬到具體人員與文件狀態的檢核程序。</p>
+      <h2>「好看」不是驗收標準</h2>
+      <p>「看得順眼就是好看」——任何兩個人都會有不同結論。改寫原則：形容詞換成可觀測、可歸屬的檢核程序。</p>
     </div>
 
     <div class="chart-block reveal">
@@ -728,7 +729,7 @@
       <div class="contact-info">
         <div class="contact-name">Zorya</div>
         <div class="contact-role">FDE &amp; Data Scientist</div>
-        <p class="contact-lede">如果你手上也有一份「客戶開的價跟真正的問題對不上」的案子——不管是合規、資料還是內部流程，都歡迎聊聊。</p>
+        <p class="contact-lede">手上也有「客戶開的價跟真正的問題對不上」的案子？歡迎聊聊。</p>
       </div>
       <a class="contact-cta" href="mailto:uzang199431465@gmail.com">
         寄信聊聊這個案例
@@ -884,5 +885,7 @@
   });
 })();
 </script>
+<script src="../../assets/works-data.js"></script>
+<script src="../../assets/case-extras.js"></script>
 </body>
 </html>

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>電商 AI 客服 — Zorya 練習 Demo</title>
-<meta name="description" content="電商 AI 客服對話介面練習 Demo：即時回覆訂單、退換貨、運費等常見問題，並可選擇語音朗讀回覆內容。">
+<title>電商 AI 客服 — Zorya Demo</title>
+<meta name="description" content="電商 AI 客服對話介面Demo：即時回覆訂單、退換貨、運費等常見問題，並可選擇語音朗讀回覆內容。">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d0d'/%3E%3Ctext x='32' y='45' font-family='Georgia, Cambria, serif' font-size='34' font-weight='700' fill='%233987e5' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,41 +22,60 @@
 
   /* ---------- page-scoped: chat widget (bespoke visual design, token-driven) ---------- */
   .phone{
+    --brand: #9db49a;
+    --brand-ink: #2b2925;
     width:100%; max-width:400px; height:min(760px,80vh);
     background:var(--surface-card); border-radius:26px; overflow:hidden;
     display:flex; flex-direction:column;
     box-shadow:var(--shadow-card); border:1px solid var(--gridline);
   }
   .top{
-    background:linear-gradient(135deg,var(--accent),var(--accent-ink));
-    color:#fff; padding:16px 18px; display:flex; align-items:center; gap:12px; flex-shrink:0;
+    background:var(--brand);
+    color:var(--brand-ink); padding:14px 18px; display:flex; align-items:center; gap:14px; flex-shrink:0;
   }
-  .av{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;position:relative}
-  .av .dot{position:absolute;right:1px;bottom:1px;width:11px;height:11px;border-radius:50%;background:var(--good);border:2px solid rgba(255,255,255,.55)}
-  .top .nm{font-weight:800;font-size:16px}
-  .top .st{font-size:11px;opacity:.9}
-  .voice{margin-left:auto;background:rgba(255,255,255,.18);border:none;color:#fff;font-size:12px;
+  .av{width:69px;height:69px;border-radius:50%;background:#f4f3ee;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;border:2px solid rgba(255,255,255,.85);padding:0;cursor:pointer;overflow:hidden;flex:none;transition:transform .15s ease}
+  .av:hover{transform:scale(1.06)} .av:active{transform:scale(.94)}
+  .av-emoji{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+  .av-cat{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;object-fit:cover;background:#f4f3ee;transform:scale(1.12)}
+  .av-cat[hidden]{display:none}
+  .av .dot{z-index:2}
+  @keyframes catpop{0%{transform:scale(.6) rotate(-8deg)}70%{transform:scale(1.18) rotate(3deg)}100%{transform:scale(1.12)}}
+  .av-cat.pop{animation:catpop .35s ease-out}
+  .av .dot{position:absolute;right:4px;bottom:4px;width:14px;height:14px;border-radius:50%;background:#7fa66f;border:2px solid #f4f3ee}
+  .top .nm{font-family:var(--font-serif);font-weight:700;font-size:18px;letter-spacing:.02em}
+  .top .st{font-size:11px;opacity:.72}
+  .voice{margin-left:auto;background:rgba(43,41,37,.10);border:none;color:var(--brand-ink);font-size:12px;
     padding:8px 11px;border-radius:20px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:5px}
   .voice.off{opacity:.55}
-  .chat{flex:1;overflow-y:auto;padding:18px 16px;background:linear-gradient(180deg,var(--surface-raised),var(--surface-page));display:flex;flex-direction:column;gap:10px}
+  .chat{flex:1;overflow-y:auto;padding:18px 16px;background:color-mix(in srgb,var(--brand) 12%,var(--surface-page));display:flex;flex-direction:column;gap:10px}
   .msg{max-width:80%;padding:11px 14px;border-radius:16px;font-size:14.5px;line-height:1.55;white-space:pre-wrap;animation:in .25s ease}
   @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  .bot{align-self:flex-start;background:var(--surface-raised);border:1px solid var(--gridline);border-bottom-left-radius:5px;color:var(--ink-primary);box-shadow:0 2px 6px rgba(11,11,11,.05)}
-  .me{align-self:flex-end;background:linear-gradient(135deg,var(--accent),var(--accent-ink));color:#fff;border-bottom-right-radius:5px}
+  .bot{align-self:flex-start;background:var(--surface-raised);border:1px solid var(--gridline);border-bottom-left-radius:5px;color:var(--ink-primary)}
+  .me{align-self:flex-end;background:var(--brand);color:var(--brand-ink);border-bottom-right-radius:5px}
   .time{font-size:10px;color:var(--ink-muted);margin:2px 4px 0}
   .me + .time{align-self:flex-end}
   .chips{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:92%}
-  .chip{background:var(--surface-raised);border:1.5px solid var(--border-strong);color:var(--accent-ink);font-size:13px;font-weight:600;
+  .chip{background:var(--surface-raised);border:1.5px solid color-mix(in srgb,var(--brand) 70%,var(--border-strong));color:var(--ink-secondary);font-size:13px;font-weight:600;
     padding:8px 13px;border-radius:20px;cursor:pointer;transition:.12s}
-  .chip:active{transform:scale(.96);background:var(--accent-soft)}
+  .chip:hover{background:color-mix(in srgb,var(--brand) 25%,var(--surface-raised))} .chip:active{transform:scale(.96)}
   .typing{align-self:flex-start;background:var(--surface-raised);border:1px solid var(--gridline);padding:13px 16px;border-radius:16px;border-bottom-left-radius:5px;display:flex;gap:4px}
   .typing i{width:7px;height:7px;border-radius:50%;background:var(--ink-muted);animation:b 1s infinite}
   .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
   @keyframes b{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
   .foot{border-top:1px solid var(--gridline);padding:10px 12px;display:flex;gap:8px;align-items:center;background:var(--surface-raised);flex-shrink:0}
   .foot input{flex:1;border:1.5px solid var(--gridline);border-radius:22px;padding:11px 15px;font-size:15px;outline:none;background:var(--surface-page);color:var(--ink-primary);font-family:inherit}
-  .foot input:focus{border-color:var(--accent)}
-  .send{width:44px;height:44px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-ink));color:#fff;font-size:18px;cursor:pointer;flex:none}
+  .foot input:focus{border-color:var(--brand)}
+  .send{width:44px;height:44px;border-radius:50%;border:none;background:var(--brand);color:var(--brand-ink);font-size:18px;cursor:pointer;flex:none}
+  .customize{width:100%;max-width:400px;display:flex;flex-direction:column;gap:12px;padding:14px 16px;background:var(--surface-card);border:1px solid var(--gridline);border-radius:14px}
+  .cz-group{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .cz-label{font-size:12px;font-weight:700;color:var(--ink-muted);letter-spacing:.04em;min-width:48px}
+  .swatches,.cat-picks{display:flex;gap:8px;flex-wrap:wrap}
+  .swatch{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;box-shadow:0 0 0 1px var(--border-strong);transition:transform .12s}
+  .swatch:hover{transform:scale(1.1)} .swatch.on{border-color:var(--ink-primary)}
+  .cat-pick{width:40px;height:40px;border-radius:50%;border:2px solid transparent;padding:0;background:#f4f3ee;overflow:hidden;cursor:pointer;transition:transform .12s}
+  .cat-pick img{width:100%;height:100%;image-rendering:pixelated;transform:scale(1.12)}
+  .cat-pick:hover{transform:scale(1.1)} .cat-pick.on{border-color:var(--ink-primary)}
+  .cz-hint{font-size:11.5px;color:var(--ink-muted)}
   .badge{font-size:9px;text-align:center;color:var(--ink-muted);padding:4px;background:var(--surface-card);flex-shrink:0}
 </style>
 </head>
@@ -73,13 +92,13 @@
 
 <main class="wrap demo-shell">
   <div class="demo-intro reveal">
-    <div class="eyebrow">練習 Demo・對話介面</div>
+    <div class="eyebrow">Demo・對話介面</div>
     <p>電商情境的 AI 客服對話練習：即時回覆訂單物流、退換貨、運費、付款等常見問題，可切換語音朗讀回覆內容。</p>
   </div>
 
   <div class="phone reveal">
     <div class="top">
-      <div class="av">🤖<span class="dot"></span></div>
+      <button class="av" id="avatar" type="button" title="點一下換一隻貓" aria-label="換一隻客服貓"><span class="av-emoji" aria-hidden="true">🐱</span><img class="av-cat" id="avatarImg" alt="小雲客服貓" width="128" height="128" hidden><span class="dot"></span></button>
       <div><div class="nm">小雲 AI 客服</div><div class="st">線上・平均 2 秒回覆</div></div>
       <button class="voice" id="voice">🔊 語音</button>
     </div>
@@ -90,11 +109,50 @@
     </div>
     <div class="badge">AI 客服 Demo・示範用（可串接真實訂單系統與大型語言模型）</div>
   </div>
+
+  <div class="customize reveal" aria-label="外觀設定">
+    <div class="cz-group"><span class="cz-label">主題色</span><div class="swatches" id="swatches"></div></div>
+    <div class="cz-group"><span class="cz-label">客服貓</span><div class="cat-picks" id="catPicks"></div></div>
+    <div class="cz-hint">委託人可自行挑選品牌色與客服角色；選擇會記在這台裝置上。</div>
+  </div>
 </main>
 
 <script src="../../assets/portfolio-theme.js"></script>
 <script>
 const chat=document.getElementById('chat');
+
+// ---- 外觀客製：品牌色 + 客服貓（選擇記在 localStorage；缺圖時退回 emoji） ----
+const THEMES=[{n:'鼠尾草',c:'#9db49a'},{n:'霧藍',c:'#9fb4c7'},{n:'奶茶',c:'#cdb59b'},{n:'乾燥玫瑰',c:'#d3a6a6'},{n:'薰衣草',c:'#b4a9cb'},{n:'燕麥',c:'#c9c2b2'}];
+const CATS=['img/cat-1.png','img/cat-2.png','img/cat-3.png','img/cat-4.png','img/cat-5.png','img/cat-6.png'];
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const phone=document.querySelector('.phone');
+const avImg=document.getElementById('avatarImg');
+let catIdx=parseInt(store.get('ai-service-cat'),10);
+if(isNaN(catIdx))catIdx=Math.floor(Math.random()*CATS.length);
+
+function applyTheme(i){
+  const t=THEMES[i]||THEMES[0];
+  phone.style.setProperty('--brand',t.c);
+  document.querySelectorAll('.swatch').forEach((b,j)=>b.classList.toggle('on',j===i));
+  store.set('ai-service-theme',String(i));
+}
+function showCat(i){
+  catIdx=i;
+  const img=new Image();
+  img.onload=()=>{avImg.src=img.src;avImg.hidden=false;avImg.classList.remove('pop');void avImg.offsetWidth;avImg.classList.add('pop');};
+  img.onerror=()=>{avImg.hidden=true;};
+  img.src=CATS[i];
+  document.querySelectorAll('.cat-pick').forEach((b,j)=>b.classList.toggle('on',j===i));
+  store.set('ai-service-cat',String(i));
+}
+const sw=document.getElementById('swatches');
+THEMES.forEach((t,i)=>{const b=document.createElement('button');b.className='swatch';b.type='button';b.title=t.n;b.setAttribute('aria-label',t.n);b.style.background=t.c;b.onclick=()=>applyTheme(i);sw.appendChild(b);});
+const cp=document.getElementById('catPicks');
+CATS.forEach((src,i)=>{const b=document.createElement('button');b.className='cat-pick';b.type='button';b.title='客服貓 '+(i+1);b.setAttribute('aria-label','客服貓 '+(i+1));
+  const im=new Image();im.src=src;im.alt='';im.onerror=()=>b.remove();b.appendChild(im);b.onclick=()=>showCat(i);cp.appendChild(b);});
+applyTheme(parseInt(store.get('ai-service-theme'),10)||0);
+showCat(catIdx);
+document.getElementById('avatar').onclick=()=>showCat((catIdx+1)%CATS.length);
 let voiceOn=true;
 
 const INTENTS=[
@@ -123,7 +181,7 @@ const INTENTS=[
    a:"不客氣！很高興能幫上忙 😊 還有其他需要協助的地方嗎？",
    chips:["查詢我的訂單","我要退換貨","運費怎麼算"]},
   {keys:["你好","哈囉","hi","hello","在嗎","嗨"],
-   a:"您好，我是小雲 AI 客服 🤖 很高興為您服務！以下是常見問題，也可以直接打字問我：",
+   a:"您好，我是小雲 AI 客服 🐾 很高興為您服務！以下是常見問題，也可以直接打字問我：",
    chips:["查詢我的訂單","我要退換貨","運費怎麼算","付款方式"]},
 ];
 const FALLBACK={a:"這個問題我先幫您記下來了 📝 我可以協助訂單物流、退換貨、運費、付款、商品規格等問題；較複雜的部分也能為您轉接真人客服。您想先了解哪一項？",
@@ -140,7 +198,7 @@ function typing(){const d=document.createElement('div');d.className='typing';d.i
 
 function speak(t){
   if(!voiceOn||!window.speechSynthesis)return;
-  const clean=t.replace(/[📦🔁🚚🛍️💳🕘👩‍💼😊🤖📝➤・]/g,' ');
+  const clean=t.replace(/[📦🔁🚚🛍️💳🕘👩‍💼😊🤖🐾📝➤・]/g,' ');
   const u=new SpeechSynthesisUtterance(clean);u.lang='zh-TW';u.rate=1.05;
   speechSynthesis.cancel();speechSynthesis.speak(u);
 }
@@ -179,7 +237,7 @@ document.getElementById('voice').onclick=function(){
 };
 
 // 開場
-setTimeout(()=>addBot("您好，我是小雲 AI 客服 🤖\n很高興為您服務！請問需要什麼協助呢？以下是常見問題，也可以直接打字問我：",
+setTimeout(()=>addBot("您好，我是小雲 AI 客服 🐾\n很高興為您服務！請問需要什麼協助呢？以下是常見問題，也可以直接打字問我：",
   ["查詢我的訂單","我要退換貨","運費怎麼算","付款方式"]),400);
 </script>
 </body>

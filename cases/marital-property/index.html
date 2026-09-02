@@ -194,12 +194,12 @@
   nav.main-nav a:hover { color: var(--ink-primary); border-bottom-color: var(--accent); }
   .theme-toggle {
     border: 1px solid var(--border-strong); background: var(--surface-card); color: var(--ink-primary);
-    border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer;
+    border-radius: var(--radius-sm); width: 44px; height: 44px; cursor: pointer;
     display: flex; align-items: center; justify-content: center; font-size: 15px;
     margin-left: var(--space-2);
   }
   .theme-toggle:hover { border-color: var(--accent); }
-  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer; }
+  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 44px; height: 44px; cursor: pointer; }
   @media (max-width: 780px) {
     nav.main-nav.links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-raised); border-bottom: 1px solid var(--gridline); flex-direction: column; align-items: flex-start; padding: var(--space-2) var(--space-3); gap: var(--space-2); }
     nav.main-nav.links.open { display: flex; }
@@ -211,7 +211,7 @@
   .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
   /* ---------- hero ---------- */
-  .hero { padding: var(--space-7) 0 var(--space-6); }
+  .hero { padding-top: var(--space-7); padding-bottom: var(--space-6); }
   .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent-ink); text-transform: uppercase; margin-bottom: var(--space-2); }
   .hero h1 { font-size: clamp(28px, 4.4vw, 44px); line-height: 1.28; max-width: 18ch; }
   .hero .lede { margin-top: var(--space-3); font-size: 18px; color: var(--ink-secondary); max-width: 60ch; }
@@ -382,14 +382,15 @@
   .footer-disclaimer p + p { margin-top: 8px; }
   .footer-meta { margin-top: var(--space-4); font-size: 12.5px; color: var(--ink-muted); border-top: 1px solid var(--gridline); padding-top: var(--space-2); }
 </style>
+<link rel="stylesheet" href="../../assets/case-extras.css">
 </head>
-<body>
+<body data-case="marital-property">
 
 <div class="disclaimer-strip">本案例情境改編自公開刊登之外包需求，所有資料為合成生成，不對應任何真實個人或案件。所有產出均為資料分析方法說明，不構成法律意見。</div>
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="../index.html">婚前婚後財產分類與追溯<span>案例研究</span></a>
+    <a class="brand" href="../../index.html">Zorya<span>FDE &amp; Data Scientist</span></a>
     <nav class="main-nav links" id="mainNav">
       <a href="#background">案件背景</a>
       <a href="#sources">資料挑戰</a>
@@ -411,7 +412,7 @@
   <section class="hero wrap">
     <div class="eyebrow">案例研究 · 法律／會計資料分析</div>
     <h1>婚前婚後財產<br>交易明細分類與追溯</h1>
-    <p class="lede">被繼承人約十年間的銀行交易、基金申購贖回、配息與淨值三項資料來源整併，依事先揭露之計算假設區分婚前與婚後財產，產出可呈庭參考報表與方法說明書。</p>
+    <p class="lede">十年份的銀行、基金、配息三種資料整併後，依揭露的假設切分婚前／婚後財產，產出可呈庭報表。</p>
     <p class="context-line">委託人已諮詢兩位律師，均表示「無法」或「很難」單憑交易明細判斷資產歸屬——問題不在律師不夠專業，而是十年份的銀行摘要、基金代碼、配息紀錄從未被整併過。</p>
 
     <div class="stat-row">
@@ -436,8 +437,8 @@
   <section id="background" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">案件背景</div>
-      <h2>兩位委任律師都做不到的事，不是能力問題</h2>
-      <p>父親過世，繼母主張夫妻剩餘財產分配。委託人需要的不是法律意見，而是一份能把十年交易明細轉成可信賴分類結果的資料分析。</p>
+      <h2>律師做不到的，不是能力問題</h2>
+      <p>父親過世，繼母主張剩餘財產分配。委託人要的不是法律意見，是一份法官看得懂的分類計算書。</p>
     </div>
 
     <div class="bg-grid">
@@ -473,8 +474,8 @@
   <section id="sources" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">資料挑戰（W1）</div>
-      <h2>三個來源，沒有一組能直接對上</h2>
-      <p>這不是「資料不乾淨」的問題，而是三份資料從設計時就用不同的鍵、不同的粒度、不同的金額基礎在記錄同一件事。</p>
+      <h2>三個來源對不上</h2>
+      <p>三份資料用不同的鍵、粒度、金額基礎，記錄同一件事。</p>
     </div>
 
     <div class="source-grid reveal">
@@ -510,8 +511,8 @@
   <section id="method" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">分類邏輯與方法</div>
-      <h2>把錢的血緣，拆成可以逐筆交代的軌跡</h2>
-      <p>先整併三來源，再依婚姻登記日切分，最後把每一分錢按性質分流並標註舉證強度——這是「釐清金流」實際在做的事。</p>
+      <h2>把錢的血緣拆成軌跡</h2>
+      <p>整併 → 依登記日切分 → 按性質分流 → 標註舉證強度。</p>
     </div>
 
     <div class="pipeline reveal">
@@ -535,13 +536,13 @@
   <section id="results" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">分析結果</div>
-      <h2>婚後財產淨額 ＝ 過世時總財產 − 可追溯至婚前財產之本金及其替代物</h2>
-      <p>下表為分類總表的十個項目，顏色代表是否計入基準情境之婚後財產淨額。同一筆資金在申購與贖回時點會分別產生一筆分類金額，因此「不計入」各列不宜直接加總視為婚前資產總額，僅供逐項對照。</p>
+      <h2>婚後財產淨額怎麼算</h2>
+      <p>十個分類項目，顏色代表是否計入婚後財產淨額；「不計入」各列不宜直接加總。</p>
     </div>
 
     <div class="chart-block reveal" id="chart-classification">
       <div class="chart-title">財產分類與金額對照</div>
-      <div class="chart-caption">依《分類邏輯與可呈庭報表.xlsx》分類總表工作表整理，金額單位為新台幣元。</div>
+      <div class="chart-caption">金額單位：新台幣元。</div>
       <div class="cbar-list" id="cbarClassification" role="img" aria-label="財產分類與金額對照長條圖"></div>
       <div class="legend-row">
         <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>計入婚後財產淨額</span>
@@ -560,7 +561,7 @@
     <div class="charts-two-col" style="margin-top: var(--space-3);">
       <div class="chart-block reveal" id="chart-confidence">
         <div class="chart-title">信心等級分佈</div>
-        <div class="chart-caption">已分類總金額 NT$ 13,486,614 之舉證強度分布；不含獨立揭露之不明轉入 NT$ 4,650,000。</div>
+        <div class="chart-caption">已分類 NT$ 13,486,614 的舉證強度；不含獨立揭露的不明轉入。</div>
         <svg class="chart-svg" id="svgConfidence" viewBox="0 0 480 120" role="img" aria-label="信心等級分佈堆疊長條圖"></svg>
         <div class="legend-row">
           <span class="legend-item"><span class="legend-swatch" style="background:var(--good)"></span>可直接舉證 74.2%</span>
@@ -578,7 +579,7 @@
 
       <div class="chart-block reveal" id="chart-sensitivity">
         <div class="chart-title">婚後財產淨額敏感度分析</div>
-        <div class="chart-caption">依 L01～L04 四項法律前提之不同組合，呈現金額變動範圍，非提供單一「正確答案」。</div>
+        <div class="chart-caption">L01～L04 不同組合下的金額區間，不是單一答案。</div>
         <svg class="chart-svg" id="svgSensitivity" viewBox="0 0 480 150" role="img" aria-label="婚後財產淨額敏感度區間圖"></svg>
         <div class="legend-row">
           <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>基準情境</span>
@@ -599,8 +600,8 @@
   <section id="cases" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">重大爭點與異常案例</div>
-      <h2>兩個算得出金額的爭點，一個容易誤判的陷阱</h2>
-      <p>每一案例都標明信心等級與影響方向，讓委任律師確認法律前提時，看得到金額會怎麼變。</p>
+      <h2>兩個爭點、一個陷阱</h2>
+      <p>每個爭點都標明信心等級；律師確認前提時，看得到金額怎麼變。</p>
     </div>
 
     <div class="case-grid reveal">
@@ -653,8 +654,8 @@
   <section id="legal" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">法律前提假設表（節錄）</div>
-      <h2>把「需要律師判斷的」與「可以先試算的」明確切開</h2>
-      <p>完整 8 條前提詳見《法律前提假設表.md》。以下 4 條對婚後財產淨額影響金額最大，且彼此獨立。</p>
+      <h2>律師判斷 vs. 先試算</h2>
+      <p>節錄影響最大的 4 條；完整 8 條見假設表。</p>
     </div>
 
     <div class="chart-block reveal">
@@ -694,7 +695,7 @@
       <div class="contact-info">
         <div class="contact-name">Zorya</div>
         <div class="contact-role">FDE &amp; Data Scientist</div>
-        <p class="contact-lede">如果你手上也有一份「資料很多、但沒人整理得出來」的案子——不管是法律、財務還是內部流程，都歡迎聊聊。</p>
+        <p class="contact-lede">手上也有「資料很多、沒人整理得出來」的案子？歡迎聊聊。</p>
       </div>
       <a class="contact-cta" href="mailto:uzang199431465@gmail.com">
         寄信聊聊這個案例
@@ -978,5 +979,7 @@
   });
 })();
 </script>
+<script src="../../assets/works-data.js"></script>
+<script src="../../assets/case-extras.js"></script>
 </body>
 </html>

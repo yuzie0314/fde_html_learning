@@ -194,12 +194,12 @@
   nav.main-nav a:hover { color: var(--ink-primary); border-bottom-color: var(--accent); }
   .theme-toggle {
     border: 1px solid var(--border-strong); background: var(--surface-card); color: var(--ink-primary);
-    border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer;
+    border-radius: var(--radius-sm); width: 44px; height: 44px; cursor: pointer;
     display: flex; align-items: center; justify-content: center; font-size: 15px;
     margin-left: var(--space-2);
   }
   .theme-toggle:hover { border-color: var(--accent); }
-  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 34px; height: 34px; cursor: pointer; }
+  .nav-toggle { display: none; border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: var(--radius-sm); width: 44px; height: 44px; cursor: pointer; }
   @media (max-width: 780px) {
     nav.main-nav.links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-raised); border-bottom: 1px solid var(--gridline); flex-direction: column; align-items: flex-start; padding: var(--space-2) var(--space-3); gap: var(--space-2); }
     nav.main-nav.links.open { display: flex; }
@@ -211,7 +211,7 @@
   .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
   /* ---------- hero ---------- */
-  .hero { padding: var(--space-7) 0 var(--space-6); }
+  .hero { padding-top: var(--space-7); padding-bottom: var(--space-6); }
   .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent-ink); text-transform: uppercase; margin-bottom: var(--space-2); }
   .hero h1 { font-size: clamp(28px, 4.4vw, 44px); line-height: 1.28; max-width: 18ch; }
   .hero .lede { margin-top: var(--space-3); font-size: 18px; color: var(--ink-secondary); max-width: 60ch; }
@@ -382,14 +382,15 @@
   .footer-disclaimer p + p { margin-top: 8px; }
   .footer-meta { margin-top: var(--space-4); font-size: 12.5px; color: var(--ink-muted); border-top: 1px solid var(--gridline); padding-top: var(--space-2); }
 </style>
+<link rel="stylesheet" href="../../assets/case-extras.css">
 </head>
-<body>
+<body data-case="frozen-food">
 
 <div class="disclaimer-strip">本案例情境改編自 Tasker 出任務平台公開刊登之外包需求，所有公司名、人名、金額、資料均為虛構合成，如有雷同純屬巧合。</div>
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="../index.html">冷凍食品業務巡補與沖帳診斷<span>案例研究</span></a>
+    <a class="brand" href="../../index.html">Zorya<span>FDE &amp; Data Scientist</span></a>
     <nav class="main-nav links" id="mainNav">
       <a href="#background">案件背景</a>
       <a href="#sources">資料挑戰</a>
@@ -410,7 +411,7 @@
   <section class="hero wrap">
     <div class="eyebrow">案例研究 · 食品經銷／診斷型</div>
     <h1>冷凍食品業務巡補<br>與沖帳診斷</h1>
-    <p class="lede">38 人冷凍食品經銷商，業務兼司機每天巡迴 15–25 個據點現場收現金，提貨、下貨、收款三張單據分別由倉管、業務、會計各自產生——老闆知道錢在漏，卻講不出是哪個環節出問題。</p>
+    <p class="lede">38 人冷凍食品經銷商，提貨、下貨、收款三張單據分屬倉管、業務、會計——老闆知道錢在漏，卻講不出是哪個環節。</p>
     <p class="context-line">客戶原話：「我們現在對帳都要對到晚上，業務單子跟會計收的錢兜不起來，但我也說不出來是哪裡出問題，反正每個月結一結，錢就是少一點。」「上一家做系統的廠商，App 做出來只能列印，我要的是『對得起來』的東西，不是好看的介面。」</p>
 
     <div class="stat-row">
@@ -435,8 +436,8 @@
   <section id="background" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">案件背景</div>
-      <h2>客戶知道錢在漏，但講不出是哪個環節</h2>
-      <p>凍原冷凍食品有限公司自有冷凍食品，配送車每天巡迴固定零售點補貨。唯一的系統是六年前外包建置的 Android App，功能僅止於「列印單據」，沒有庫存勾稽、沒有帳務對帳功能。</p>
+      <h2>錢在漏，但不知道漏在哪</h2>
+      <p>配送車每天巡迴固定零售點補貨；唯一的系統是六年前的 Android App，只會列印單據，不會對帳。</p>
     </div>
 
     <div class="callout reveal" style="margin-top:0; margin-bottom: var(--space-4);">
@@ -477,8 +478,8 @@
   <section id="sources" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">資料挑戰（W1）</div>
-      <h2>三張單據，沒有一組能直接對上</h2>
-      <p>提貨、下貨、收款分別由倉管、業務、會計各自產生，彼此主鍵不同、日期定義不同、金額含稅基準不同、部分業務姓名寫法還不一致——不整併就算不出核心指標。</p>
+      <h2>三張單據對不上</h2>
+      <p>主鍵不同、日期定義不同、含稅基準不同——不先整併，核心指標算不出來。</p>
     </div>
 
     <div class="source-grid reveal">
@@ -514,8 +515,8 @@
   <section id="cases" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">異常案例／爭點（W4 數字敏感度）</div>
-      <h2>兩個算得出金額的真異常，一個容易誤判的陷阱</h2>
-      <p>每個案例都標明信心等級與影響方向，讓老闆與會計看到「錢到底漏在哪裡」，而不是只有質性描述。</p>
+      <h2>兩個真異常、一個陷阱</h2>
+      <p>每個異常都算得出金額、標明信心等級——不是質性描述。</p>
     </div>
 
     <div class="case-grid reveal">
@@ -570,14 +571,14 @@
   <section id="results" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">分析結果 · ROI（W4 數字敏感度）</div>
-      <h2>核心指標＝淨車存差異＋未沖帳金額</h2>
-      <p>淨車存差異 ＝ 提貨量 −（下貨量 ＋ 回頭貨量 ＋ 樣品報廢量）；未沖帳金額 ＝ 已下貨金額 − 已沖帳金額 − 合理壓趟區間內金額（5 個工作天）。兩個真異常都是從這兩條公式重新勾稽三表後才算得出來的，不是猜出來的。</p>
+      <h2>兩條公式算出金額</h2>
+      <p>淨車存差異 ＝ 提貨 −（下貨 ＋ 回頭貨 ＋ 樣品報廢）；未沖帳金額 ＝ 已下貨 − 已沖帳 − 合理壓趟區間（5 個工作天）內金額。兩個真異常都是由這兩條公式勾稽出來的。</p>
     </div>
 
     <div class="charts-two-col">
       <div class="chart-block reveal" id="chart-anomaly">
         <div class="chart-title">兩個真異常之年度財務影響</div>
-        <div class="chart-caption">同一筆 S03 壓趟異常，「資金成本法」與「呆帳風險法」是兩種不同性質的風險框架，差距達 7–8 倍；ROI 主數字採較保守之呆帳風險法。</div>
+        <div class="chart-caption">同一筆壓趟異常，資金成本法與呆帳風險法差 7–8 倍；ROI 採較保守的呆帳風險法。</div>
         <div class="cbar-list" id="cbarAnomaly" role="img" aria-label="真異常年度財務影響長條圖"></div>
         <div class="legend-row">
           <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>計入 ROI 可回收損失</span>
@@ -594,7 +595,7 @@
 
       <div class="chart-block reveal" id="chart-roi">
         <div class="chart-title">投資 vs. 年度淨效益</div>
-        <div class="chart-caption">保守法：異常損失回收＋陳姐工時節省，扣除系統維運成本增額後之淨效益，對照一次性專案投資。</div>
+        <div class="chart-caption">異常回收＋工時節省，扣除維運增額，對照一次性投資。</div>
         <svg class="chart-svg" id="svgRoi" viewBox="0 0 480 150" role="img" aria-label="投資與年度淨效益對照圖"></svg>
         <div class="legend-row">
           <span class="legend-item"><span class="legend-swatch" style="background:var(--ink-muted)"></span>專案投資（一次性）</span>
@@ -615,8 +616,8 @@
   <section id="assumptions" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">假設與待確認清單（節錄）</div>
-      <h2>客戶把問題丟回來的兩題，我們先給建議值</h2>
-      <p>完整 10 條假設詳見《假設與待確認清單.md》。以下 2 條對應逐字稿中林總明確把判斷丟回顧問方的情境（W2 時效標準／成功指標）。</p>
+      <h2>客戶丟回來的兩題</h2>
+      <p>節錄 2 條客戶把判斷丟回來的題目；完整 10 條見清單文件。</p>
     </div>
 
     <div class="chart-block reveal">
@@ -636,7 +637,7 @@
   <section id="scope" class="wrap">
     <div class="section-head reveal">
       <div class="section-kicker">交付範疇</div>
-      <h2>三項交付物：先講清楚錢漏在哪，再談要不要建系統</h2>
+      <h2>三項交付物</h2>
     </div>
     <div class="fork-row reveal" style="grid-template-columns: repeat(3, 1fr);">
       <div class="fork-node out-yes"><strong>01　需求分析報告</strong>含三表資料整併邏輯與異常清單</div>
@@ -653,7 +654,7 @@
       <div class="contact-info">
         <div class="contact-name">Zorya</div>
         <div class="contact-role">FDE &amp; Data Scientist</div>
-        <p class="contact-lede">如果你手上也有一份「帳兜不起來、卻講不出哪裡出問題」的案子——不管是經銷配送、零售對帳還是內部流程，都歡迎聊聊。</p>
+        <p class="contact-lede">手上也有「帳兜不起來、卻講不出哪裡出問題」的案子？歡迎聊聊。</p>
       </div>
       <a class="contact-cta" href="mailto:uzang199431465@gmail.com">
         寄信聊聊這個案例
@@ -894,5 +895,7 @@
   });
 })();
 </script>
+<script src="../../assets/works-data.js"></script>
+<script src="../../assets/case-extras.js"></script>
 </body>
 </html>
