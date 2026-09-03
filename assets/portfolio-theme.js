@@ -81,6 +81,26 @@
     if (tooltip && tooltip.classList.contains('show')) moveTooltip(evt);
   });
 
+  // ---- language switch (zh -> EN); EN pages carry their own switch back ----
+  (function () {
+    if (document.querySelector('.lang-sw')) return;
+    var path = location.pathname;
+    var en = '/en/index.html';
+    var m = path.match(/\/cases\/([a-z-]+)\//);
+    if (m) en = '/en/cases/' + m[1] + '.html';
+    else if (/\/cases\/?(index\.html)?$/.test(path)) en = '/en/cases/index.html';
+    else if (/\/demos\//.test(path)) en = '/en/demos/index.html';
+    var slot = document.querySelector('.header-inner > div');
+    if (!slot) return;
+    var a = document.createElement('a');
+    a.className = 'lang-sw';
+    a.href = en;
+    a.lang = 'en';
+    a.title = 'Switch to English';
+    a.textContent = 'EN';
+    slot.insertBefore(a, slot.firstChild);
+  })();
+
   // Expose small shared helpers for per-page chart scripts.
   window.ZoryaTheme = { showTooltip: showTooltip, moveTooltip: moveTooltip, hideTooltip: hideTooltip, fmt: fmt, pct: pct, cssVar: cssVar };
 })();

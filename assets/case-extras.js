@@ -15,6 +15,18 @@
   for (var i = 0; i < W.CASES.length; i++) if (W.CASES[i].slug === slug) idx = i;
   var me = idx >= 0 ? W.CASES[idx] : null;
 
+  // 0) language switch to the EN brief
+  if (!document.querySelector(".lang-sw")) {
+    var slotEl = document.querySelector(".header-inner > div");
+    if (slotEl) {
+      var sw = document.createElement("a");
+      sw.className = "lang-sw";
+      sw.href = "/en/cases/" + slug + ".html";
+      sw.lang = "en"; sw.title = "Switch to English"; sw.textContent = "EN";
+      slotEl.insertBefore(sw, slotEl.firstChild);
+    }
+  }
+
   // 1) reading progress bar + back-to-top
   var bar = document.createElement("div");
   bar.className = "read-progress";
