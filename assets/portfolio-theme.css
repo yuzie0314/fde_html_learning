@@ -452,3 +452,9 @@ section.tight { padding: var(--space-5) 0; }
 /* demo cards share the work-card look; "打開 Demo" footer in muted ink */
 .work-card.demo .work-kicker { color: var(--ink-muted); background: var(--gray-status-soft); }
 .work-card.demo .work-stat { color: var(--ink-secondary); }
+
+/* ---------- language switch pill ---------- */
+.lang-sw { margin-right: 8px; border: 1px solid var(--border-strong); border-radius: 8px; min-width: 44px; min-height: 44px;
+  display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; text-decoration: none;
+  font-size: 13px; font-weight: 700; color: var(--ink-primary); background: var(--surface-card); }
+.lang-sw:hover { border-color: var(--accent); }
